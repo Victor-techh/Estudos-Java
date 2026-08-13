@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agente de Vendas IA - Chat</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .chat-container { width: 100%; max-width: 600px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; height: 80vh; }
+        .chat-header { background: #1f2937; color: white; padding: 15px; border-radius: 8px 8px 0 0; text-align: center; }
+        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .message { padding: 10px 14px; border-radius: 8px; max-width: 75%; font-size: 14px; line-height: 1.4; }
+        .user { background: #2563eb; color: white; align-self: flex-end; }
+        .model { background: #e5e7eb; color: #1f2937; align-self: flex-start; }
+        .chat-input { display: flex; border-top: 1px solid #e5e7eb; padding: 10px; gap: 10px; }
+        input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
+        button { padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:disabled { background: #9ca3af; }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-header">
+        <h3 style="margin: 0 0 10px 0;">Negociação com Agente IA</h3>
+        <label for="qtdMusicos" style="font-size: 12px;">Formação:</label>
+        <select id="qtdMusicos" style="padding: 4px; border-radius: 4px; color: #1f2937;">
+            <option value="1">Solo (1 Músico - Piso: R$ 420)</option>
+            <option value="2">Duo (2 Músicos - Piso: R$ 840)</option>
+            <option value="3">Trio (3 Músicos - Piso: R$ 1.260)</option>
+            <option value="4">Quarteto (4 Músicos - Piso: R$ 1.680)</option>
+        </select>
+    </div>
+    <div id="messages" class="chat-messages"></div>
+    <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Digite sua mensagem ou contraproposta...">
+        <button id="sendBtn" onclick="enviarMensagem()">Enviar</button>
+    </div>
+</div>
+
+<script>
+    const estabelecimento = {
+        nome: "Bar do Jazz",
+        tipo: "Bar",
+        endereco: "Rua Central, 100",
+        orcamentoMaximo: 1500.0,
+        estiloMusicalDesejado: "Jazz",
+        possuiEquipamentoSom: true
+    };
+
+    let historico = [];
+
+    async function enviarMensagem() {
+        const input = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const texto = input.value.trim();
+
+        if (!texto) return;
+
+        adicionarMensagem('user', texto);
+        input.value = '';
+        input.disabled = true;
+        sendBtn.disabled = true;
+
+        try {
+            // Requisição enviando o historico e a quantidade de músicos selecionada
+            const response = await fetch('/api/agente/atendimento', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    estabelecimento: estabelecimento,
+                    historico: historico,
+                    mensagem: texto,
+                    quantidadeMusicos: parseInt(document.getElementById('qtdMusicos').value)
+                })
+            });
+
+            const respostaTexto = await response.text();
+
+            adicionarMensagem('model', respostaTexto);
+
+            historico.push({ role: 'user', texto: texto });
+            historico.push({ role: 'model', texto: respostaTexto });
+
+        } catch (error) {
+            adicionarMensagem('model', '[Erro de Comunicação]: Não foi possível conectar ao servidor.');
+        } finally {
+            input.disabled = false;
+            sendBtn.disabled = false;
+            input.focus();
+        }
+    }
+
+    function adicionarMensagem(role, texto) {
+        const container = document.getElementById('messages');
+        const div = document.createElement('div');
+        div.className = `message ${role}`;
+        div.innerText = texto;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+</script>
+
+</body>
+</html>

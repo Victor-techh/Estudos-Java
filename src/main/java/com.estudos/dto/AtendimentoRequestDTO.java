@@ -1,0 +1,33 @@
+package com.estudos.dto;
+
+import com.estudos.modelo.Estabelecimento;
+import java.util.ArrayList;
+import java.util.List;
+
+public class AtendimentoRequestDTO {
+    private Estabelecimento estabelecimento;
+    private String mensagem;
+    private List<MensagemDTO> historico = new ArrayList<>();
+    private int quantidadeMusicos = 1; // Padrão: Solo
+
+    public AtendimentoRequestDTO() {}
+
+    public AtendimentoRequestDTO(Estabelecimento estabelecimento, String mensagem, List<MensagemDTO> historico, int quantidadeMusicos) {
+        this.estabelecimento = estabelecimento;
+        this.mensagem = mensagem;
+        this.historico = historico != null ? historico : new ArrayList<>();
+        this.quantidadeMusicos = quantidadeMusicos > 0 ? quantidadeMusicos : 1;
+    }
+
+    public Estabelecimento getEstabelecimento() { return estabelecimento; }
+    public void setEstabelecimento(Estabelecimento estabelecimento) { this.estabelecimento = estabelecimento; }
+
+    public String getMensagem() { return mensagem; }
+    public void setMensagem(String mensagem) { this.mensagem = mensagem; }
+
+    public List<MensagemDTO> getHistorico() { return historico; }
+    public void setHistorico(List<MensagemDTO> historico) { this.historico = historico; }
+
+    public int getQuantidadeMusicos() { return quantidadeMusicos; }
+    public void setQuantidadeMusicos(int quantidadeMusicos) { this.quantidadeMusicos = quantidadeMusicos; }
+}

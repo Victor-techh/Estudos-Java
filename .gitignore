@@ -1,0 +1,7 @@
+target/
+bin/
+.vscode/
+resultado.txt
+contratos_registrados.txt
+.DS_Store
+*.class
