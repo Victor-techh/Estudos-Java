@@ -10,8 +10,9 @@ public class AgenteController {
 
     private final AgenteVendasService agenteService;
 
-    public AgenteController() {
-        this.agenteService = new AgenteVendasService();
+    // Injeção de dependência via construtor pelo Spring
+    public AgenteController(AgenteVendasService agenteService) {
+        this.agenteService = agenteService;
     }
 
     @PostMapping("/atendimento")
