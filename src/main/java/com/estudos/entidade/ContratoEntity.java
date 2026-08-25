@@ -1,7 +1,10 @@
 package com.estudos.entidade;
 
-import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_contratos")
@@ -11,23 +14,29 @@ public class ContratoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String estabelecimentoNome;
-    private String artistaNome;
-    private double valorFechado;
-    private LocalDateTime dataRegistro;
+    private String contratante;
+    private String contratado;
+    private Double valor;
 
+    // Construtor padrão obrigatório para o JPA/Jackson
     public ContratoEntity() {}
 
-    public ContratoEntity(String estabelecimentoNome, String artistaNome, double valorFechado) {
-        this.estabelecimentoNome = estabelecimentoNome;
-        this.artistaNome = artistaNome;
-        this.valorFechado = valorFechado;
-        this.dataRegistro = LocalDateTime.now();
+    public ContratoEntity(String contratante, String contratado, Double valor) {
+        this.contratante = contratante;
+        this.contratado = contratado;
+        this.valor = valor;
     }
 
+    // Getters e Setters obrigatórios para serialização JSON
     public Long getId() { return id; }
-    public String getEstabelecimentoNome() { return estabelecimentoNome; }
-    public String getArtistaNome() { return artistaNome; }
-    public double getValorFechado() { return valorFechado; }
-    public LocalDateTime getDataRegistro() { return dataRegistro; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getContratante() { return contratante; }
+    public void setContratante(String contratante) { this.contratante = contratante; }
+
+    public String getContratado() { return contratado; }
+    public void setContratado(String contratado) { this.contratado = contratado; }
+
+    public Double getValor() { return valor; }
+    public void setValor(Double valor) { this.valor = valor; }
 }
