@@ -130,7 +130,7 @@ public class AgenteVendasService {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("Content-Type", "application/json")
-                    .timeout(Duration.ofSeconds(15))
+                    .timeout(Duration.ofSeconds(45))
                     .POST(HttpRequest.BodyPublishers.ofString(payload))
                     .build();
 
@@ -152,7 +152,7 @@ public class AgenteVendasService {
             }
 
         } catch (HttpTimeoutException e) {
-            return "[ERRO TIMEOUT]: A API do Gemini demorou mais de 15 segundos para responder. Tente novamente.";
+            return "[ERRO TIMEOUT]: A API do Gemini demorou mais de 45 segundos para responder. Tente novamente.";
         } catch (Exception e) {
             return "[ERRO DE CONEXÃO]: Falha ao comunicar com o servidor da IA: " + e.getMessage();
         }
