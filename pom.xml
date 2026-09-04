@@ -35,7 +35,7 @@
             <scope>runtime</scope>
         </dependency>
         
-        // dependecia sobre o spring boot starter mail para envio de email para disparo de emails
+        <!-- Starter Mail para envio de e-mails -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
