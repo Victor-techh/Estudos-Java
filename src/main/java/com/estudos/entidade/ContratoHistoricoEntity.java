@@ -1,6 +1,10 @@
 package com.estudos.entidade;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,30 +16,47 @@ public class ContratoHistoricoEntity {
     private Long id;
 
     private String emailDestinatario;
-    private String nomeEstabelecimento;
-    
-    @Column(columnDefinition = "TEXT")
-    private String conteudoContrato;
-    
-    private String caminhoArquivoPdf;
-    private LocalDateTime dataCriacao;
+    private String estabelecimento;
+    private String textoContrato;
+    private LocalDateTime dataEnvio;
 
-    public ContratoHistoricoEntity() {
-        this.dataCriacao = LocalDateTime.now();
+    public Long getId() {
+        return id;
     }
 
-    public ContratoHistoricoEntity(String emailDestinatario, String nomeEstabelecimento, String conteudoContrato, String caminhoArquivoPdf) {
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getEmailDestinatario() {
+        return emailDestinatario;
+    }
+
+    public void setEmailDestinatario(String emailDestinatario) {
         this.emailDestinatario = emailDestinatario;
-        this.nomeEstabelecimento = nomeEstabelecimento;
-        this.conteudoContrato = conteudoContrato;
-        this.caminhoArquivoPdf = caminhoArquivoPdf;
-        this.dataCriacao = LocalDateTime.now();
     }
 
-    public Long getId() { return id; }
-    public String getEmailDestinatario() { return emailDestinatario; }
-    public String getNomeEstabelecimento() { return nomeEstabelecimento; }
-    public String getConteudoContrato() { return conteudoContrato; }
-    public String getCaminhoArquivoPdf() { return caminhoArquivoPdf; }
-    public LocalDateTime getDataCriacao() { return dataCriacao; }
+    public String getEstabelecimento() {
+        return estabelecimento;
+    }
+
+    public void setEstabelecimento(String estabelecimento) {
+        this.estabelecimento = estabelecimento;
+    }
+
+    public String getTextoContrato() {
+        return textoContrato;
+    }
+
+    public void setTextoContrato(String textoContrato) {
+        this.textoContrato = textoContrato;
+    }
+
+    public LocalDateTime getDataEnvio() {
+        return dataEnvio;
+    }
+
+    public void setDataEnvio(LocalDateTime dataEnvio) {
+        this.dataEnvio = dataEnvio;
+    }
 }
