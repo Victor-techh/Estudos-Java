@@ -2,63 +2,58 @@ package com.estudos.servico;
 
 import com.estudos.entidade.ContratoHistoricoEntity;
 import com.estudos.repositorio.ContratoHistoricoRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Service
 public class EmailContratoService {
 
-    private final JavaMailSender mailSender;
     private final ContratoHistoricoRepository repository;
+    private final JavaMailSender mailSender;
 
-    @Value("${app.contratos.diretorio:./contratos_historico/}")
-    private String diretorioContratos;
-
-    public EmailContratoService(JavaMailSender mailSender, ContratoHistoricoRepository repository) {
-        this.mailSender = mailSender;
+    public EmailContratoService(ContratoHistoricoRepository repository, JavaMailSender mailSender) {
         this.repository = repository;
+        this.mailSender = mailSender;
     }
 
-    public void processarENotificarContrato(String emailCliente, String estabelecimento, String textoContrato) {
-        String caminhoArquivo = salvarArquivoLocal(estabelecimento, textoContrato);
+    public void processarENotificarContrato(String email, String estabelecimento, String textoContrato) {
+        // 1. Salva arquivo local
+        salvarArquivoLocal(estabelecimento, textoContrato);
 
-        ContratoHistoricoEntity historico = new ContratoHistoricoEntity(
-                emailCliente, estabelecimento, textoContrato, caminhoArquivo
-        );
+        // 2. Persiste no banco de dados H2
+        ContratoHistoricoEntity historico = new ContratoHistoricoEntity();
+        historico.setEmailDestinatario(email);
+        historico.setEstabelecimento(estabelecimento);
+        historico.setTextoContrato(textoContrato);
+        historico.setDataEnvio(LocalDateTime.now());
         repository.save(historico);
 
-        enviarEmail(emailCliente, "Contrato de Apresentação Artística - Cura", textoContrato);
-    }
-
-    private String salvarArquivoLocal(String estabelecimento, String textoContrato) {
+        // 3. Tenta enviar o e-mail sem quebrar a requisição se o Render bloquear a porta SMTP
         try {
-            File pasta = new File(diretorioContratos);
-            if (!pasta.exists()) {
-                pasta.mkdirs();
-            }
-            String nomeArquivo = "contrato_" + estabelecimento.replaceAll("\\s+", "_") + "_" + System.currentTimeMillis() + ".txt";
-            File arquivo = new File(pasta, nomeArquivo);
-            
-            try (FileWriter writer = new FileWriter(arquivo)) {
-                writer.write(textoContrato);
-            }
-            return arquivo.getAbsolutePath();
-        } catch (IOException e) {
-            throw new RuntimeException("Erro ao salvar arquivo de contrato localmente: " + e.getMessage(), e);
+            enviarEmail(email, estabelecimento, textoContrato);
+        } catch (Exception e) {
+            System.err.println("FALHA AO ENVIAR E-MAIL (Bloqueio SMTP/Render): " + e.getMessage());
         }
     }
 
-    private void enviarEmail(String para, String assunto, String corpo) {
+    private void salvarArquivoLocal(String estabelecimento, String textoContrato) {
+        try (FileWriter writer = new FileWriter("contrato_" + System.currentTimeMillis() + ".txt")) {
+            writer.write(textoContrato);
+        } catch (IOException e) {
+            System.err.println("Erro ao salvar arquivo local: " + e.getMessage());
+        }
+    }
+
+    private void enviarEmail(String email, String estabelecimento, String textoContrato) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(para);
-        message.setSubject(assunto);
-        message.setText(corpo);
+        message.setTo(email);
+        message.setSubject("Contrato de Prestação de Serviços - " + estabelecimento);
+        message.setText(textoContrato);
         mailSender.send(message);
     }
 }
