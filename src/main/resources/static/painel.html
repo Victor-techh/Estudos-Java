@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cura - Painel</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background-color: #f4f4f9; color: #333; }
+        .header { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px 30px; border-bottom: 1px solid #ddd; }
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        h2, h3 { margin-top: 0; }
+        input, textarea, button { width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #0056b3; }
+        .btn-logout { background-color: #dc3545; width: auto; padding: 8px 15px; }
+        .item-historico { border-bottom: 1px solid #eee; padding: 15px 0; }
+        .item-historico:last-child { border-bottom: none; }
+        .data { font-size: 0.85em; color: #777; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h2>CURA - Gestão de Contratos</h2>
+    <div>
+        <span id="nome-usuario"></span>
+        <button class="btn-logout" onclick="logout()">Sair</button>
+    </div>
+</div>
+
+<div class="container">
+    
+    <div class="card">
+        <h3>Simular Novo Contrato</h3>
+        <input type="email" id="email-destinatario" placeholder="E-mail do Destinatário">
+        <input type="text" id="nome-estabelecimento" placeholder="Nome do Estabelecimento / Contratante">
+        <textarea id="texto-contrato" rows="4" placeholder="Termos do contrato..."></textarea>
+        <button onclick="gerarContrato()">Salvar e Processar Contrato</button>
+        <div id="status-envio" style="margin-top: 10px; font-weight: bold;"></div>
+    </div>
+
+    <div class="card">
+        <h3>Seu Histórico de Contratos</h3>
+        <div id="lista-historico">Carregando...</div>
+    </div>
+
+</div>
+
+<script>
+    const usuarioId = localStorage.getItem('usuarioId');
+    const usuarioNome = localStorage.getItem('usuarioNome');
+
+    if (!usuarioId) {
+        window.location.href = '/login.html';
+    } else {
+        document.getElementById('nome-usuario').innerText = 'Usuário: ' + usuarioNome + ' | ';
+        carregarHistorico();
+    }
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = '/login.html';
+    }
+
+    async function carregarHistorico() {
+        const conteiner = document.getElementById('lista-historico');
+        
+        try {
+            const response = await fetch('/api/contratos/historico?usuarioId=' + usuarioId);
+            const dados = await response.json();
+
+            if (dados.length === 0) {
+                conteiner.innerHTML = '<p>Nenhum contrato associado à sua conta.</p>';
+                return;
+            }
+
+            conteiner.innerHTML = '';
+            dados.reverse().forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item-historico';
+                
+                const dataFormatada = new Date(item.dataEnvio).toLocaleString('pt-BR');
+
+                div.innerHTML = `
+                    <strong>Estabelecimento:</strong> ${escapeHtml(item.estabelecimento)}<br>
+                    <strong>Destinatário:</strong> ${escapeHtml(item.emailDestinatario)}<br>
+                    <span class="data">Data de Criação: ${dataFormatada}</span>
+                    <pre>${escapeHtml(item.textoContrato)}</pre>
+                `;
+                conteiner.appendChild(div);
+            });
+        } catch (error) {
+            conteiner.innerHTML = '<p style="color: red;">Erro ao carregar histórico.</p>';
+        }
+    }
+
+    async function gerarContrato() {
+        const email = document.getElementById('email-destinatario').value;
+        const estabelecimento = document.getElementById('nome-estabelecimento').value;
+        const textoContrato = document.getElementById('texto-contrato').value;
+        const statusDiv = document.getElementById('status-envio');
+
+        if (!email || !estabelecimento || !textoContrato) {
+            alert('Preencha todos os campos.');
+            return;
+        }
+
+        statusDiv.innerText = 'Processando...';
+
+        try {
+            const response = await fetch(`/api/contratos/enviar?usuarioId=${usuarioId}&email=${encodeURIComponent(email)}&estabelecimento=${encodeURIComponent(estabelecimento)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: textoContrato
+            });
+
+            if (response.ok) {
+                statusDiv.style.color = 'green';
+                statusDiv.innerText = 'Contrato registrado com sucesso!';
+                document.getElementById('email-destinatario').value = '';
+                document.getElementById('nome-estabelecimento').value = '';
+                document.getElementById('texto-contrato').value = '';
+                carregarHistorico();
+            } else {
+                statusDiv.style.color = 'red';
+                statusDiv.innerText = 'Erro ao registrar contrato.';
+            }
+        } catch (error) {
+            statusDiv.style.color = 'red';
+            statusDiv.innerText = 'Falha de comunicação com o servidor.';
+        }
+    }
+
+    function escapeHtml(text) {
+        return text ? text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
+    }
+</script>
+
+</body>
+</html>

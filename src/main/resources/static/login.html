@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cura - Autenticação</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f4f9; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 320px; }
+        h1 { text-align: center; color: #333; margin-bottom: 20px; }
+        input, select, button { width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #218838; }
+        .mensagem { color: red; font-size: 0.9em; margin-top: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>CURA</h1>
+    <p style="text-align: center; color: #666; font-size: 0.9em;">Curadoria e Gestão Artística</p>
+
+    <div id="form-login">
+        <input type="email" id="login-email" placeholder="E-mail">
+        <input type="password" id="login-senha" placeholder="Senha">
+        <button onclick="fazerLogin()">Entrar</button>
+    </div>
+
+    <div id="mensagem" class="mensagem"></div>
+</div>
+
+<script>
+    async function fazerLogin() {
+        const email = document.getElementById('login-email').value;
+        const senha = document.getElementById('login-senha').value;
+        const msgDiv = document.getElementById('mensagem');
+
+        msgDiv.innerText = '';
+
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, senha })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem('usuarioId', data.id);
+                localStorage.setItem('usuarioNome', data.nome);
+                localStorage.setItem('usuarioPerfil', data.tipoPerfil);
+                alert('Login efetuado com sucesso!');
+                window.location.href = '/painel.html';
+            } else {
+                msgDiv.innerText = data.mensagem;
+            }
+        } catch (error) {
+            msgDiv.innerText = 'Erro de conexão com o servidor.';
+        }
+    }
+</script>
+
+</body>
+</html>

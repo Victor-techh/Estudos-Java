@@ -21,12 +21,13 @@ public class EmailContratoService {
         this.mailSender = mailSender;
     }
 
-    public void processarENotificarContrato(String email, String estabelecimento, String textoContrato) {
+    public void processarENotificarContrato(Long usuarioId, String email, String estabelecimento, String textoContrato) {
         // 1. Salva arquivo local
         salvarArquivoLocal(estabelecimento, textoContrato);
 
-        // 2. Persiste no banco de dados H2
+        // 2. Persiste no banco de dados H2 com associação ao usuarioId
         ContratoHistoricoEntity historico = new ContratoHistoricoEntity();
+        historico.setUsuarioId(usuarioId);
         historico.setEmailDestinatario(email);
         historico.setEstabelecimento(estabelecimento);
         historico.setTextoContrato(textoContrato);

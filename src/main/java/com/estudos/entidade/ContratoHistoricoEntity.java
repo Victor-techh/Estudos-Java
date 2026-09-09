@@ -15,6 +15,7 @@ public class ContratoHistoricoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long usuarioId;
     private String emailDestinatario;
     private String estabelecimento;
     private String textoContrato;
@@ -26,6 +27,14 @@ public class ContratoHistoricoEntity {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
     public String getEmailDestinatario() {
