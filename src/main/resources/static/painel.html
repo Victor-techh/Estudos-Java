@@ -2,46 +2,60 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Cura - Painel</title>
+    <title>Cura - Painel de Negociação</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; background-color: #f4f4f9; color: #333; }
+        * { box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { margin: 0; background-color: #f4f4f9; display: flex; flex-direction: column; height: 100vh; }
         .header { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px 30px; border-bottom: 1px solid #ddd; }
-        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
-        .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        h2, h3 { margin-top: 0; }
-        input, textarea, button { width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #0056b3; }
-        .btn-logout { background-color: #dc3545; width: auto; padding: 8px 15px; }
-        .item-historico { border-bottom: 1px solid #eee; padding: 15px 0; }
-        .item-historico:last-child { border-bottom: none; }
-        .data { font-size: 0.85em; color: #777; }
-        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word; }
+        .main-container { display: flex; flex: 1; overflow: hidden; }
+        
+        /* Chat Central */
+        .chat-section { flex: 2; display: flex; flex-direction: column; background: #fff; border-right: 1px solid #ddd; padding: 20px; }
+        .chat-box { flex: 1; border: 1px solid #eee; border-radius: 8px; padding: 15px; overflow-y: auto; background: #fafafa; margin-bottom: 15px; }
+        .msg { margin-bottom: 12px; padding: 10px 14px; border-radius: 6px; max-width: 80%; line-height: 1.4; white-space: pre-wrap; }
+        .msg-user { background: #007bff; color: white; margin-left: auto; text-align: right; }
+        .msg-model { background: #e9ecef; color: #333; margin-right: auto; }
+        .input-box { display: flex; gap: 10px; }
+        input[type="text"] { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #28a745; color: white; border: none; padding: 12px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #218838; }
+        .btn-logout { background: #dc3545; }
+        
+        /* Histórico Lateral */
+        .history-section { flex: 1; padding: 20px; overflow-y: auto; background: #f8f9fa; }
+        .card-contrato { background: white; padding: 12px; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 10px; font-size: 0.9em; }
+        .card-contrato pre { white-space: pre-wrap; font-size: 0.85em; background: #f1f1f1; padding: 8px; border-radius: 4px; }
+        .fechado-alert { background: #d4edda; color: #155724; padding: 10px; border-radius: 4px; margin-bottom: 10px; display: none; text-align: center; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h2>CURA - Gestão de Contratos</h2>
+    <h2>CURA - Gestão & IA</h2>
     <div>
         <span id="nome-usuario"></span>
         <button class="btn-logout" onclick="logout()">Sair</button>
     </div>
 </div>
 
-<div class="container">
+<div class="main-container">
     
-    <div class="card">
-        <h3>Simular Novo Contrato</h3>
-        <input type="email" id="email-destinatario" placeholder="E-mail do Destinatário">
-        <input type="text" id="nome-estabelecimento" placeholder="Nome do Estabelecimento / Contratante">
-        <textarea id="texto-contrato" rows="4" placeholder="Termos do contrato..."></textarea>
-        <button onclick="gerarContrato()">Salvar e Processar Contrato</button>
-        <div id="status-envio" style="margin-top: 10px; font-weight: bold;"></div>
+    <div class="chat-section">
+        <h3>Negociação com o Agente</h3>
+        <div id="alerta-fechamento" class="fechado-alert">
+            <strong>Negócio Fechado!</strong> O contrato foi gravado no histórico.
+        </div>
+        <div id="chat-box" class="chat-box">
+            <div class="msg msg-model">Olá! Sou o agente consultor do Cura. Qual a proposta de apresentação musical para hoje?</div>
+        </div>
+        <div class="input-box">
+            <input type="text" id="mensagem-input" placeholder="Digite sua mensagem..." onkeypress="checarEnter(event)">
+            <button onclick="enviarMensagem()">Enviar</button>
+        </div>
     </div>
 
-    <div class="card">
-        <h3>Seu Histórico de Contratos</h3>
+    <div class="history-section">
+        <h3>Seus Contratos Registrados</h3>
         <div id="lista-historico">Carregando...</div>
     </div>
 
@@ -50,6 +64,9 @@
 <script>
     const usuarioId = localStorage.getItem('usuarioId');
     const usuarioNome = localStorage.getItem('usuarioNome');
+    
+    // Array para manter o contexto exigido pelo DTO MensagemDTO no backend
+    let historicoConversa = [];
 
     if (!usuarioId) {
         window.location.href = '/login.html';
@@ -63,72 +80,99 @@
         window.location.href = '/login.html';
     }
 
+    function checarEnter(e) {
+        if (e.key === 'Enter') enviarMensagem();
+    }
+
+    async function enviarMensagem() {
+        const input = document.getElementById('mensagem-input');
+        const texto = input.value.trim();
+        if (!texto) return;
+
+        adicionarMensagemNaTela(texto, 'user');
+        input.value = '';
+
+        // Monta o payload conforme a classe SolicitacaoChat do AgenteController
+        const payload = {
+            mensagem: texto,
+            qtdMusicos: 1,
+            historico: historicoConversa
+        };
+
+        // Atualiza o histórico local antes do envio
+        historicoConversa.push({ role: 'user', texto: texto });
+
+        try {
+            const response = await fetch('/api/agente/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const respostaTexto = await response.text();
+            
+            // Adiciona a resposta da IA ao histórico local
+            historicoConversa.push({ role: 'model', texto: respostaTexto });
+            adicionarMensagemNaTela(respostaTexto, 'model');
+
+            // Verifica o gatilho do SINDIMUCE / Lei Estadual nº 15.112/2012
+            if (respostaTexto.includes('Negócio fechado!')) {
+                document.getElementById('alerta-fechamento').style.display = 'block';
+                salvarContratoAutomatico(respostaTexto);
+            }
+
+        } catch (error) {
+            adicionarMensagemNaTela('Erro ao comunicar com o servidor.', 'model');
+        }
+    }
+
+    function adicionarMensagemNaTela(texto, role) {
+        const box = document.getElementById('chat-box');
+        const div = document.createElement('div');
+        div.className = `msg msg-${role}`;
+        div.innerText = texto;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    async function salvarContratoAutomatico(textoAcordo) {
+        try {
+            await fetch(`/api/contratos/enviar?usuarioId=${usuarioId}&email=contratos@cura.com&estabelecimento=${encodeURIComponent(usuarioNome)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: textoAcordo
+            });
+            carregarHistorico();
+        } catch (e) {
+            console.error('Erro ao persistir contrato:', e);
+        }
+    }
+
     async function carregarHistorico() {
-        const conteiner = document.getElementById('lista-historico');
-        
+        const container = document.getElementById('lista-historico');
         try {
             const response = await fetch('/api/contratos/historico?usuarioId=' + usuarioId);
             const dados = await response.json();
 
             if (dados.length === 0) {
-                conteiner.innerHTML = '<p>Nenhum contrato associado à sua conta.</p>';
+                container.innerHTML = '<p style="color:#777;">Nenhum contrato fechado.</p>';
                 return;
             }
 
-            conteiner.innerHTML = '';
+            container.innerHTML = '';
             dados.reverse().forEach(item => {
                 const div = document.createElement('div');
-                div.className = 'item-historico';
-                
-                const dataFormatada = new Date(item.dataEnvio).toLocaleString('pt-BR');
-
+                div.className = 'card-contrato';
+                const data = new Date(item.dataEnvio).toLocaleDateString('pt-BR');
                 div.innerHTML = `
-                    <strong>Estabelecimento:</strong> ${escapeHtml(item.estabelecimento)}<br>
-                    <strong>Destinatário:</strong> ${escapeHtml(item.emailDestinatario)}<br>
-                    <span class="data">Data de Criação: ${dataFormatada}</span>
+                    <strong>Data:</strong> ${data}<br>
+                    <strong>Contratante:</strong> ${escapeHtml(item.estabelecimento)}
                     <pre>${escapeHtml(item.textoContrato)}</pre>
                 `;
-                conteiner.appendChild(div);
+                container.appendChild(div);
             });
         } catch (error) {
-            conteiner.innerHTML = '<p style="color: red;">Erro ao carregar histórico.</p>';
-        }
-    }
-
-    async function gerarContrato() {
-        const email = document.getElementById('email-destinatario').value;
-        const estabelecimento = document.getElementById('nome-estabelecimento').value;
-        const textoContrato = document.getElementById('texto-contrato').value;
-        const statusDiv = document.getElementById('status-envio');
-
-        if (!email || !estabelecimento || !textoContrato) {
-            alert('Preencha todos os campos.');
-            return;
-        }
-
-        statusDiv.innerText = 'Processando...';
-
-        try {
-            const response = await fetch(`/api/contratos/enviar?usuarioId=${usuarioId}&email=${encodeURIComponent(email)}&estabelecimento=${encodeURIComponent(estabelecimento)}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain' },
-                body: textoContrato
-            });
-
-            if (response.ok) {
-                statusDiv.style.color = 'green';
-                statusDiv.innerText = 'Contrato registrado com sucesso!';
-                document.getElementById('email-destinatario').value = '';
-                document.getElementById('nome-estabelecimento').value = '';
-                document.getElementById('texto-contrato').value = '';
-                carregarHistorico();
-            } else {
-                statusDiv.style.color = 'red';
-                statusDiv.innerText = 'Erro ao registrar contrato.';
-            }
-        } catch (error) {
-            statusDiv.style.color = 'red';
-            statusDiv.innerText = 'Falha de comunicação com o servidor.';
+            container.innerHTML = '<p style="color:red;">Erro ao carregar histórico.</p>';
         }
     }
 
