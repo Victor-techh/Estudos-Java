@@ -5,36 +5,63 @@
     <title>Cura - Autenticação</title>
     <style>
         body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f4f9; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 320px; }
-        h1 { text-align: center; color: #333; margin-bottom: 20px; }
+        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 340px; }
+        h1 { text-align: center; color: #333; margin: 0; }
+        p.sub { text-align: center; color: #666; font-size: 0.85em; margin-bottom: 20px; }
         input, select, button { width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         button { background-color: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #218838; }
-        .mensagem { color: red; font-size: 0.9em; margin-top: 10px; text-align: center; }
+        .aba-btn { background: none; color: #007bff; border: none; margin-top: 15px; text-decoration: underline; cursor: pointer; padding: 0; }
+        .mensagem { color: red; font-size: 0.85em; margin-top: 10px; text-align: center; }
     </style>
 </head>
 <body>
 
 <div class="card">
     <h1>CURA</h1>
-    <p style="text-align: center; color: #666; font-size: 0.9em;">Curadoria e Gestão Artística</p>
+    <p class="sub">Curadoria e Gestão Artística</p>
 
-    <div id="form-login">
+    <!-- FORMULÁRIO DE LOGIN -->
+    <div id="box-login">
+        <h3>Acessar Conta</h3>
         <input type="email" id="login-email" placeholder="E-mail">
         <input type="password" id="login-senha" placeholder="Senha">
         <button onclick="fazerLogin()">Entrar</button>
+        <button class="aba-btn" onclick="alternarTela('cadastro')">Não tem conta? Cadastre-se</button>
+    </div>
+
+    <!-- FORMULÁRIO DE CADASTRO -->
+    <div id="box-cadastro" style="display: none;">
+        <h3>Criar Nova Conta</h3>
+        <input type="text" id="cad-nome" placeholder="Nome Completo / Razão Social">
+        <input type="email" id="cad-email" placeholder="E-mail">
+        <input type="password" id="cad-senha" placeholder="Senha">
+        <select id="cad-perfil">
+            <option value="ARTISTA">Perfil: Artista</option>
+            <option value="ESTABELECIMENTO">Perfil: Estabelecimento / Contratante</option>
+        </select>
+        <button onclick="fazerCadastro()">Cadastrar</button>
+        <button class="aba-btn" onclick="alternarTela('login')">Já tem conta? Faça Login</button>
     </div>
 
     <div id="mensagem" class="mensagem"></div>
 </div>
 
 <script>
+    function alternarTela(tela) {
+        document.getElementById('mensagem').innerText = '';
+        if (tela === 'cadastro') {
+            document.getElementById('box-login').style.display = 'none';
+            document.getElementById('box-cadastro').style.display = 'block';
+        } else {
+            document.getElementById('box-cadastro').style.display = 'none';
+            document.getElementById('box-login').style.display = 'block';
+        }
+    }
+
     async function fazerLogin() {
         const email = document.getElementById('login-email').value;
         const senha = document.getElementById('login-senha').value;
         const msgDiv = document.getElementById('mensagem');
-
-        msgDiv.innerText = '';
 
         try {
             const response = await fetch('/api/auth/login', {
@@ -49,13 +76,39 @@
                 localStorage.setItem('usuarioId', data.id);
                 localStorage.setItem('usuarioNome', data.nome);
                 localStorage.setItem('usuarioPerfil', data.tipoPerfil);
-                alert('Login efetuado com sucesso!');
                 window.location.href = '/painel.html';
             } else {
-                msgDiv.innerText = data.mensagem;
+                msgDiv.innerText = data.mensagem || 'Credenciais inválidas.';
             }
         } catch (error) {
-            msgDiv.innerText = 'Erro de conexão com o servidor.';
+            msgDiv.innerText = 'Erro ao conectar com o servidor.';
+        }
+    }
+
+    async function fazerCadastro() {
+        const nome = document.getElementById('cad-nome').value;
+        const email = document.getElementById('cad-email').value;
+        const senha = document.getElementById('cad-senha').value;
+        const tipoPerfil = document.getElementById('cad-perfil').value;
+        const msgDiv = document.getElementById('mensagem');
+
+        try {
+            const response = await fetch('/api/auth/cadastro', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, email, senha, tipoPerfil })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('Cadastro realizado com sucesso! Faça login.');
+                alternarTela('login');
+            } else {
+                msgDiv.innerText = data.mensagem || 'Erro ao realizar cadastro.';
+            }
+        } catch (error) {
+            msgDiv.innerText = 'Erro ao conectar com o servidor.';
         }
     }
 </script>
