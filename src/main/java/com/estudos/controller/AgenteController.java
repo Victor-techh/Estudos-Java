@@ -2,47 +2,59 @@ package com.estudos.controller;
 
 import com.estudos.dto.MensagemDTO;
 import com.estudos.modelo.Estabelecimento;
+import com.estudos.modelo.Usuario;
+import com.estudos.repositorio.UsuarioRepository;
 import com.estudos.servico.AgenteVendasService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * Controller REST responsável por expor o endpoint de chat da negociação.
- */
 @RestController
 @RequestMapping("/api/agente")
 public class AgenteController {
 
+    // Serviço responsável pela comunicação com a API do Gemini e regras de negócio
     private final AgenteVendasService agenteVendasService;
+    
+    // Repositório JPA para consultar os registros salvos na tabela de usuários do H2
+    private final UsuarioRepository usuarioRepository;
 
-    public AgenteController(AgenteVendasService agenteVendasService) {
+    // Injeção de dependências do Spring via construtor
+    public AgenteController(AgenteVendasService agenteVendasService, UsuarioRepository usuarioRepository) {
         this.agenteVendasService = agenteVendasService;
+        this.usuarioRepository = usuarioRepository;
     }
 
-    /**
-     * Recebe as mensagens da interface web e repassa ao serviço comercial.
-     */
     @PostMapping("/chat")
     public String conversar(@RequestBody SolicitacaoChat request) {
-        // Correção: adição do argumento double (0.0) exigido pela classe Estabelecimento
+        // 1. Consulta o banco H2, busca todos os registros e filtra apenas os nomes dos usuários com perfil 'ARTISTA'
+        List<String> artistasCadastrados = usuarioRepository.findAll().stream()
+                .filter(u -> "ARTISTA".equalsIgnoreCase(u.getTipoPerfil()))
+                .map(Usuario::getNome)
+                .collect(Collectors.toList());
+
+        // 2. Cria objeto temporário com dados do estabelecimento para contexto da negociação
         Estabelecimento est = new Estabelecimento(
-                "Promenade Bar",
-                "Bar / Restaurante",
-                "Rua Central, 100",
+                "Estabelecimento Conectado",
+                "Bar / Casa de Shows",
+                "Endereço Local",
                 0.0,
-                "Jazz / Lounge",
+                "Variado",
                 true
         );
 
+        // 3. Chama o serviço da IA repassando a mensagem, o histórico e a lista de artistas extraída do H2
         return agenteVendasService.processarAtendimento(
                 est,
                 request.getMensagem(),
                 request.getHistorico(),
-                request.getQtdMusicos()
+                request.getQtdMusicos(),
+                artistasCadastrados
         );
     }
 
+    // Estrutura interna (DTO) para mapear o JSON recebido no corpo do POST
     public static class SolicitacaoChat {
         private String mensagem;
         private int qtdMusicos;
