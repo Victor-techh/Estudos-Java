@@ -14,18 +14,23 @@ import java.util.*;
 @Service
 public class AgenteVendasService {
 
-    // Recupera a chave da API do ambiente do sistema para evitar exposicao no codigo
     private final String apiKey = System.getenv("GEMINI_API_KEY");
-    
-    // URL de chamada da API do Gemini via REST
     private final String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey;
-
     private final RestTemplate restTemplate = new RestTemplate();
 
-    /**
-     * Processa a negociacao do contrato integrando os dados do estabelecimento,
-     * a lista de artistas vinda do H2 e as regras de negocio do SINDIMUCE.
-     */
+    // --- MÉTODOS DE SOBRECARGA (COMPATIBILIDADE RETROATIVA) ---
+
+    // Compatibilidade para chamadas legadas com 2 parâmetros
+    public String processarAtendimento(Estabelecimento est, String mensagem) {
+        return processarAtendimento(est, mensagem, Collections.emptyList(), 1, Collections.emptyList());
+    }
+
+    // Compatibilidade para chamadas legadas com 4 parâmetros
+    public String processarAtendimento(Estabelecimento est, String mensagem, List<MensagemDTO> historico, int qtdMusicos) {
+        return processarAtendimento(est, mensagem, historico, qtdMusicos, Collections.emptyList());
+    }
+
+    // --- MÉTODO PRINCIPAL (5 PARÂMETROS) ---
     public String processarAtendimento(
             Estabelecimento est, 
             String mensagemAtual, 
@@ -33,16 +38,13 @@ public class AgenteVendasService {
             int qtdMusicos,
             List<String> artistasCadastrados) {
 
-        // 1. Tratamento da lista de artistas vinda da tabela de Usuarios (H2)
         String listaArtistasStr = (artistasCadastrados == null || artistasCadastrados.isEmpty()) 
                 ? "Nenhum artista cadastrado na base no momento." 
                 : String.join(", ", artistasCadastrados);
 
-        // Calculate cache minimo baseado no piso legal (R$ 420,00 por musico)
         int totalIntegrantes = Math.max(qtdMusicos, 1);
         double cacheMinimoPiso = totalIntegrantes * 420.0;
 
-        // 2. Engenharia de prompt: injeta dados estaticos, dinamicos (H2) e regras inviolaveis
         String contextoComercial = String.format(
             "Você é um agente de vendas e consultor artístico comercial para apresentações ao vivo no Ceará.\n" +
             "Seu papel é negociar contratos de forma consultiva, pragmática, concisa e orientada a soluções.\n\n" +
@@ -64,27 +66,23 @@ public class AgenteVendasService {
         );
 
         try {
-            // 3. Montagem do payload JSON conforme estrutura esperada pela API do Gemini
             Map<String, Object> requestBody = new HashMap<>();
             
-            // Injeta o prompt com as regras do sistema
             Map<String, Object> systemInstruction = new HashMap<>();
             systemInstruction.put("parts", List.of(Map.of("text", contextoComercial)));
             requestBody.put("system_instruction", systemInstruction);
 
-            // Mapeia o historico de mensagens e a mensagem atual para envio
             List<Map<String, Object>> contents = new ArrayList<>();
             
             if (historico != null) {
                 for (MensagemDTO msg : historico) {
                     Map<String, Object> contentNode = new HashMap<>();
-                    contentNode.put("role", msg.getRole()); // "user" ou "model"
+                    contentNode.put("role", msg.getRole());
                     contentNode.put("parts", List.of(Map.of("text", msg.getTexto())));
                     contents.add(contentNode);
                 }
             }
 
-            // Adiciona a mensagem atual enviada pelo usuario no topo do historico
             Map<String, Object> mensagemAtualNode = new HashMap<>();
             mensagemAtualNode.put("role", "user");
             mensagemAtualNode.put("parts", List.of(Map.of("text", mensagemAtual)));
@@ -92,14 +90,12 @@ public class AgenteVendasService {
 
             requestBody.put("contents", contents);
 
-            // 4. Envio da requisicao HTTP POST para a API externa do Google
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
             ResponseEntity<Map> response = restTemplate.postForEntity(apiUrl, entity, Map.class);
 
-            // 5. Extracao do texto da resposta JSON devolvida pelo modelo
             if (response.getBody() != null && response.getBody().containsKey("candidates")) {
                 List<Map<String, Object>> candidates = (List<Map<String, Object>>) response.getBody().get("candidates");
                 if (!candidates.isEmpty()) {
@@ -113,8 +109,7 @@ public class AgenteVendasService {
             return "Não foi possível gerar a resposta no momento.";
 
         } catch (Exception e) {
-            // Log de erro basico e fallback de retorno
-            System.err.println("Erro na comunicacao com a API do Gemini: " + e.getMessage());
+            System.err.println("Erro na comunicação com a API do Gemini: " + e.getMessage());
             return "Erro temporário ao processar negociação com o agente.";
         }
     }
