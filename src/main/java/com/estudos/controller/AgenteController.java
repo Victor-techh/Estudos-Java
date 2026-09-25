@@ -1,8 +1,8 @@
 package com.estudos.controller;
 
 import com.estudos.dto.MensagemDTO;
+import com.estudos.entidade.UsuarioEntity; // Import correto do pacote 'entidade'
 import com.estudos.modelo.Estabelecimento;
-import com.estudos.modelo.UsuarioEntity;
 import com.estudos.repositorio.UsuarioRepository;
 import com.estudos.servico.AgenteVendasService;
 import org.springframework.web.bind.annotation.*;
