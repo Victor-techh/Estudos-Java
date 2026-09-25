@@ -24,7 +24,6 @@ public class AgenteController {
 
     @PostMapping("/chat")
     public String conversar(@RequestBody SolicitacaoChat request) {
-        // Busca os nomes filtrando a entidade real do banco
         List<String> artistasCadastrados = usuarioRepository.findAll().stream()
                 .filter(u -> "ARTISTA".equalsIgnoreCase(u.getTipoPerfil()))
                 .map(UsuarioEntity::getNome)
