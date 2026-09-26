@@ -13,7 +13,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8f6f0;
+            background-color: #f4f6f8;
             color: #1f2937;
             -webkit-tap-highlight-color: transparent;
         }
@@ -28,17 +28,17 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: #edf2f7;
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #d4d4d8;
+            background: #cbd5e1;
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #a1a1aa;
+            background: #94a3b8;
         }
 
         .fade-in {
@@ -59,44 +59,44 @@
     </style>
 </head>
 
-<body class="min-h-[100dvh] flex flex-col bg-[#FAF9F5] overflow-x-hidden">
-
+<body class="min-h-[100dvh] flex flex-col bg-[#F0F4F8] overflow-x-hidden">
 
     <!-- TELA DE AUTENTICAÇÃO (LOGIN / CADASTRO) -->
     <div id="view-auth" class="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 min-h-[100dvh]">
         <div
-            class="w-full max-w-5xl bg-white rounded-3xl shadow-2xl border border-gray-100 grid grid-cols-1 lg:grid-cols-12 overflow-hidden my-auto">
+            class="w-full max-w-5xl bg-white rounded-3xl shadow-2xl border border-slate-200/80 grid grid-cols-1 lg:grid-cols-12 overflow-hidden my-auto">
 
             <!-- PAINEL LATERAL DE APRESENTAÇÃO (SPLIT-SCREEN) -->
             <div
-                class="lg:col-span-5 bg-[#19130E] text-white p-8 sm:p-10 flex flex-col justify-between relative overflow-hidden">
+                class="lg:col-span-5 bg-[#0D1B2A] text-white p-8 sm:p-10 flex flex-col justify-between relative overflow-hidden">
                 <div
-                    class="absolute -right-12 -bottom-12 w-48 h-48 rounded-full bg-[#E7CB72]/10 blur-2xl pointer-events-none">
+                    class="absolute -right-12 -bottom-12 w-48 h-48 rounded-full bg-[#00B4D8]/15 blur-2xl pointer-events-none">
                 </div>
                 <div>
                     <div class="flex items-center gap-3 mb-6">
                         <div
-                            class="w-10 h-10 rounded-2xl bg-[#E7CB72]/15 border border-[#E7CB72]/40 flex items-center justify-center text-[#E7CB72] font-bold text-lg shadow-inner">
+                            class="w-10 h-10 rounded-2xl bg-[#00B4D8]/20 border border-[#00B4D8]/40 flex items-center justify-center text-[#00B4D8] font-bold text-lg shadow-inner">
                             ✨
                         </div>
                         <div>
                             <h1 class="serif-title text-2xl font-bold tracking-wide text-white">CURA</h1>
-                            <p class="text-[10px] text-[#E7CB72] tracking-widest uppercase font-light">Gestão Artística
+                            <p class="text-[10px] text-[#00B4D8] tracking-widest uppercase font-light">Gestão Artística
                                 & Inteligência Artificial</p>
                         </div>
                     </div>
-                    <h2 class="serif-title text-2xl sm:text-3xl font-normal leading-snug text-gray-100 mb-4">
+                    <h2 class="serif-title text-2xl sm:text-3xl font-normal leading-snug text-slate-100 mb-4">
                         Conectando arte, contratos e transparência cultural.
                     </h2>
-                    <p class="text-xs sm:text-sm text-gray-300 font-light leading-relaxed">
+                    <p class="text-xs sm:text-sm text-slate-300 font-light leading-relaxed">
                         Plataforma inteligente alinhada à Lei Estadual nº 15.112/2012 para cotação, negociação e
                         formalização de apresentações artísticas com segurança jurídica.
                     </p>
                 </div>
 
-                <div class="mt-8 pt-6 border-t border-white/10 text-xs text-gray-400 flex items-center justify-between">
+                <div
+                    class="mt-8 pt-6 border-t border-white/10 text-xs text-slate-400 flex items-center justify-between">
                     <span>SINDIMUCE / Curadoria IA</span>
-                    <span class="text-[#E7CB72] font-medium">Versão 2.0.0</span>
+                    <span class="text-[#2EC4B6] font-medium">Versão 2.0.1</span>
                 </div>
             </div>
 
@@ -106,8 +106,8 @@
                 <!-- ABA LOGIN -->
                 <div id="form-login-container" class="space-y-6 fade-in">
                     <div>
-                        <h3 class="serif-title text-2xl font-bold text-gray-900 mb-1">Bem-vindo de volta</h3>
-                        <p class="text-xs sm:text-sm text-gray-500">Entre com suas credenciais para acessar o painel de
+                        <h3 class="serif-title text-2xl font-bold text-slate-900 mb-1">Bem-vindo de volta</h3>
+                        <p class="text-xs sm:text-sm text-slate-500">Entre com suas credenciais para acessar o painel de
                             negociação.</p>
                     </div>
 
@@ -118,29 +118,29 @@
                     <form onsubmit="realizarLogin(event)" class="space-y-4">
                         <div>
                             <label
-                                class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">E-mail
+                                class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">E-mail
                                 de Acesso</label>
                             <input type="email" id="login-email" required placeholder="seu.email@exemplo.com"
-                                class="w-full px-4 py-3 bg-gray-50/50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#19130E] focus:bg-white transition shadow-sm">
+                                class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm">
                         </div>
                         <div>
                             <label
-                                class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">Senha</label>
+                                class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Senha</label>
                             <input type="password" id="login-senha" required placeholder="••••••••"
-                                class="w-full px-4 py-3 bg-gray-50/50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#19130E] focus:bg-white transition shadow-sm">
+                                class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm">
                         </div>
                         <button type="submit"
-                            class="w-full py-3.5 bg-[#19130E] text-[#E7CB72] hover:bg-black rounded-xl font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2">
+                            class="w-full py-3.5 bg-[#0D1B2A] text-[#00B4D8] hover:bg-[#1B263B] rounded-xl font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2">
                             <span>Acessar Painel</span>
                             <span>→</span>
                         </button>
                     </form>
 
                     <div class="text-center pt-2">
-                        <p class="text-xs text-gray-500">
+                        <p class="text-xs text-slate-500">
                             Não possui uma conta?
                             <button onclick="alternarTelaAuth('cadastro')"
-                                class="text-[#8C6D1F] font-semibold hover:underline ml-1">Cadastre-se aqui</button>
+                                class="text-[#E05A47] font-semibold hover:underline ml-1">Cadastre-se aqui</button>
                         </p>
                     </div>
                 </div>
@@ -148,8 +148,8 @@
                 <!-- ABA CADASTRO -->
                 <div id="form-cadastro-container" class="space-y-6 fade-in" style="display: none;">
                     <div>
-                        <h3 class="serif-title text-2xl font-bold text-gray-900 mb-1">Criar Nova Conta</h3>
-                        <p class="text-xs sm:text-sm text-gray-500">Cadastre seu estabelecimento ou perfil artístico
+                        <h3 class="serif-title text-2xl font-bold text-slate-900 mb-1">Criar Nova Conta</h3>
+                        <p class="text-xs sm:text-sm text-slate-500">Cadastre seu estabelecimento ou perfil artístico
                             para iniciar negociações.</p>
                     </div>
 
@@ -164,47 +164,47 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label
-                                    class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Nome
+                                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Nome
                                     do Estabelecimento / Artista</label>
                                 <input type="text" id="cad-nome" required placeholder="Ex: Bar do Jazz / Banda Cura"
-                                    class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#19130E] focus:bg-white transition shadow-sm">
+                                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm">
                             </div>
                             <div>
                                 <label
-                                    class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">E-mail</label>
+                                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">E-mail</label>
                                 <input type="email" id="cad-email" required placeholder="contato@exemplo.com"
-                                    class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#19130E] focus:bg-white transition shadow-sm">
+                                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm">
                             </div>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label
-                                    class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Senha</label>
+                                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Senha</label>
                                 <input type="password" id="cad-senha" required placeholder="Mínimo 6 caracteres"
-                                    class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#19130E] focus:bg-white transition shadow-sm">
+                                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm">
                             </div>
                             <div>
                                 <label
-                                    class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Perfil</label>
+                                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Perfil</label>
                                 <select id="cad-tipo"
-                                    class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#19130E] focus:bg-white transition shadow-sm">
+                                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm">
                                     <option value="ESTABELECIMENTO">Estabelecimento / Contratante</option>
                                     <option value="ARTISTA">Artista / Banda</option>
                                 </select>
                             </div>
                         </div>
                         <button type="submit"
-                            class="w-full py-3.5 bg-[#19130E] text-[#E7CB72] hover:bg-black rounded-xl font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2">
+                            class="w-full py-3.5 bg-[#0D1B2A] text-[#00B4D8] hover:bg-[#1B263B] rounded-xl font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2">
                             <span>Concluir Cadastro</span>
                             <span>✨</span>
                         </button>
                     </form>
 
                     <div class="text-center pt-2">
-                        <p class="text-xs text-gray-500">
+                        <p class="text-xs text-slate-500">
                             Já possui uma conta?
                             <button onclick="alternarTelaAuth('login')"
-                                class="text-[#8C6D1F] font-semibold hover:underline ml-1">Faça login</button>
+                                class="text-[#E05A47] font-semibold hover:underline ml-1">Faça login</button>
                         </p>
                     </div>
                 </div>
@@ -218,27 +218,27 @@
 
         <!-- HEADER SUPERIOR ELEGANTE -->
         <header
-            class="bg-[#19130E] text-white px-4 sm:px-6 py-3.5 flex justify-between items-center shadow-md border-b border-[#E7CB72]/20 flex-shrink-0 z-20">
+            class="bg-[#0D1B2A] text-white px-4 sm:px-6 py-3.5 flex justify-between items-center shadow-md border-b border-[#00B4D8]/30 flex-shrink-0 z-20">
             <div class="flex items-center gap-3">
                 <div
-                    class="w-9 h-9 rounded-xl bg-[#E7CB72]/15 border border-[#E7CB72]/40 flex items-center justify-center text-[#E7CB72] font-bold">
+                    class="w-9 h-9 rounded-xl bg-[#00B4D8]/20 border border-[#00B4D8]/40 flex items-center justify-center text-[#00B4D8] font-bold">
                     ✨
                 </div>
                 <div>
                     <h1 class="serif-title text-lg sm:text-xl font-bold tracking-wide text-white">CURA</h1>
-                    <p class="text-[10px] sm:text-[11px] text-[#E7CB72] tracking-wider uppercase font-light">Gestão
+                    <p class="text-[10px] sm:text-[11px] text-[#00B4D8] tracking-wider uppercase font-light">Gestão
                         Artística & Inteligência Artificial</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-3">
                 <div
-                    class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span id="nome-usuario" class="text-gray-200 font-medium">Carregando...</span>
+                    class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 border border-white/15 text-xs">
+                    <span class="w-2 h-2 rounded-full bg-[#2EC4B6] animate-pulse"></span>
+                    <span id="nome-usuario" class="text-slate-200 font-medium">Carregando...</span>
                 </div>
                 <button onclick="logout()"
-                    class="px-3.5 py-2 bg-red-600/80 hover:bg-red-600 text-white rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+                    class="px-3.5 py-2 bg-[#E05A47] hover:bg-[#C94836] text-white rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
                     <span>Sair</span>
                     <span>🚪</span>
                 </button>
@@ -251,19 +251,19 @@
 
             <!-- SEÇÃO CENTRAL: CHAT DE NEGOCIAÇÃO -->
             <section
-                class="flex-1 lg:flex-[2] bg-white rounded-3xl shadow-xl border border-gray-100 flex flex-col overflow-hidden min-h-[50vh] lg:min-h-0">
+                class="flex-1 lg:flex-[2] bg-white rounded-3xl shadow-xl border border-slate-200/80 flex flex-col overflow-hidden min-h-[50vh] lg:min-h-0">
 
                 <!-- CABEÇALHO DO CHAT -->
                 <div
-                    class="p-4 sm:p-5 border-b border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 flex-shrink-0">
+                    class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 flex-shrink-0">
                     <div>
-                        <h3 class="serif-title text-base sm:text-lg font-bold text-gray-900">Negociação com o Agente
+                        <h3 class="serif-title text-base sm:text-lg font-bold text-slate-900">Negociação com o Agente
                         </h3>
-                        <p class="text-xs text-gray-500">Defina valores, repertório e alinhamento contratual direto com
+                        <p class="text-xs text-slate-500">Defina valores, repertório e alinhamento contratual direto com
                             a curadoria IA.</p>
                     </div>
                     <div
-                        class="text-[11px] px-2.5 py-1 rounded-full bg-[#E7CB72]/15 text-[#8C6D1F] border border-[#E7CB72]/40 font-medium whitespace-nowrap">
+                        class="text-[11px] px-3 py-1 rounded-full bg-[#2EC4B6]/15 text-[#0F766E] border border-[#2EC4B6]/40 font-semibold whitespace-nowrap">
                         Lei Estadual nº 15.112/2012
                     </div>
                 </div>
@@ -283,10 +283,10 @@
                 <div id="chat-box" class="flex-1 p-4 sm:p-5 overflow-y-auto space-y-4 bg-white">
                     <div class="flex items-start gap-3 max-w-[90%] sm:max-w-[75%]">
                         <div
-                            class="w-8 h-8 rounded-full bg-[#19130E] text-[#E7CB72] flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
+                            class="w-8 h-8 rounded-full bg-[#0D1B2A] text-[#00B4D8] flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1 shadow">
                             IA</div>
                         <div
-                            class="p-3.5 sm:p-4 rounded-2xl rounded-tl-none bg-gray-100 text-gray-800 text-xs sm:text-sm leading-relaxed shadow-sm">
+                            class="p-3.5 sm:p-4 rounded-2xl rounded-tl-none bg-slate-100 text-slate-800 text-xs sm:text-sm leading-relaxed shadow-sm">
                             Olá! Sou o agente consultor do Cura. Qual a proposta de apresentação musical ou artística
                             para hoje?
                         </div>
@@ -294,13 +294,13 @@
                 </div>
 
                 <!-- INPUT DE ENVIO -->
-                <div class="p-3 sm:p-5 border-t border-gray-100 bg-gray-50/50 flex-shrink-0">
+                <div class="p-3 sm:p-5 border-t border-slate-100 bg-slate-50/50 flex-shrink-0">
                     <div class="flex gap-2 sm:gap-3">
                         <input type="text" id="mensagem-input" placeholder="Digite sua mensagem ou proposta de cachê..."
                             onkeypress="checarEnter(event)"
-                            class="flex-1 px-3.5 sm:px-4 py-3 bg-white border border-gray-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#19130E] transition shadow-sm">
+                            class="flex-1 px-3.5 sm:px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] transition shadow-sm">
                         <button onclick="enviarMensagem()"
-                            class="px-4 sm:px-5 py-3 bg-[#19130E] text-[#E7CB72] hover:bg-black rounded-xl font-semibold text-xs sm:text-sm transition shadow-md flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                            class="px-4 sm:px-5 py-3 bg-[#0D1B2A] text-[#00B4D8] hover:bg-[#1B263B] rounded-xl font-semibold text-xs sm:text-sm transition shadow-md flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                             <span>Enviar</span>
                             <span>→</span>
                         </button>
@@ -311,24 +311,24 @@
 
             <!-- SEÇÃO LATERAL: HISTÓRICO DE CONTRATOS -->
             <section
-                class="w-full lg:w-[400px] xl:w-[440px] bg-white rounded-3xl shadow-xl border border-gray-100 flex flex-col overflow-hidden flex-shrink-0 max-h-[350px] lg:max-h-none">
+                class="w-full lg:w-[400px] xl:w-[440px] bg-white rounded-3xl shadow-xl border border-slate-200/80 flex flex-col overflow-hidden flex-shrink-0 max-h-[350px] lg:max-h-none">
 
                 <div
-                    class="p-4 sm:p-5 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between flex-shrink-0">
+                    class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between flex-shrink-0">
                     <div class="flex items-center gap-2">
-                        <span class="text-amber-700">📜</span>
-                        <h3 class="serif-title text-sm sm:text-base font-bold text-gray-900">Seus Contratos Registrados
+                        <span class="text-[#E05A47]">📜</span>
+                        <h3 class="serif-title text-sm sm:text-base font-bold text-slate-900">Seus Contratos Registrados
                         </h3>
                     </div>
                     <button onclick="carregarHistorico()" title="Atualizar Histórico"
-                        class="p-1.5 hover:bg-gray-200 rounded-lg text-gray-500 transition text-xs">
+                        class="p-1.5 hover:bg-slate-200 rounded-lg text-slate-500 transition text-xs">
                         🔄
                     </button>
                 </div>
 
                 <div id="lista-historico"
-                    class="flex-1 p-4 sm:p-5 overflow-y-auto space-y-3 sm:space-y-4 bg-gray-50/30">
-                    <div class="text-center py-8 text-gray-400 text-xs">Carregando histórico...</div>
+                    class="flex-1 p-4 sm:p-5 overflow-y-auto space-y-3 sm:space-y-4 bg-slate-50/30">
+                    <div class="text-center py-8 text-slate-400 text-xs">Carregando histórico...</div>
                 </div>
 
             </section>
@@ -381,7 +381,6 @@
             erroBox.classList.add('hidden');
 
             try {
-                // Tenta requisição ao backend Spring Boot
                 const response = await fetch('/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -389,7 +388,6 @@
                 }).catch(() => null);
 
                 if (!response || !response.ok) {
-                    // Fallback simulado para funcionamento imediato na interface
                     if (email) {
                         usuarioId = 'user_sim_' + Date.now();
                         usuarioNome = email.split('@')[0];
@@ -434,7 +432,6 @@
                 }).catch(() => null);
 
                 if (!response || !response.ok) {
-                    // Simulação inteligente de sucesso no cadastro caso backend esteja indisponível
                     sucessoBox.innerText = 'Cadastro realizado com sucesso! Redirecionando...';
                     sucessoBox.classList.remove('hidden');
                     setTimeout(() => {
@@ -494,7 +491,7 @@
 
                 if (!response || !response.ok && response.status === 404) {
                     setTimeout(() => {
-                        const respostaSimulada = "Proposta analisada com sucesso pela Curadoria IA. Com base no repertório e cachê alinhados, Negócio fechado!\n\nCONTRATO DE APRESENTAÇÃO ARTÍSTICA\nContratante: " + (usuarioNome || 'Estabelecimento') + "\nValor Acordado: R$ 1.500,00\nCondições: Conforme Lei Estadual nº 15.112/2012.";
+                        const respostaSimulada = "Proposta analisada com sucesso pela Curadoria IA. Com base no repertório e cachê alinhados, Negócio fechado!\n\nCONTRATO DE APRESENTAÇÃO ARTÍSTICA\nContratante: " + (usuarioNome || 'Estabelecimento') + "\nValor Acordado: R$ 1.500,00\nCondições: Conforme Lei Estadual nº 15.112/2012 e diretrizes do SINDIMUCE.";
                         historicoConversa.push({ role: 'model', texto: respostaSimulada });
                         adicionarMensagemNaTela(respostaSimulada, 'model');
                         document.getElementById('alerta-fechamento').style.display = 'flex';
@@ -524,16 +521,16 @@
             if (role === 'user') {
                 div.className = 'flex items-start justify-end gap-3 max-w-[90%] sm:max-w-[75%] ml-auto fade-in';
                 div.innerHTML = `
-                    <div class="p-3.5 sm:p-4 rounded-2xl rounded-tr-none bg-[#19130E] text-white text-xs sm:text-sm leading-relaxed shadow-sm">
+                    <div class="p-3.5 sm:p-4 rounded-2xl rounded-tr-none bg-[#0D1B2A] text-white text-xs sm:text-sm leading-relaxed shadow-sm">
                         ${escapeHtml(texto)}
                     </div>
-                    <div class="w-8 h-8 rounded-full bg-[#E7CB72] text-[#19130E] flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">EU</div>
+                    <div class="w-8 h-8 rounded-full bg-[#00B4D8] text-[#0D1B2A] flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1 shadow">EU</div>
                 `;
             } else {
                 div.className = 'flex items-start gap-3 max-w-[90%] sm:max-w-[75%] fade-in';
                 div.innerHTML = `
-                    <div class="w-8 h-8 rounded-full bg-[#19130E] text-[#E7CB72] flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">IA</div>
-                    <div class="p-3.5 sm:p-4 rounded-2xl rounded-tl-none bg-gray-100 text-gray-800 text-xs sm:text-sm leading-relaxed shadow-sm whitespace-pre-wrap">${escapeHtml(texto)}</div>
+                    <div class="w-8 h-8 rounded-full bg-[#0D1B2A] text-[#00B4D8] flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1 shadow">IA</div>
+                    <div class="p-3.5 sm:p-4 rounded-2xl rounded-tl-none bg-slate-100 text-slate-800 text-xs sm:text-sm leading-relaxed shadow-sm whitespace-pre-wrap">${escapeHtml(texto)}</div>
                 `;
             }
 
@@ -589,7 +586,7 @@
             const container = document.getElementById('lista-historico');
             if (!dados || dados.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center py-10 text-gray-400 text-xs">
+                    <div class="text-center py-10 text-slate-400 text-xs">
                         <p class="text-2xl mb-2">📂</p>
                         <p>Nenhum contrato fechado no histórico ainda.</p>
                     </div>`;
@@ -599,18 +596,18 @@
             container.innerHTML = '';
             dados.slice().reverse().forEach(item => {
                 const div = document.createElement('div');
-                div.className = 'bg-white p-3.5 sm:p-4 rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md transition text-xs space-y-2';
+                div.className = 'bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition text-xs space-y-2';
                 const dataFormatada = item.dataEnvio ? new Date(item.dataEnvio).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Data recente';
 
                 div.innerHTML = `
-                    <div class="flex justify-between items-center text-gray-500 border-b border-gray-100 pb-2">
-                        <span class="font-semibold text-gray-700">📅 ${dataFormatada}</span>
+                    <div class="flex justify-between items-center text-slate-500 border-b border-slate-100 pb-2">
+                        <span class="font-semibold text-slate-700">📅 ${dataFormatada}</span>
                         <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold">Assinado</span>
                     </div>
                     <div>
-                        <strong class="text-gray-900">Contratante:</strong> <span class="text-gray-600">${escapeHtml(item.estabelecimento)}</span>
+                        <strong class="text-slate-900">Contratante:</strong> <span class="text-slate-600">${escapeHtml(item.estabelecimento)}</span>
                     </div>
-                    <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-100 font-mono text-[11px] text-gray-700 max-h-28 overflow-y-auto whitespace-pre-wrap">${escapeHtml(item.textoContrato)}</div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-mono text-[11px] text-slate-700 max-h-28 overflow-y-auto whitespace-pre-wrap">${escapeHtml(item.textoContrato)}</div>
                 `;
                 container.appendChild(div);
             });
