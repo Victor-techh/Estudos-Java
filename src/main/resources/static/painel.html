@@ -112,168 +112,140 @@
 
 <body class="h-screen flex flex-col overflow-hidden bg-[#F8F9FA]">
 
-    <!-- HEADER SUPERIOR ELEGANTE -->
-    <header
-        class="bg-primaryDark text-white px-6 py-4 flex justify-between items-center shadow-lg border-b border-accent/20 flex-shrink-0 relative z-20">
-        <div class="flex items-center gap-3">
-            <div
-                class="w-10 h-10 rounded-2xl bg-gradient-to-br from-accent/20 to-accentMint/20 border border-accent/40 flex items-center justify-center text-accent shadow-sm shadow-accent/10">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3">
-                    </path>
-                </svg>
-            </div>
-            <div>
-                <div class="flex items-center gap-2">
-                    <h1 class="text-xl font-extrabold tracking-tight text-white">CURA</h1>
-                    <div class="sound-wave">
-                        <span></span><span></span><span></span>
-                    </div>
+    <div id="view-dashboard" class="flex-1 flex flex-col h-[100dvh] overflow-hidden" style="display: none;">
+
+        <!-- HEADER SUPERIOR ELEGANTE -->
+        <header
+            class="bg-[#0D1B2A] text-white px-4 sm:px-6 py-3.5 flex justify-between items-center shadow-md border-b border-[#00B4D8]/30 flex-shrink-0 z-20">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-9 h-9 rounded-xl bg-[#00B4D8]/20 border border-[#00B4D8]/40 flex items-center justify-center text-[#00B4D8] font-bold">
+                    ✨
                 </div>
-                <p class="text-[11px] text-accentMint tracking-wider uppercase font-semibold">Gestão Artística &
-                    Inteligência Artificial</p>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-4">
-            <div
-                class="hidden sm:flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl bg-primary border border-accent/30 text-xs shadow-inner">
-                <span
-                    class="w-2.5 h-2.5 rounded-full bg-accentMint animate-pulse shadow-sm shadow-accentMint/50"></span>
-                <span id="nome-usuario" class="text-gray-100 font-semibold">Carregando...</span>
-            </div>
-            <button onclick="logout()"
-                class="px-4 py-2 bg-secondary/90 hover:bg-secondary text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md hover:shadow-lg active:scale-95 duration-200">
-                <span>Sair</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-                    </path>
-                </svg>
-            </button>
-        </div>
-    </header>
-
-    <!-- CONTAINER PRINCIPAL -->
-    <main class="flex-1 flex flex-col lg:flex-row overflow-hidden p-4 sm:p-6 gap-6 max-w-[1700px] w-full mx-auto">
-
-        <!-- SEÇÃO CENTRAL: CHAT DE NEGOCIAÇÃO -->
-        <section
-            class="flex-1 lg:flex-[2] bg-white rounded-3xl shadow-xl border border-gray-200/60 flex flex-col overflow-hidden relative">
-
-            <!-- CABEÇALHO DO CHAT -->
-            <div
-                class="p-5 border-b border-gray-100 bg-cream/60 flex justify-between items-center flex-shrink-0 backdrop-blur-sm">
                 <div>
-                    <h3 class="text-lg font-bold text-primary">Negociação com o Agente</h3>
-                    <p class="text-xs text-gray-500 font-medium">Defina valores, repertório e alinhamento contratual
-                        direto com a curadoria IA.</p>
+                    <h1 class="serif-title text-lg sm:text-xl font-bold tracking-wide text-white">CURA</h1>
+                    <p class="text-[10px] sm:text-[11px] text-[#00B4D8] tracking-wider uppercase font-light">Gestão
+                        Artística & Inteligência Artificial</p>
                 </div>
+            </div>
+
+            <div class="flex items-center gap-3">
                 <div
-                    class="hidden sm:flex items-center gap-1.5 text-[11px] px-3 py-1 rounded-full bg-accent/10 text-primary border border-accent/30 font-bold shadow-sm">
-                    <svg class="w-3.5 h-3.5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Lei Estadual nº 15.112/2012
+                    class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 border border-white/15 text-xs">
+                    <span class="w-2 h-2 rounded-full bg-[#2EC4B6] animate-pulse"></span>
+                    <span id="nome-usuario" class="text-slate-200 font-medium">Carregando...</span>
                 </div>
-            </div>
-
-            <!-- ALERTA DE FECHAMENTO DE CONTRATO -->
-            <div id="alerta-fechamento"
-                class="mx-5 mt-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs sm:text-sm font-medium flex items-center gap-3 shadow-md fade-in"
-                style="display: none;">
-                <div
-                    class="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-lg flex-shrink-0 shadow-sm shadow-emerald-500/30">
-                    🎉</div>
-                <div class="flex-1">
-                    <strong class="font-bold text-emerald-950">Negócio Fechado com Sucesso!</strong> O contrato gerado
-                    foi gravado e arquivado no seu histórico lateral de segurança.
-                </div>
-            </div>
-
-            <!-- CAIXA DE MENSAGENS -->
-            <div id="chat-box" class="flex-1 p-5 overflow-y-auto space-y-4 bg-gradient-to-b from-white to-cream/20">
-                <div class="flex items-start gap-3 max-w-[85%] sm:max-w-[75%] fade-in">
-                    <div
-                        class="w-9 h-9 rounded-2xl bg-primary text-accent flex items-center justify-center text-xs font-extrabold flex-shrink-0 mt-1 shadow-md shadow-primary/20 border border-accent/30">
-                        IA</div>
-                    <div
-                        class="p-4 rounded-2xl rounded-tl-none bg-cream border border-gray-200/80 text-primary text-sm leading-relaxed shadow-sm font-medium">
-                        Olá! Sou o agente consultor do Cura. Qual a proposta de apresentação musical ou artística para
-                        hoje? Estou pronto para negociar dentro dos parâmetros e diretrizes do SINDIMUCE.
-                    </div>
-                </div>
-            </div>
-
-            <!-- INPUT DE ENVIO -->
-            <div class="p-4 sm:p-5 border-t border-gray-100 bg-cream/60 flex-shrink-0">
-                <div class="flex gap-2 sm:gap-3">
-                    <input type="text" id="mensagem-input" placeholder="Digite sua mensagem ou proposta de cachê..."
-                        onkeypress="checarEnter(event)"
-                        class="flex-1 px-4 py-3.5 bg-white border border-gray-300 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition shadow-sm font-medium placeholder-gray-400">
-                    <button onclick="enviarMensagem()"
-                        class="px-6 py-3.5 bg-primary hover:bg-primaryDark text-accent hover:text-accentMint rounded-2xl font-bold text-sm transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 flex-shrink-0 active:scale-95">
-                        <span>Enviar</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-        </section>
-
-        <!-- SEÇÃO LATERAL: HISTÓRICO DE CONTRATOS -->
-        <section
-            class="w-full lg:w-[440px] bg-white rounded-3xl shadow-xl border border-gray-200/60 flex flex-col overflow-hidden flex-shrink-0">
-
-            <div
-                class="p-5 border-b border-gray-100 bg-cream/60 flex items-center justify-between flex-shrink-0 backdrop-blur-sm">
-                <div class="flex items-center gap-2.5">
-                    <div
-                        class="w-8 h-8 rounded-xl bg-secondary/10 border border-secondary/30 flex items-center justify-center text-secondary shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                            </path>
-                        </svg>
-                    </div>
-                    <h3 class="text-base font-bold text-primary">Seus Contratos Registrados</h3>
-                </div>
-                <button onclick="carregarHistorico()" title="Atualizar Histórico"
-                    class="p-2 hover:bg-gray-200/60 rounded-xl text-gray-600 transition text-xs flex items-center gap-1 active:rotate-180 duration-300">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
-                        </path>
-                    </svg>
+                <button onclick="logout()"
+                    class="px-3.5 py-2 bg-[#E05A47] hover:bg-[#C94836] text-white rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+                    <span>Sair</span>
+                    <span>🚪</span>
                 </button>
             </div>
+        </header>
 
-            <div id="lista-historico"
-                class="flex-1 p-5 overflow-y-auto space-y-4 bg-gradient-to-b from-cream/20 to-gray-50">
-                <div class="text-center py-12 text-gray-400 text-xs font-medium">Carregando histórico...</div>
-            </div>
+        <!-- CONTAINER PRINCIPAL (GRID RESPONSIVO / VERTICAL STACK EM MOBILE) -->
+        <main
+            class="flex-1 flex flex-col lg:flex-row overflow-hidden p-3 sm:p-5 lg:p-6 gap-4 sm:gap-6 max-w-[1700px] w-full mx-auto">
 
-        </section>
+            <!-- SEÇÃO CENTRAL: CHAT DE NEGOCIAÇÃO -->
+            <section
+                class="flex-1 lg:flex-[2] bg-white rounded-3xl shadow-xl border border-slate-200/80 flex flex-col overflow-hidden min-h-[50vh] lg:min-h-0">
 
-    </main>
+                <!-- CABEÇALHO DO CHAT -->
+                <div
+                    class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 flex-shrink-0">
+                    <div>
+                        <h3 class="serif-title text-base sm:text-lg font-bold text-slate-900">Negociação com o Agente
+                        </h3>
+                        <p class="text-xs text-slate-500">Defina valores, repertório e alinhamento contratual direto com
+                            a curadoria IA.</p>
+                    </div>
+                    <div
+                        class="text-[11px] px-3 py-1 rounded-full bg-[#2EC4B6]/15 text-[#0F766E] border border-[#2EC4B6]/40 font-semibold whitespace-nowrap">
+                        Lei Estadual nº 15.112/2012
+                    </div>
+                </div>
+
+                <!-- ALERTA DE FECHAMENTO DE CONTRATO -->
+                <div id="alerta-fechamento"
+                    class="mx-4 sm:mx-5 mt-4 p-3.5 sm:p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm font-medium flex items-center gap-3 shadow-sm"
+                    style="display: none;">
+                    <span class="text-lg">🎉</span>
+                    <div>
+                        <strong class="font-bold">Negócio Fechado!</strong> O contrato gerado foi gravado com sucesso no
+                        seu histórico lateral.
+                    </div>
+                </div>
+
+                <!-- CAIXA DE MENSAGENS -->
+                <div id="chat-box" class="flex-1 p-4 sm:p-5 overflow-y-auto space-y-4 bg-white">
+                    <div class="flex items-start gap-3 max-w-[90%] sm:max-w-[75%]">
+                        <div
+                            class="w-8 h-8 rounded-full bg-[#0D1B2A] text-[#00B4D8] flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1 shadow">
+                            IA</div>
+                        <div
+                            class="p-3.5 sm:p-4 rounded-2xl rounded-tl-none bg-slate-100 text-slate-800 text-xs sm:text-sm leading-relaxed shadow-sm">
+                            Olá! Sou o agente consultor do Cura. Qual a proposta de apresentação musical ou artística
+                            para hoje?
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INPUT DE ENVIO -->
+                <div class="p-3 sm:p-5 border-t border-slate-100 bg-slate-50/50 flex-shrink-0">
+                    <div class="flex gap-2 sm:gap-3">
+                        <input type="text" id="mensagem-input" placeholder="Digite sua mensagem ou proposta de cachê..."
+                            onkeypress="checarEnter(event)"
+                            class="flex-1 px-3.5 sm:px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] transition shadow-sm">
+                        <button onclick="enviarMensagem()"
+                            class="px-4 sm:px-5 py-3 bg-[#0D1B2A] text-[#00B4D8] hover:bg-[#1B263B] rounded-xl font-semibold text-xs sm:text-sm transition shadow-md flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                            <span>Enviar</span>
+                            <span>→</span>
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- SEÇÃO LATERAL: HISTÓRICO DE CONTRATOS -->
+            <section
+                class="w-full lg:w-[400px] xl:w-[440px] bg-white rounded-3xl shadow-xl border border-slate-200/80 flex flex-col overflow-hidden flex-shrink-0 max-h-[350px] lg:max-h-none">
+
+                <div
+                    class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between flex-shrink-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[#E05A47]">📜</span>
+                        <h3 class="serif-title text-sm sm:text-base font-bold text-slate-900">Seus Contratos Registrados
+                        </h3>
+                    </div>
+                    <button onclick="carregarHistorico()" title="Atualizar Histórico"
+                        class="p-1.5 hover:bg-slate-200 rounded-lg text-slate-500 transition text-xs">
+                        🔄
+                    </button>
+                </div>
+
+                <div id="lista-historico"
+                    class="flex-1 p-4 sm:p-5 overflow-y-auto space-y-3 sm:space-y-4 bg-slate-50/30">
+                    <div class="text-center py-8 text-slate-400 text-xs">Carregando histórico...</div>
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
 
     <!-- SCRIPT DE LÓGICA FUNCIONAL -->
     <script>
-        const usuarioId = localStorage.getItem('usuarioId');
-        const usuarioNome = localStorage.getItem('usuarioNome');
+        const user = JSON.parse(localStorage.getItem('user'));
 
         // Array para manter o contexto exigido pelo DTO MensagemDTO no backend
         let historicoConversa = [];
 
-        if (!usuarioId) {
-            window.location.href = '/login.html';
+        if (!user) {
+            // window.location.href = '/login.html';
         } else {
-            document.getElementById('nome-usuario').innerText = 'Usuário: ' + usuarioNome;
+            document.getElementById('nome-usuario').innerText = 'Usuário: ' + user.nome;
             carregarHistorico();
         }
 
@@ -294,14 +266,12 @@
             adicionarMensagemNaTela(texto, 'user');
             input.value = '';
 
-            // Monta o payload conforme a classe SolicitacaoChat do AgenteController
             const payload = {
                 mensagem: texto,
                 qtdMusicos: 1,
                 historico: historicoConversa
             };
 
-            // Atualiza o histórico local antes do envio
             historicoConversa.push({ role: 'user', texto: texto });
 
             try {
@@ -311,27 +281,21 @@
                     body: JSON.stringify(payload)
                 }).catch(() => null);
 
-                // Fallback inteligente caso a API Spring Boot não esteja conectada no momento
                 if (!response || !response.ok && response.status === 404) {
                     setTimeout(() => {
                         const respostaSimulada = "Proposta analisada com sucesso pela Curadoria IA. Com base no repertório e cachê alinhados, Negócio fechado!\n\nCONTRATO DE APRESENTAÇÃO ARTÍSTICA\nContratante: " + (usuarioNome || 'Estabelecimento') + "\nValor Acordado: R$ 1.500,00\nCondições: Conforme Lei Estadual nº 15.112/2012 e diretrizes do SINDIMUCE.";
                         historicoConversa.push({ role: 'model', texto: respostaSimulada });
                         adicionarMensagemNaTela(respostaSimulada, 'model');
                         document.getElementById('alerta-fechamento').style.display = 'flex';
-
-                        // Salva simulado no localStorage para manter a experiência interativa impecável
                         salvarContratoSimuladoLocal(respostaSimulada);
                     }, 800);
                     return;
                 }
 
                 const respostaTexto = await response.text();
-
-                // Adiciona a resposta da IA ao histórico local
                 historicoConversa.push({ role: 'model', texto: respostaTexto });
                 adicionarMensagemNaTela(respostaTexto, 'model');
 
-                // Verifica o gatilho do SINDIMUCE / Lei Estadual nº 15.112/2012
                 if (respostaTexto.toLowerCase().includes('negócio fechado')) {
                     document.getElementById('alerta-fechamento').style.display = 'flex';
                     salvarContratoAutomatico(respostaTexto);
@@ -347,18 +311,18 @@
             const div = document.createElement('div');
 
             if (role === 'user') {
-                div.className = 'flex items-start justify-end gap-3 max-w-[85%] sm:max-w-[75%] ml-auto fade-in';
+                div.className = 'flex items-start justify-end gap-3 max-w-[90%] sm:max-w-[75%] ml-auto fade-in';
                 div.innerHTML = `
-                    <div class="p-4 rounded-2xl rounded-tr-none bg-primary text-white text-sm leading-relaxed shadow-md font-medium">
+                    <div class="p-3.5 sm:p-4 rounded-2xl rounded-tr-none bg-[#0D1B2A] text-white text-xs sm:text-sm leading-relaxed shadow-sm">
                         ${escapeHtml(texto)}
                     </div>
-                    <div class="w-9 h-9 rounded-2xl bg-secondary text-white flex items-center justify-center text-xs font-extrabold flex-shrink-0 mt-1 shadow-md shadow-secondary/20">EU</div>
+                    <div class="w-8 h-8 rounded-full bg-[#00B4D8] text-[#0D1B2A] flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1 shadow">EU</div>
                 `;
             } else {
-                div.className = 'flex items-start gap-3 max-w-[85%] sm:max-w-[75%] fade-in';
+                div.className = 'flex items-start gap-3 max-w-[90%] sm:max-w-[75%] fade-in';
                 div.innerHTML = `
-                    <div class="w-9 h-9 rounded-2xl bg-primary text-accent flex items-center justify-center text-xs font-extrabold flex-shrink-0 mt-1 shadow-md shadow-primary/20 border border-accent/30">IA</div>
-                    <div class="p-4 rounded-2xl rounded-tl-none bg-cream border border-gray-200/80 text-primary text-sm leading-relaxed shadow-sm whitespace-pre-wrap font-medium">${escapeHtml(texto)}</div>
+                    <div class="w-8 h-8 rounded-full bg-[#0D1B2A] text-[#00B4D8] flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1 shadow">IA</div>
+                    <div class="p-3.5 sm:p-4 rounded-2xl rounded-tl-none bg-slate-100 text-slate-800 text-xs sm:text-sm leading-relaxed shadow-sm whitespace-pre-wrap">${escapeHtml(texto)}</div>
                 `;
             }
 
@@ -396,7 +360,6 @@
                 const response = await fetch('/api/contratos/historico?usuarioId=' + usuarioId).catch(() => null);
 
                 if (!response || !response.ok) {
-                    // Carrega do localStorage simulado caso o backend não esteja ativo
                     const locais = JSON.parse(localStorage.getItem('contratos_simulados') || '[]');
                     renderizarListaHistorico(locais);
                     return;
@@ -415,10 +378,9 @@
             const container = document.getElementById('lista-historico');
             if (!dados || dados.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center py-12 text-gray-400 text-xs font-medium">
-                        <p class="text-3xl mb-2">📂</p>
-                        <p class="font-semibold text-gray-500">Nenhum contrato fechado no histórico ainda.</p>
-                        <p class="text-[11px] text-gray-400 mt-1">Conclua uma negociação com a IA para registrar.</p>
+                    <div class="text-center py-10 text-slate-400 text-xs">
+                        <p class="text-2xl mb-2">📂</p>
+                        <p>Nenhum contrato fechado no histórico ainda.</p>
                     </div>`;
                 return;
             }
@@ -426,23 +388,22 @@
             container.innerHTML = '';
             dados.slice().reverse().forEach(item => {
                 const div = document.createElement('div');
-                div.className = 'bg-white p-4 rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md transition text-xs space-y-2.5 fade-in';
+                div.className = 'bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition text-xs space-y-2';
                 const dataFormatada = item.dataEnvio ? new Date(item.dataEnvio).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Data recente';
 
                 div.innerHTML = `
-                    <div class="flex justify-between items-center text-gray-500 border-b border-gray-100 pb-2.5">
-                        <span class="font-bold text-primary flex items-center gap-1">📅 ${dataFormatada}</span>
-                        <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 font-bold border border-emerald-200 text-[10px]">Assinado</span>
+                    <div class="flex justify-between items-center text-slate-500 border-b border-slate-100 pb-2">
+                        <span class="font-semibold text-slate-700">📅 ${dataFormatada}</span>
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold">Assinado</span>
                     </div>
                     <div>
-                        <strong class="text-gray-900 font-semibold">Contratante:</strong> <span class="text-gray-600 font-medium">${escapeHtml(item.estabelecimento)}</span>
+                        <strong class="text-slate-900">Contratante:</strong> <span class="text-slate-600">${escapeHtml(item.estabelecimento)}</span>
                     </div>
-                    <div class="bg-cream/50 p-3 rounded-xl border border-gray-200/60 font-mono text-[11px] text-gray-700 max-h-36 overflow-y-auto whitespace-pre-wrap leading-relaxed">${escapeHtml(item.textoContrato)}</div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-mono text-[11px] text-slate-700 max-h-28 overflow-y-auto whitespace-pre-wrap">${escapeHtml(item.textoContrato)}</div>
                 `;
                 container.appendChild(div);
             });
         }
-
         function escapeHtml(text) {
             return text ? text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
         }
