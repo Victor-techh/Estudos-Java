@@ -169,13 +169,7 @@
 
                 if (!response || !response.ok) throw new Error();
 
-                // TODO: Handle user data received from Backend and set on LocalStorage
-                // const dados = await response.json();
-                const userData = {
-                    id: '000001',
-                    nome: email,
-                    email: email
-                }
+                const userData = await response?.json();
                 localStorage.setItem('user', JSON.stringify(userData));
                 verificarEstadoSessao();
 
