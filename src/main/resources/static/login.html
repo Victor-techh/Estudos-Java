@@ -150,9 +150,8 @@
         });
 
         function verificarEstadoSessao() {
-            if (usuarioId && usuarioId !== 'null' && usuarioId !== '') {
-                window.location.href = "/painel.html";
-            }
+            const user = localStorage.getItem('user');
+            if (user) window.location.href = "/painel.html";
         }
 
         async function realizarLogin(e) {
@@ -170,27 +169,19 @@
                     body: JSON.stringify({ email, senha })
                 }).catch(() => null);
 
-                if (!response || !response.ok) {
-                    if (email) {
-                        usuarioId = 'user_sim_' + Date.now();
-                        usuarioNome = email.split('@')[0];
-                        localStorage.setItem('usuarioId', usuarioId);
-                        localStorage.setItem('usuarioNome', usuarioNome);
-                        verificarEstadoSessao();
-                        return;
-                    }
-                    throw new Error('Credenciais inválidas.');
-                }
+                if (!response || !response.ok) throw new Error();
 
                 const dados = await response.json();
-                usuarioId = dados.id || dados.usuarioId;
-                usuarioNome = dados.nome || email;
-                localStorage.setItem('usuarioId', usuarioId);
-                localStorage.setItem('usuarioNome', usuarioNome);
+                const userData = {
+                    id: dados.id || dados.usuarioId,
+                    nome: dados.nome || email,
+                    email: email
+                }
+                localStorage.setItem('user', JSON.stringify(userData));
                 verificarEstadoSessao();
 
             } catch (err) {
-                erroBox.innerText = 'Erro ao autenticar. Verifique seus dados ou tente novamente.';
+                erroBox.innerText = 'Erro ao autenticar. Verifique seus dados e tente novamente.';
                 erroBox.classList.remove('hidden');
             }
         }

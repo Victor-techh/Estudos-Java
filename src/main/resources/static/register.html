@@ -157,18 +157,17 @@
   </div>
 
   <script>
-    let usuarioId = localStorage.getItem('usuarioId');
-    let usuarioNome = localStorage.getItem('usuarioNome');
     let historicoConversa = [];
+    const user = JSON.parse(localStorage.getItem('user'));
+    const usuarioId = user.id;
+    const usuarioNome = user.nome;
 
     window.addEventListener('DOMContentLoaded', () => {
       verificarEstadoSessao();
     });
 
     function verificarEstadoSessao() {
-      if (usuarioId && usuarioId !== 'null' && usuarioId !== '') {
-        window.location.href = "/painel.html";
-      }
+      if (user) window.location.href = "/painel.html";
     }
 
     function redirectToLogin() {
@@ -194,22 +193,11 @@
           body: JSON.stringify({ nome, email, senha, tipo })
         }).catch(() => null);
 
-        if (!response || !response.ok) {
-          sucessoBox.innerText = 'Cadastro realizado com sucesso! Redirecionando...';
-          sucessoBox.classList.remove('hidden');
-          setTimeout(() => {
-            usuarioId = 'user_cad_' + Date.now();
-            usuarioNome = nome;
-            localStorage.setItem('usuarioId', usuarioId);
-            localStorage.setItem('usuarioNome', usuarioNome);
-            verificarEstadoSessao();
-          }, 1000);
-          return;
-        }
+        if (!response || !response.ok) throw new Error();
 
         sucessoBox.innerText = 'Conta criada com sucesso! Faça login para continuar.';
         sucessoBox.classList.remove('hidden');
-        setTimeout(() => alternarTelaAuth('login'), 1200);
+        setTimeout(() => redirectToLogin(), 1200);
 
       } catch (err) {
         erroBox.innerText = 'Erro ao realizar cadastro no servidor.';
