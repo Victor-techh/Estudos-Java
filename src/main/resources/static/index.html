@@ -1,183 +1,476 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="scroll-smooth">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma de Negociação Artística</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #0f172a; color: #f8fafc; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
-        
-        /* Navegação principal */
-        nav { display: flex; gap: 10px; margin-bottom: 20px; background: #1e293b; padding: 6px; border-radius: 8px; border: 1px solid #334155; }
-        nav button { background: transparent; border: none; color: #94a3b8; padding: 10px 20px; font-weight: 600; cursor: pointer; border-radius: 6px; transition: 0.2s; }
-        nav button.active { background-color: #2563eb; color: #ffffff; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CURA — Músicos & Estabelecimentos</title>
 
-        /* Contêiner de painéis */
-        .container { width: 100%; max-width: 800px; background: #1e293b; border-radius: 12px; border: 1px solid #334155; overflow: hidden; display: flex; flex-direction: column; height: 650px; }
-        .tab-content { display: none; height: 100%; flex-direction: column; }
-        .tab-content.active { display: flex; }
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-        /* Estilos do Painel do Contratante (Chat) */
-        .header { background: #0f172a; padding: 16px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
-        .header h2 { font-size: 1.1rem; }
-        .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .message { max-width: 80%; padding: 12px 16px; border-radius: 8px; font-size: 0.95rem; line-height: 1.4; white-space: pre-wrap; }
-        .user { align-self: flex-end; background-color: #2563eb; color: #ffffff; }
-        .model { align-self: flex-start; background-color: #334155; color: #f8fafc; }
-        .input-area { padding: 16px; background: #0f172a; border-top: 1px solid #334155; display: flex; gap: 10px; }
-        input[type="text"], select { background: #1e293b; border: 1px solid #475569; color: #fff; padding: 10px; border-radius: 6px; font-size: 0.9rem; }
-        input[type="text"] { flex: 1; }
-        button.send-btn { background: #2563eb; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
 
-        /* Estilos do Painel do Artista (Dashboard) */
-        .dashboard { padding: 20px; overflow-y: auto; }
-        .dashboard h3 { margin-bottom: 16px; color: #38bdf8; }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
-        th, td { padding: 12px; border-bottom: 1px solid #334155; }
-        th { background: #0f172a; color: #94a3b8; }
-        tr:hover { background: #334155; }
-        .refresh-btn { background: #059669; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; margin-bottom: 15px; }
-    </style>
-</head>
-<body>
-
-    <nav>
-        <button id="btn-contratante" class="active" onclick="alternarAba('contratante')">Painel Contratante (Negociação)</button>
-        <button id="btn-artista" onclick="alternarAba('artista')">Painel Artista (Dashboard)</button>
-    </nav>
-
-    <div class="container">
-        <!-- Aba Contratante -->
-        <div id="tab-contratante" class="tab-content active">
-            <div class="header">
-                <h2>Negociação com Agente Comercial</h2>
-                <select id="select-formacao">
-                    <option value="1">Solo (1 Músico - Piso: R$ 420)</option>
-                    <option value="2">Duo (2 Músicos - Piso: R$ 840)</option>
-                    <option value="3" selected>Trio (3 Músicos - Piso: R$ 1.260)</option>
-                </select>
-            </div>
-            <div class="chat-box" id="chat-box"></div>
-            <div class="input-area">
-                <input type="text" id="input-msg" placeholder="Digite sua proposta ou objeção..." onkeypress="tratarKeyPress(event)">
-                <button class="send-btn" onclick="enviarMensagem()">Enviar</button>
-            </div>
-        </div>
-
-        <!-- Aba Artista -->
-        <div id="tab-artista" class="tab-content">
-            <div class="dashboard">
-                <h3>Contratos Fechados via Agente IA</h3>
-                <button class="refresh-btn" onclick="carregarContratos()">Atualizar Lista</button>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Contratante</th>
-                            <th>Contratado</th>
-                            <th>Valor Fechado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabela-contratos">
-                        <tr><td colspan="4" style="text-align:center;">Carregando dados...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const historicoChat = [];
-
-        function alternarAba(aba) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
-
-            document.getElementById('tab-' + aba).classList.add('active');
-            document.getElementById('btn-' + aba).classList.add('active');
-
-            if (aba === 'artista') {
-                carregarContratos();
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#0D1B2A',
+              light: '#1B263B',
+              dark: '#080E17',
+            },
+            accent: {
+              terracotta: '#E05A47',
+              terracottaHover: '#C94835',
+            },
+            highlight: {
+              cyan: '#00B4D8',
+              mint: '#2EC4B6',
+            },
+            cream: {
+              DEFAULT: '#F4F1DE',
+              light: '#F8F9FA',
             }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+          }
         }
-
-        async function enviarMensagem() {
-            const input = document.getElementById('input-msg');
-            const texto = input.value.trim();
-            const qtdMusicos = document.getElementById('select-formacao').value;
-
-            if (!texto) return;
-
-            adicionarMensagemNoChat('user', texto);
-            input.value = '';
-
-            try {
-                const response = await fetch('/api/agente/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        mensagem: texto,
-                        qtdMusicos: parseInt(qtdMusicos),
-                        historico: historicoChat
-                    })
-                });
-
-                const respostaTexto = await response.text();
-                adicionarMensagemNoChat('model', respostaTexto);
-
-                historicoChat.push({ role: 'user', texto: texto });
-                historicoChat.push({ role: 'model', texto: respostaTexto });
-
-            } catch (err) {
-                adicionarMensagemNoChat('model', '[ERRO DE CONEXÃO]: Não foi possível enviar a mensagem.');
-            }
-        }
-
-        function adicionarMensagemNoChat(role, texto) {
-            const chatBox = document.getElementById('chat-box');
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `message ${role}`;
-            msgDiv.innerText = texto;
-            chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        function tratarKeyPress(event) {
-            if (event.key === 'Enter') enviarMensagem();
-        }
-
-        async function carregarContratos() {
-    const tbody = document.getElementById('tabela-contratos');
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Buscando contratos...</td></tr>';
-
-    try {
-        const res = await fetch('/api/contratos');
-        if (!res.ok) {
-            throw new Error(`HTTP ${res.status}`);
-        }
-        const dados = await res.json();
-
-        if (dados.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Nenhum contrato fechado até o momento.</td></tr>';
-            return;
-        }
-
-        tbody.innerHTML = '';
-        dados.forEach(c => {
-            const valorExibicao = c.valor ? c.valor.toFixed(2) : '0.00';
-            const row = `<tr>
-                <td>#${c.id}</td>
-                <td>${c.contratante}</td>
-                <td>${c.contratado}</td>
-                <td>R$ ${valorExibicao}</td>
-            </tr>`;
-            tbody.innerHTML += row;
-        });
-    } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#ef4444;">Erro ao carregar dados (${err.message}).</td></tr>`;
+      }
     }
-}
-    </script>
+  </script>
+
+  <style>
+    .text-balance {
+      text-wrap: balance;
+    }
+
+    /* Custom Soundwave decoration */
+    .soundwave-bar {
+      animation: pulseWave 1.5s ease-in-out infinite alternate;
+    }
+
+    .soundwave-bar:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .soundwave-bar:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    .soundwave-bar:nth-child(4) {
+      animation-delay: 0.6s;
+    }
+
+    .soundwave-bar:nth-child(5) {
+      animation-delay: 0.8s;
+    }
+
+    @keyframes pulseWave {
+      0% {
+        transform: scaleY(0.4);
+        opacity: 0.6;
+      }
+
+      100% {
+        transform: scaleY(1);
+        opacity: 1;
+      }
+    }
+
+    /* Geometric network grid pattern */
+    .network-grid {
+      background-image: radial-gradient(rgba(0, 180, 216, 0.15) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+  </style>
+</head>
+
+<body
+  class="min-h-screen bg-[#F8F9FA] text-[#0D1B2A] selection:bg-[#00B4D8]/30 selection:text-[#0D1B2A] font-sans antialiased">
+
+  <!-- Top Editorial Announcement Bar -->
+  <div class="border-b border-[#0D1B2A]/10 bg-[#F4F1DE] px-4 py-2.5 text-center text-xs text-[#1B263B]">
+    <div class="max-w-6xl mx-auto flex items-center justify-between text-[11px]">
+      <div class="flex items-center space-x-2">
+        <span class="font-bold tracking-wider text-[#0D1B2A] bg-[#00B4D8]/20 px-2 py-0.5 rounded text-[10px]">CURA
+          AI</span>
+        <span aria-hidden="true" class="text-[#0D1B2A]/30">·</span>
+        <span class="text-[#1B263B] font-medium">
+          Conectando Músicos e Estabelecimentos com Curadoria & IA
+        </span>
+      </div>
+
+      <div class="hidden sm:flex items-center space-x-3 text-[#1B263B]/80 font-medium">
+        <span class="flex items-center space-x-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#2EC4B6]"></span>
+          <span>+240 shows fechados neste mês</span>
+        </span>
+        <span aria-hidden="true" class="text-[#0D1B2A]/30">·</span>
+        <span>Segurança no Cachê & Acústica Ideal</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section
+    class="relative px-4 sm:px-6 lg:px-8 pt-12 pb-16 lg:pt-20 lg:pb-24 border-b border-[#0D1B2A]/10 overflow-hidden network-grid">
+    <!-- Decorative floating ambient blobs -->
+    <div class="absolute -top-40 -right-40 w-96 h-96 bg-[#00B4D8]/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-1/2 -left-32 w-80 h-80 bg-[#E05A47]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-6xl mx-auto relative z-10">
+      <div class="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+
+        <!-- Left Column -->
+        <div class="lg:col-span-7 space-y-6">
+
+          <div
+            class="inline-flex items-center space-x-2 bg-white/80 border border-[#00B4D8]/30 px-3 py-1.5 rounded-full text-xs text-[#0D1B2A] font-semibold shadow-sm">
+            <div class="flex items-center space-x-0.5 h-3">
+              <span class="w-0.5 h-2 bg-[#E05A47] soundwave-bar inline-block rounded-full"></span>
+              <span class="w-0.5 h-3 bg-[#00B4D8] soundwave-bar inline-block rounded-full"></span>
+              <span class="w-0.5 h-2.5 bg-[#2EC4B6] soundwave-bar inline-block rounded-full"></span>
+            </div>
+            <span>O Palco Certo para Cada Noite · Bares, Pubs & Artistas</span>
+          </div>
+
+          <h1
+            class="text-3xl sm:text-5xl lg:text-5xl font-extrabold tracking-tight text-[#0D1B2A] leading-[1.12] text-balance">
+            Estabelecimentos encontram músicos ideais. Músicos encontram palcos abertos.
+          </h1>
+
+          <p class="text-[#1B263B]/80 text-sm sm:text-base leading-relaxed max-w-2xl font-normal">
+            O <strong class="text-[#0D1B2A] font-semibold">CURA</strong> é a plataforma que simplifica a contratação de
+            música ao vivo.
+            Donos de bares, pubs e restaurantes descobrem artistas com repertório alinhado ao seu público,
+            enquanto músicos encontram propostas com cachês garantidos e rider técnico transparente — com o
+            suporte da inteligência artificial para curadoria de contratos.
+          </p>
+
+          <!-- CTA Buttons -->
+          <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <button id="hero-btn-marketplace" onclick="openModal('marketplace')"
+              class="px-6 py-3.5 rounded-xl bg-[#E05A47] hover:bg-[#C94835] text-white text-xs sm:text-sm font-bold transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 group">
+              <span class="group-hover:scale-110 transition-transform">♫</span>
+              <span>Ver Propostas & Músicos</span>
+            </button>
+
+            <button id="hero-btn-login" onclick="redirectToLogin()"
+              class="px-6 py-3.5 rounded-xl bg-[#0D1B2A] hover:bg-[#1B263B] text-[#00B4D8] text-xs sm:text-sm font-semibold transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2">
+              <span>Entrar na Plataforma</span>
+              <span class="text-white group-hover:translate-x-1 transition-transform">→</span>
+            </button>
+          </div>
+
+          <!-- Trust Indicators -->
+          <div class="pt-4 flex flex-wrap items-center gap-y-2 gap-x-4 text-xs text-[#1B263B]/70 font-medium">
+            <span class="flex items-center space-x-1.5">
+              <span class="text-[#2EC4B6] font-bold">✓</span>
+              <span>Sem taxa de adesão para músicos</span>
+            </span>
+            <span aria-hidden="true" class="text-[#0D1B2A]/25">·</span>
+            <span class="flex items-center space-x-1.5">
+              <span class="text-[#2EC4B6] font-bold">✓</span>
+              <span>Cachês acordados com transparência</span>
+            </span>
+          </div>
+
+        </div>
+
+        <!-- Right Column - Visual card with high quality Unsplash image & Network overlay -->
+        <div class="lg:col-span-5">
+          <div class="relative rounded-2xl overflow-hidden border border-[#0D1B2A]/15 shadow-2xl bg-[#0D1B2A]">
+            <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80"
+              alt="Bar e lounge aconchegante com iluminação âmbar e palco para música ao vivo"
+              class="w-full h-[380px] sm:h-[440px] object-cover opacity-90 hover:scale-105 transition-transform duration-700">
+
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-[#0D1B2A] via-[#0D1B2A]/40 to-transparent flex flex-col justify-end p-6 text-white">
+              <div
+                class="flex items-center space-x-2 text-[11px] font-mono uppercase tracking-wider text-[#00B4D8] mb-1.5">
+                <span class="inline-block w-2.5 h-2.5 rounded-full bg-[#2EC4B6] animate-pulse"></span>
+                <span>Música ao Vivo Hoje · Conexão IA Ativa</span>
+              </div>
+
+              <h3 class="text-xl font-bold leading-snug">
+                Bistrô & Jazz Club Vila Madalena
+              </h3>
+
+              <p class="text-xs text-white/80 mt-1">
+                Acústica controlada, gastronomia autoral e curadoria de shows afinada com o público.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Proof Numbers -->
+  <section class="bg-[#0D1B2A] text-white py-10 px-4 sm:px-6 lg:px-8 border-b border-[#1B263B]">
+    <div class="max-w-6xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+
+      <div class="border-l-2 border-[#E05A47] pl-4 space-y-1">
+        <div class="text-2xl sm:text-3xl font-extrabold text-[#00B4D8] tabular-nums">
+          180+
+        </div>
+        <div class="text-xs text-white/70 font-medium">
+          Músicos e Bandas disponíveis
+        </div>
+      </div>
+
+      <div class="border-l-2 border-[#E05A47] pl-4 space-y-1">
+        <div class="text-2xl sm:text-3xl font-extrabold text-[#00B4D8] tabular-nums">
+          48
+        </div>
+        <div class="text-xs text-white/70 font-medium">
+          Bares, Pubs & Casas cadastradas
+        </div>
+      </div>
+
+      <div class="border-l-2 border-[#E05A47] pl-4 space-y-1">
+        <div class="text-2xl sm:text-3xl font-extrabold text-[#00B4D8] tabular-nums">
+          R$ 420
+        </div>
+        <div class="text-xs text-white/70 font-medium">
+          Cachê médio por apresentação
+        </div>
+      </div>
+
+      <div class="border-l-2 border-[#E05A47] pl-4 space-y-1">
+        <div class="text-2xl sm:text-3xl font-extrabold text-[#00B4D8] tabular-nums">
+          98.4%
+        </div>
+        <div class="text-xs text-white/70 font-medium">
+          Avaliações positivas entre contratantes
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Dual Value Proposition -->
+  <section class="py-16 lg:py-24 px-4 sm:px-6 lg:px-8 border-b border-[#0D1B2A]/10 bg-[#F4F1DE]/40">
+    <div class="max-w-6xl mx-auto space-y-14">
+
+      <div class="text-center space-y-2 max-w-2xl mx-auto">
+        <span class="text-xs font-bold uppercase tracking-wider text-[#E05A47] bg-[#E05A47]/10 px-3 py-1 rounded-full">
+          Dois Lados da Mesma Paixão
+        </span>
+        <h2 class="text-2xl sm:text-4xl font-extrabold text-[#0D1B2A]">
+          Como o CURA resolve os desafios da música ao vivo
+        </h2>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8 items-stretch">
+
+        <!-- Establishments -->
+        <div
+          class="bg-white rounded-2xl p-8 border border-[#0D1B2A]/10 shadow-sm hover:shadow-md transition-shadow space-y-6 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div
+              class="w-12 h-12 rounded-xl bg-[#00B4D8]/10 border border-[#00B4D8]/30 flex items-center justify-center text-[#00B4D8] text-xl font-bold">
+              ⌂
+            </div>
+
+            <div class="space-y-1">
+              <span class="text-[11px] font-mono uppercase tracking-wider text-[#E05A47] font-bold">
+                Para Bares, Pubs & Casas de Show
+              </span>
+              <h3 class="text-xl font-extrabold text-[#0D1B2A]">
+                Atraia mais clientes com o som certo para o seu público
+              </h3>
+            </div>
+
+            <ul class="space-y-3 text-xs text-[#1B263B]/80">
+              <li class="flex items-start space-x-2.5">
+                <span class="text-[#2EC4B6] shrink-0 font-bold mt-0.5">✓</span>
+                <span>
+                  <strong class="text-[#0D1B2A]">Encontre músicos disponíveis:</strong>
+                  Filtre por estilo (Jazz, MPB, Rock, Samba), formato (Voz e Violão, Trio, Banda) e proximidade.
+                </span>
+              </li>
+
+              <li class="flex items-start space-x-2.5">
+                <span class="text-[#2EC4B6] shrink-0 font-bold mt-0.5">✓</span>
+                <span>
+                  <strong class="text-[#0D1B2A]">Publique propostas abertas:</strong>
+                  Defina data, horário, perfil desejado e cachê. Receba candidaturas com histórico de shows e
+                  avaliações.
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="pt-4 border-t border-[#0D1B2A]/10">
+            <button onclick="openModal('marketplace')"
+              class="w-full py-3 px-4 rounded-xl bg-[#0D1B2A] hover:bg-[#1B263B] text-white text-xs font-semibold transition flex items-center justify-center space-x-2">
+              <span>Explorar Músicos Disponíveis</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Musicians -->
+        <div
+          class="bg-white rounded-2xl p-8 border border-[#0D1B2A]/10 shadow-sm hover:shadow-md transition-shadow space-y-6 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div
+              class="w-12 h-12 rounded-xl bg-[#E05A47]/10 border border-[#E05A47]/30 flex items-center justify-center text-[#E05A47] text-xl font-bold">
+              ♫
+            </div>
+
+            <div class="space-y-1">
+              <span class="text-[11px] font-mono uppercase tracking-wider text-[#E05A47] font-bold">
+                Para Artistas, Bandas & Instrumentistas
+              </span>
+              <h3 class="text-xl font-extrabold text-[#0D1B2A]">
+                Agenda cheia, cachê justo e menos burocracia
+              </h3>
+            </div>
+
+            <ul class="space-y-3 text-xs text-[#1B263B]/80">
+              <li class="flex items-start space-x-2.5">
+                <span class="text-[#2EC4B6] shrink-0 font-bold mt-0.5">✓</span>
+                <span>
+                  <strong class="text-[#0D1B2A]">Vagas abertas com cachê claro:</strong>
+                  Saiba exatamente quanto a casa paga, horários de som e se fornecem PA ou se você deve levar o som.
+                </span>
+              </li>
+
+              <li class="flex items-start space-x-2.5">
+                <span class="text-[#2EC4B6] shrink-0 font-bold mt-0.5">✓</span>
+                <span>
+                  <strong class="text-[#0D1B2A]">Candidatura em um clique:</strong>
+                  Seu perfil com amostras de repertório, formato e fotos chega direto ao responsável da casa.
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="pt-4 border-t border-[#0D1B2A]/10">
+            <button onclick="openModal('marketplace')"
+              class="w-full py-3 px-4 rounded-xl bg-[#E05A47] hover:bg-[#C94835] text-white text-xs font-semibold transition flex items-center justify-center space-x-2">
+              <span>Ver Propostas Abertas em Bares</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-[#0D1B2A] text-white border-b border-[#1B263B]">
+    <div class="max-w-4xl mx-auto text-center space-y-6">
+      <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-balance">
+        Pronto para fechar o próximo show ou encontrar o artista perfeito?
+      </h2>
+
+      <p class="text-white/85 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
+        Seja você um dono de bar querendo casa cheia ou um músico querendo preencher
+        a agenda do fim de semana, o CURA é o seu ponto de encontro.
+      </p>
+
+      <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <button onclick=""
+          class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-[#E05A47] hover:bg-[#C94835] text-white text-xs sm:text-sm font-bold transition shadow-md flex items-center justify-center space-x-2">
+          <span>♫</span>
+          <span>Acessar Mural de Shows</span>
+        </button>
+
+        <button onclick="redirectToLogin"
+          class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-[#1B263B] hover:bg-[#23324d] text-[#00B4D8] text-xs sm:text-sm font-semibold transition flex items-center justify-center space-x-2 border border-[#00B4D8]/20">
+          <span>Fazer Login</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-10 px-4 sm:px-6 lg:px-8 bg-[#080E17] text-white/70 text-xs border-t border-[#1B263B]">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center space-x-2">
+        <span class="font-bold text-white text-sm tracking-wide bg-[#00B4D8]/20 px-2.5 py-0.5 rounded text-[#00B4D8]">
+          CURA
+        </span>
+        <span aria-hidden="true" class="text-white/30">·</span>
+        <span>
+          Músicos & Estabelecimentos com Curadoria por IA
+        </span>
+      </div>
+    </div>
+  </footer>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toastNotification"
+    class="fixed bottom-6 right-6 z-50 bg-[#0D1B2A] text-white px-5 py-3 rounded-xl shadow-xl border border-[#00B4D8]/30 transform translate-y-20 opacity-0 transition-all duration-300 text-xs font-semibold flex items-center space-x-2">
+    <span class="text-[#2EC4B6]">✓</span>
+    <span id="toastText">Ação realizada com sucesso!</span>
+  </div>
+
+  <!-- Modal & Notification Script Logic (No alert/confirm used) -->
+  <script>
+    function openModal(view) {
+      const modal = document.getElementById('appModal');
+      const views = document.querySelectorAll('.modal-view');
+      views.forEach(v => v.classList.add('hidden'));
+
+      if (view === 'marketplace') {
+        document.getElementById('modalContentMarketplace').classList.remove('hidden');
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('appModal').classList.add('hidden');
+    }
+
+    function showNotification(message) {
+      const toast = document.getElementById('toastNotification');
+      const textSpan = document.getElementById('toastText');
+      textSpan.textContent = message;
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 4000);
+
+      closeModal();
+    }
+
+    function handleFormSubmit(event, successMessage) {
+      event.preventDefault();
+      showNotification(successMessage);
+    }
+
+    // Close modal when clicking backdrop
+    window.onclick = function (event) {
+      const modal = document.getElementById('appModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+
+    function redirectToLogin() {
+      window.location.href = "/login.html";
+    }
+  </script>
+
 </body>
+
 </html>
