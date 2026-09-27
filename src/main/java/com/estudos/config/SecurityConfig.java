@@ -1,4 +1,4 @@
-package com.estudos;
+package com.estudos.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +20,7 @@ public class SecurityConfig {
             // Público
             .requestMatchers(
                 "/login.html",
+                "/register.html",
                 "/css/**",
                 "/js/**",
                 "/images/**")
