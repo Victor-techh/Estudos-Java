@@ -1,5 +1,6 @@
 package com.estudos.controller;
 
+import com.estudos.dto.ApiResponse;
 import com.estudos.entidade.UsuarioEntity;
 import com.estudos.repositorio.UsuarioRepository;
 import org.springframework.http.HttpStatus;
@@ -22,11 +23,15 @@ public class AuthController {
     @PostMapping("/cadastro")
     public ResponseEntity<?> cadastrar(@RequestBody UsuarioEntity usuario) {
         if (usuarioRepository.existsByEmail(usuario.getEmail())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("mensagem", "E-mail já cadastrado no sistema."));
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error("E-mail já cadastrado no sistema."));
         }
+
         UsuarioEntity novoUsuario = usuarioRepository.save(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success(novoUsuario, "Usuário cadastrado com sucesso."));
     }
 
     @PostMapping("/login")
@@ -36,11 +41,14 @@ public class AuthController {
 
         Optional<UsuarioEntity> usuarioOpt = usuarioRepository.findByEmailAndSenha(email, senha);
 
+        System.out.println(usuarioOpt);
+
         if (usuarioOpt.isPresent()) {
-            return ResponseEntity.ok(usuarioOpt.get());
+            return ResponseEntity.ok(ApiResponse.success(usuarioOpt.get(), "Login realizado com sucesso."));
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of("mensagem", "E-mail ou senha inválidos."));
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("E-mail ou senha inválidos."));
     }
 }
