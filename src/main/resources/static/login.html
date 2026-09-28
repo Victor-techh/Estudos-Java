@@ -169,7 +169,8 @@
 
                 if (!response || !response.ok) throw new Error();
 
-                const userData = await response?.json();
+                const data = await response?.json();
+                const userData = data.data
                 localStorage.setItem('user', JSON.stringify(userData));
                 verificarEstadoSessao();
 

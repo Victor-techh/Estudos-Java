@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -41,10 +42,16 @@ public class AuthController {
 
         Optional<UsuarioEntity> usuarioOpt = usuarioRepository.findByEmailAndSenha(email, senha);
 
-        System.out.println(usuarioOpt);
-
         if (usuarioOpt.isPresent()) {
-            return ResponseEntity.ok(ApiResponse.success(usuarioOpt.get(), "Login realizado com sucesso."));
+            UsuarioEntity user = usuarioOpt.get();
+            Map<String, Object> userInfo = new HashMap<>();
+            userInfo.put("id", user.getId());
+            userInfo.put("name", user.getNome());
+            userInfo.put("email", user.getEmail());
+            userInfo.put("type", user.getTipoPerfil());
+            userInfo.put("token", null); // TODO : Add JWT token here
+
+            return ResponseEntity.ok(ApiResponse.success(userInfo, "Login realizado com sucesso."));
         }
 
         return ResponseEntity
