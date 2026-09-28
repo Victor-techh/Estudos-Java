@@ -112,16 +112,11 @@
 
 <body class="h-screen flex flex-col overflow-hidden bg-[#F8F9FA]">
 
-    <div id="view-dashboard" class="flex-1 flex flex-col h-[100dvh] overflow-hidden" style="display: none;">
+    <div id="view-dashboard" class="flex-1 flex flex-col h-[100dvh] overflow-hidden">
 
-        <!-- HEADER SUPERIOR ELEGANTE -->
         <header
             class="bg-[#0D1B2A] text-white px-4 sm:px-6 py-3.5 flex justify-between items-center shadow-md border-b border-[#00B4D8]/30 flex-shrink-0 z-20">
             <div class="flex items-center gap-3">
-                <div
-                    class="w-9 h-9 rounded-xl bg-[#00B4D8]/20 border border-[#00B4D8]/40 flex items-center justify-center text-[#00B4D8] font-bold">
-                    ✨
-                </div>
                 <div>
                     <h1 class="serif-title text-lg sm:text-xl font-bold tracking-wide text-white">CURA</h1>
                     <p class="text-[10px] sm:text-[11px] text-[#00B4D8] tracking-wider uppercase font-light">Gestão
@@ -143,11 +138,9 @@
             </div>
         </header>
 
-        <!-- CONTAINER PRINCIPAL (GRID RESPONSIVO / VERTICAL STACK EM MOBILE) -->
         <main
             class="flex-1 flex flex-col lg:flex-row overflow-hidden p-3 sm:p-5 lg:p-6 gap-4 sm:gap-6 max-w-[1700px] w-full mx-auto">
 
-            <!-- SEÇÃO CENTRAL: CHAT DE NEGOCIAÇÃO -->
             <section
                 class="flex-1 lg:flex-[2] bg-white rounded-3xl shadow-xl border border-slate-200/80 flex flex-col overflow-hidden min-h-[50vh] lg:min-h-0">
 
@@ -243,9 +236,9 @@
         let historicoConversa = [];
 
         if (!user) {
-            // window.location.href = '/login.html';
+            window.location.href = '/login.html';
         } else {
-            document.getElementById('nome-usuario').innerText = 'Usuário: ' + user.nome;
+            document.getElementById('nome-usuario').innerText = 'Usuário: ' + user.name;
             carregarHistorico();
         }
 
