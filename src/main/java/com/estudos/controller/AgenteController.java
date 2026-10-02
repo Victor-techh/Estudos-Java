@@ -1,37 +1,40 @@
 package com.estudos.controller;
 
 import com.estudos.dto.MensagemDTO;
+import com.estudos.entidade.UsuarioEntity; // Import correto do pacote 'entidade'
 import com.estudos.modelo.Estabelecimento;
+import com.estudos.repositorio.UsuarioRepository;
 import com.estudos.servico.AgenteVendasService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * Controller REST responsável por expor o endpoint de chat da negociação.
- */
 @RestController
 @RequestMapping("/api/agente")
 public class AgenteController {
 
     private final AgenteVendasService agenteVendasService;
+    private final UsuarioRepository usuarioRepository;
 
-    public AgenteController(AgenteVendasService agenteVendasService) {
+    public AgenteController(AgenteVendasService agenteVendasService, UsuarioRepository usuarioRepository) {
         this.agenteVendasService = agenteVendasService;
+        this.usuarioRepository = usuarioRepository;
     }
 
-    /**
-     * Recebe as mensagens da interface web e repassa ao serviço comercial.
-     */
     @PostMapping("/chat")
     public String conversar(@RequestBody SolicitacaoChat request) {
-        // Correção: adição do argumento double (0.0) exigido pela classe Estabelecimento
+        List<String> artistasCadastrados = usuarioRepository.findAll().stream()
+                .filter(u -> "ARTISTA".equalsIgnoreCase(u.getTipoPerfil()))
+                .map(UsuarioEntity::getNome)
+                .collect(Collectors.toList());
+
         Estabelecimento est = new Estabelecimento(
-                "Promenade Bar",
-                "Bar / Restaurante",
-                "Rua Central, 100",
+                "Estabelecimento Conectado",
+                "Bar / Casa de Shows",
+                "Endereço Local",
                 0.0,
-                "Jazz / Lounge",
+                "Variado",
                 true
         );
 
@@ -39,7 +42,8 @@ public class AgenteController {
                 est,
                 request.getMensagem(),
                 request.getHistorico(),
-                request.getQtdMusicos()
+                request.getQtdMusicos(),
+                artistasCadastrados
         );
     }
 
