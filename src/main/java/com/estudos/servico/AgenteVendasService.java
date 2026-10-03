@@ -2,8 +2,10 @@ package com.estudos.servico;
 
 import com.estudos.dto.MensagemDTO;
 import com.estudos.entidade.ContratoEntity;
+import com.estudos.entidade.UsuarioEntity;
 import com.estudos.modelo.Estabelecimento;
 import com.estudos.repositorio.ContratoRepository;
+import com.estudos.repositorio.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,76 +17,70 @@ import java.net.http.HttpTimeoutException;
 import java.time.Duration;
 import java.util.List;
 
-/**
- * Camada de serviço responsável por orquestrar a comunicação com a API do Gemini,
- * aplicar as regras de negócio comercial (piso sindical e objeções) e persistir
- * os contratos fechados no banco de dados H2.
- */
 @Service
 public class AgenteVendasService {
 
-    // Cliente HTTP nativo (Java 11+) reutilizável e thread-safe
     private final HttpClient httpClient;
-
-    // Repositório Spring Data JPA para persistência relacional
     private final ContratoRepository contratoRepository;
+    
+    // 1. ATRIBUTO ADICIONADO
+    private final UsuarioRepository usuarioRepository;
 
-    // Constante de negócio: piso mínimo por músico estabelecido pela tabela Sindimuce
     private static final double CACHE_BASE_POR_MUSICO = 420.0;
 
-    /**
-     * Construtor sem argumentos para permitir testes isolados e execução direta
-     * fora do ciclo de injeção de dependências do Spring (ex: testes legados via Principal.java).
-     */
     public AgenteVendasService() {
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
         this.contratoRepository = null;
+        this.usuarioRepository = null;
     }
 
-    /**
-     * Construtor principal gerenciado pelo Spring IoC container para injeção do repositório JPA.
-     */
+    // 2. CONSTRUTOR ATUALIZADO PARA INJETAR O USUARIOREPOSITORY
     @Autowired
-    public AgenteVendasService(ContratoRepository contratoRepository) {
+    public AgenteVendasService(ContratoRepository contratoRepository, UsuarioRepository usuarioRepository) {
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
         this.contratoRepository = contratoRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
-    /**
-     * Sobrecarga de conveniência para chamadas simples sem histórico ou formação declarada.
-     */
+    // 3. NOVO MÉTODO QUE BUSCA OS DADOS DO H2 PELO ID DO USUÁRIO
+    public String processarAtendimentoPorUsuario(Long usuarioId, String mensagemAtual, List<MensagemDTO> historico, int qtdMusicos) {
+        if (usuarioRepository == null) {
+            return "[ERRO CONFIGURAÇÃO]: Repositório de usuários não foi injetado pelo Spring.";
+        }
+
+        UsuarioEntity usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado no H2 para o ID: " + usuarioId));
+
+        Estabelecimento est = new Estabelecimento();
+        est.setNome(usuario.getNome());
+        est.setTipo(usuario.getTipoPerfil());
+        est.setEndereco(usuario.getEndereco() != null ? usuario.getEndereco() : "Não informado");
+        est.setEstiloMusicalDesejado(usuario.getGeneroMusical() != null ? usuario.getGeneroMusical() : "Geral");
+        est.setPossuiEquipamentoSom(true);
+
+        return processarAtendimento(est, mensagemAtual, historico, qtdMusicos);
+    }
+
     public String processarAtendimento(Estabelecimento est, String mensagem) {
         return processarAtendimento(est, mensagem, null, 1);
     }
 
-    /**
-     * Processa a negociação comercial montando o prompt de sistema, enviando a requisição
-     * à API externa e gerenciando a persistência em caso de acordo definitivo.
-     *
-     * @param est             Dados do contratante (nome, endereço, estrutura de som, estilo).
-     * @param mensagemAtual   Última mensagem enviada pelo contratante.
-     * @param historico       Lista de mensagens trocadas anteriormente para manter o contexto.
-     * @param qtdMusicos      Número de integrantes selecionados para o cálculo do piso.
-     * @return                Resposta gerada pela IA ou mensagem técnica de erro.
-     */
     public String processarAtendimento(Estabelecimento est, String mensagemAtual, List<MensagemDTO> historico, int qtdMusicos) {
-        // 1. Validação de credenciais de ambiente
         String apiKey = System.getenv("GEMINI_API_KEY");
         if (apiKey == null || apiKey.isBlank()) {
             return "[ERRO CONFIGURAÇÃO]: Variável de ambiente GEMINI_API_KEY não definida.";
         }
 
-        // 2. Definição da regra de piso financeiro inegociável
         int totalIntegrantes = qtdMusicos > 0 ? qtdMusicos : 1;
         double cacheMinimoPiso = totalIntegrantes * CACHE_BASE_POR_MUSICO;
 
+        // MANTIDO MODELO GEMINI 3 FLASH PREVIEW
         String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=" + apiKey;
 
-        // 3. Engenharia de prompt: postura consultiva com separação estrita de fases (proposta vs fechamento)
         String contextoComercial = String.format(
             "Você é um agente de vendas e consultor artístico comercial para apresentações ao vivo no Ceará.\n" +
             "Seu papel é negociar contratos de forma consultiva, pragmática, concisa e orientada a soluções, sem enrolação.\n\n" +
@@ -104,14 +100,11 @@ public class AgenteVendasService {
             cacheMinimoPiso, cacheMinimoPiso
         );
 
-        // 4. Montagem manual da estrutura JSON compatível com a API Gemini Contents
         StringBuilder contentsJson = new StringBuilder();
         contentsJson.append("[");
-        // Injeção do System Context simulado via turno inicial de diálogo
         contentsJson.append("{\"role\":\"user\",\"parts\":[{\"text\":\"").append(escaparTexto(contextoComercial)).append("\"}]},");
         contentsJson.append("{\"role\":\"model\",\"parts\":[{\"text\":\"Entendido. Atuarei de forma consultiva, defenderei o piso legal e só emitirei fechamento após confirmação explícita.\"}]},");
 
-        // Anexação do histórico de mensagens anteriores
         if (historico != null) {
             for (MensagemDTO msg : historico) {
                 contentsJson.append("{\"role\":\"").append(msg.getRole()).append("\",\"parts\":[{\"text\":\"")
@@ -119,13 +112,11 @@ public class AgenteVendasService {
             }
         }
 
-        // Mensagem corrente do usuário
         contentsJson.append("{\"role\":\"user\",\"parts\":[{\"text\":\"").append(escaparTexto(mensagemAtual)).append("\"}]}");
         contentsJson.append("]");
 
         String payload = "{\"contents\":" + contentsJson.toString() + "}";
 
-        // 5. Execução da chamada HTTP e tratamento de resiliência
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
@@ -140,7 +131,6 @@ public class AgenteVendasService {
 
             if (status == 200) {
                 String respostaTexto = extrairTextoResposta(response.body());
-                // Dispara a gravação caso haja gatilho de fechamento no texto retornado
                 verificarEPersistirAcordo(respostaTexto, est, cacheMinimoPiso);
                 return respostaTexto;
             } else if (status == 429) {
@@ -158,10 +148,6 @@ public class AgenteVendasService {
         }
     }
 
-    /**
-     * Analisa o conteúdo textual da resposta da IA. Se constatar o aceite definitivo ("negócio fechado"),
-     * instancia a entidade JPA e realiza o commit no banco relacional H2.
-     */
     private void verificarEPersistirAcordo(String respostaIa, Estabelecimento est, double valorFechado) {
         if (respostaIa.toLowerCase().contains("negócio fechado")) {
             if (contratoRepository == null) {
@@ -178,19 +164,11 @@ public class AgenteVendasService {
         }
     }
 
-    /**
-     * Sanitiza caracteres especiais (aspas, quebras de linha e barras) para evitar erros
-     * de parsing ao concatenar strings brutas no corpo do payload JSON.
-     */
     private String escaparTexto(String texto) {
         if (texto == null) return "";
         return texto.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "");
     }
 
-    /**
-     * Extrai o campo "text" da estrutura JSON de resposta do Gemini via manipulação de string,
-     * eliminando a necessidade de parsers externos adicionais nesta camada.
-     */
     private String extrairTextoResposta(String json) {
         int chaveIndex = json.indexOf("\"text\":");
         if (chaveIndex != -1) {

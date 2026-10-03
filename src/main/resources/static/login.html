@@ -39,6 +39,12 @@
             <option value="ARTISTA">Perfil: Artista</option>
             <option value="ESTABELECIMENTO">Perfil: Estabelecimento / Contratante</option>
         </select>
+        
+        <!-- NOVOS CAMPOS ADICIONADOS -->
+        <input type="text" id="cad-genero" placeholder="Gênero Musical (ex: MPB, Jazz)">
+        <input type="text" id="cad-estabelecimento" placeholder="Nome do Estabelecimento">
+        <input type="text" id="cad-endereco" placeholder="Endereço Completo">
+
         <button onclick="fazerCadastro()">Cadastrar</button>
         <button class="aba-btn" onclick="alternarTela('login')">Já tem conta? Faça Login</button>
     </div>
@@ -90,13 +96,27 @@
         const email = document.getElementById('cad-email').value;
         const senha = document.getElementById('cad-senha').value;
         const tipoPerfil = document.getElementById('cad-perfil').value;
+        
+        // LEITURA DOS NOVOS CAMPOS
+        const generoMusical = document.getElementById('cad-genero').value;
+        const estabelecimento = document.getElementById('cad-estabelecimento').value;
+        const endereco = document.getElementById('cad-endereco').value;
+
         const msgDiv = document.getElementById('mensagem');
 
         try {
             const response = await fetch('/api/auth/cadastro', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nome, email, senha, tipoPerfil })
+                body: JSON.stringify({ 
+                    nome, 
+                    email, 
+                    senha, 
+                    tipoPerfil, 
+                    generoMusical, 
+                    estabelecimento, 
+                    endereco 
+                })
             });
 
             const data = await response.json();
