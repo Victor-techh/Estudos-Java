@@ -1,15 +1,20 @@
 package com.estudos.servico;
 
-import com.estudos.dto.MensagemDTO;
-import com.estudos.modelo.Estabelecimento;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import com.estudos.dto.MensagemDTO;
+import com.estudos.modelo.Estabelecimento;
 
 @Service
 public class AgenteVendasService {
@@ -40,37 +45,32 @@ public class AgenteVendasService {
             int qtdMusicos,
             List<String> artistasCadastrados) {
 
-        String listaArtistasStr = (artistasCadastrados == null || artistasCadastrados.isEmpty())
-                ? "Nenhum artista cadastrado na base no momento."
+        String listaArtistasStr = (artistasCadastrados == null || artistasCadastrados.isEmpty()) 
+                ? "Nenhum artista cadastrado na base no momento." 
                 : String.join(", ", artistasCadastrados);
 
         int totalIntegrantes = Math.max(qtdMusicos, 1);
         double cacheMinimoPiso = totalIntegrantes * 420.0;
 
         String contextoComercial = String.format(
-                "Você é um agente de vendas e consultor artístico comercial para apresentações ao vivo no Ceará.\n" +
-                        "Seu papel é negociar contratos de forma consultiva, pragmática, concisa e orientada a soluções.\n\n"
-                        +
-                        "DADOS DA NEGOCIAÇÃO E PLATAFORMA:\n" +
-                        "- Contratante: %s (%s)\n" +
-                        "- Endereço: %s\n" +
-                        "- Formação Atual Solicitada: %d músico(s)\n" +
-                        "- Estilo Base: %s\n" +
-                        "- Estrutura de Som: %b\n" +
-                        "- ARTISTAS DISPONÍVEIS NA BASE (H2): %s\n" +
-                        "- Piso Mínimo Inegociável (SINDIMUCE / Lei Estadual nº 15.112/2012): R$ %.2f (R$ 420,00 por músico).\n\n"
-                        +
-                        "DIRETRIZES DE NEGOCIAÇÃO E TRATAMENTO DE OBJEÇÕES:\n" +
-                        "1. PISO INVIOLÁVEL: Nunca aceite valores abaixo de R$ %.2f para a formação solicitada. Recuse citando a Lei Estadual nº 15.112/2012 e a tabela do SINDIMUCE. Se o contratante tiver orçamento menor, sugira reduzir o formato e pergunte se ele aceita.\n"
-                        +
-                        "2. RECOMENDAÇÃO DE ARTISTAS: Quando solicitado indicação de nomes, cite prioritariamente os artistas disponíveis na base informada acima.\n"
-                        +
-                        "3. CONTRAPROPOSTAS E PERGUNTAS: Ao sugerir adaptação de repertório, redução de músicos ou nova data, finalize APENAS com a pergunta de validação. É ESTRITAMENTE PROIBIDO usar o termo 'Negócio fechado!' enquanto aguarda a confirmação do contratante.\n"
-                        +
-                        "4. FECHAMENTO DEFINITIVO: Use a expressão exata 'Negócio fechado!' SOMENTE quando o contratante concordar expressamente (ex: 'sim', 'aceito', 'fechado') ou fizer uma oferta direta igual ou superior ao piso. Após a frase, resuma brevemente: Formação, Valor final e Endereço.",
-                est.getNome(), est.getTipo(), est.getEndereco(), totalIntegrantes, est.getEstiloMusicalDesejado(),
-                est.isPossuiEquipamentoSom(),
-                listaArtistasStr, cacheMinimoPiso, cacheMinimoPiso);
+            "Você é um agente de vendas e consultor artístico comercial para apresentações ao vivo no Ceará.\n" +
+            "Seu papel é negociar contratos de forma consultiva, pragmática, concisa e orientada a soluções.\n\n" +
+            "DADOS DA NEGOCIAÇÃO E PLATAFORMA:\n" +
+            "- Contratante: %s (%s)\n" +
+            "- Endereço: %s\n" +
+            "- Formação Atual Solicitada: %d músico(s)\n" +
+            "- Estilo Base: %s\n" +
+            "- Estrutura de Som: %b\n" +
+            "- ARTISTAS DISPONÍVEIS NA BASE (H2): %s\n" +
+            "- Piso Mínimo Inegociável (SINDIMUCE / Lei Estadual nº 15.112/2012): R$ %.2f (R$ 420,00 por músico).\n\n" +
+            "DIRETRIZES DE NEGOCIAÇÃO E TRATAMENTO DE OBJEÇÕES:\n" +
+            "1. PISO INVIOLÁVEL: Nunca aceite valores abaixo de R$ %.2f para a formação solicitada. Recuse citando a Lei Estadual nº 15.112/2012 e a tabela do SINDIMUCE. Se o contratante tiver orçamento menor, sugira reduzir o formato e pergunte se ele aceita.\n" +
+            "2. RECOMENDAÇÃO DE ARTISTAS: Quando solicitado indicação de nomes, cite prioritariamente os artistas disponíveis na base informada acima.\n" +
+            "3. CONTRAPROPOSTAS E PERGUNTAS: Ao sugerir adaptação de repertório, redução de músicos ou nova data, finalize APENAS com a pergunta de validação. É ESTRITAMENTE PROIBIDO usar o termo 'Negócio fechado!' enquanto aguarda a confirmação do contratante.\n" +
+            "4. FECHAMENTO DEFINITIVO: Use a expressão exata 'Negócio fechado!' SOMENTE quando o contratante concordar expressamente (ex: 'sim', 'aceito', 'fechado') ou fizer uma oferta direta igual ou superior ao piso. Após a frase, resuma brevemente: Formação, Valor final e Endereço.",
+            est.getNome(), est.getTipo(), est.getEndereco(), totalIntegrantes, est.getEstiloMusicalDesejado(), est.isPossuiEquipamentoSom(),
+            listaArtistasStr, cacheMinimoPiso, cacheMinimoPiso
+        );
 
         try {
             Map<String, Object> requestBody = new HashMap<>();

@@ -34,8 +34,8 @@
     <style>
         body {
             font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-            background-color: #F8F9FA;
-            color: #1B263B;
+            background-color: #0D1B2A;
+            color: white;
         }
 
         /* Custom scrollbars */
@@ -110,10 +110,9 @@
     </style>
 </head>
 
-<body class="h-screen flex flex-col overflow-hidden bg-[#F8F9FA]">
+<body class="h-screen flex flex-col overflow-hidden bg-[#0D1B2A] text-white">
 
-    <div id="view-dashboard" class="flex-1 flex flex-col h-[100dvh] overflow-hidden">
-
+        <!-- HEADER SUPERIOR ELEGANTE -->
         <header
             class="bg-[#0D1B2A] text-white px-4 sm:px-6 py-3.5 flex justify-between items-center shadow-md border-b border-[#00B4D8]/30 flex-shrink-0 z-20">
             <div class="flex items-center gap-3">
@@ -138,9 +137,11 @@
             </div>
         </header>
 
+        <!-- CONTAINER PRINCIPAL (GRID RESPONSIVO / VERTICAL STACK EM MOBILE) -->
         <main
             class="flex-1 flex flex-col lg:flex-row overflow-hidden p-3 sm:p-5 lg:p-6 gap-4 sm:gap-6 max-w-[1700px] w-full mx-auto">
 
+            <!-- SEÇÃO CENTRAL: CHAT DE NEGOCIAÇÃO -->
             <section
                 class="flex-1 lg:flex-[2] bg-white rounded-3xl shadow-xl border border-slate-200/80 flex flex-col overflow-hidden min-h-[50vh] lg:min-h-0">
 
@@ -189,7 +190,7 @@
                     <div class="flex gap-2 sm:gap-3">
                         <input type="text" id="mensagem-input" placeholder="Digite sua mensagem ou proposta de cachê..."
                             onkeypress="checarEnter(event)"
-                            class="flex-1 px-3.5 sm:px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] transition shadow-sm">
+                            class="flex-1 px-3.5 sm:px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] transition shadow-sm text-black">
                         <button onclick="enviarMensagem()"
                             class="px-4 sm:px-5 py-3 bg-[#0D1B2A] text-[#00B4D8] hover:bg-[#1B263B] rounded-xl font-semibold text-xs sm:text-sm transition shadow-md flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                             <span>Enviar</span>
@@ -225,8 +226,6 @@
             </section>
 
         </main>
-
-    </div>
 
     <!-- SCRIPT DE LÓGICA FUNCIONAL -->
     <script>
