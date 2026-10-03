@@ -35,14 +35,14 @@
         <input type="text" id="cad-nome" placeholder="Nome Completo / Razão Social">
         <input type="email" id="cad-email" placeholder="E-mail">
         <input type="password" id="cad-senha" placeholder="Senha">
-        <select id="cad-perfil">
+        
+        <select id="cad-perfil" onchange="atualizarCamposPerfil()">
             <option value="ARTISTA">Perfil: Artista</option>
             <option value="ESTABELECIMENTO">Perfil: Estabelecimento / Contratante</option>
         </select>
         
-        <!-- NOVOS CAMPOS ADICIONADOS -->
-        <input type="text" id="cad-genero" placeholder="Gênero Musical (ex: MPB, Jazz)">
-        <input type="text" id="cad-estabelecimento" placeholder="Nome do Estabelecimento">
+        <input type="text" id="cad-genero" placeholder="Gênero Musical Principal (ex: MPB, Rock)">
+        <input type="text" id="cad-estabelecimento" placeholder="Nome do Estabelecimento" style="display: none;">
         <input type="text" id="cad-endereco" placeholder="Endereço Completo">
 
         <button onclick="fazerCadastro()">Cadastrar</button>
@@ -58,9 +58,25 @@
         if (tela === 'cadastro') {
             document.getElementById('box-login').style.display = 'none';
             document.getElementById('box-cadastro').style.display = 'block';
+            atualizarCamposPerfil();
         } else {
             document.getElementById('box-cadastro').style.display = 'none';
             document.getElementById('box-login').style.display = 'block';
+        }
+    }
+
+    function atualizarCamposPerfil() {
+        const perfil = document.getElementById('cad-perfil').value;
+        const campoEstabelecimento = document.getElementById('cad-estabelecimento');
+        const campoGenero = document.getElementById('cad-genero');
+
+        if (perfil === 'ARTISTA') {
+            campoEstabelecimento.style.display = 'none';
+            campoEstabelecimento.value = '';
+            campoGenero.placeholder = 'Gênero Musical Principal (ex: MPB, Rock)';
+        } else {
+            campoEstabelecimento.style.display = 'block';
+            campoGenero.placeholder = 'Gênero Musical Desejado (ex: MPB, Jazz)';
         }
     }
 
@@ -97,7 +113,6 @@
         const senha = document.getElementById('cad-senha').value;
         const tipoPerfil = document.getElementById('cad-perfil').value;
         
-        // LEITURA DOS NOVOS CAMPOS
         const generoMusical = document.getElementById('cad-genero').value;
         const estabelecimento = document.getElementById('cad-estabelecimento').value;
         const endereco = document.getElementById('cad-endereco').value;
