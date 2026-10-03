@@ -22,8 +22,6 @@ public class AgenteVendasService {
 
     private final HttpClient httpClient;
     private final ContratoRepository contratoRepository;
-    
-    // 1. ATRIBUTO ADICIONADO
     private final UsuarioRepository usuarioRepository;
 
     private static final double CACHE_BASE_POR_MUSICO = 420.0;
@@ -36,7 +34,6 @@ public class AgenteVendasService {
         this.usuarioRepository = null;
     }
 
-    // 2. CONSTRUTOR ATUALIZADO PARA INJETAR O USUARIOREPOSITORY
     @Autowired
     public AgenteVendasService(ContratoRepository contratoRepository, UsuarioRepository usuarioRepository) {
         this.httpClient = HttpClient.newBuilder()
@@ -46,7 +43,6 @@ public class AgenteVendasService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    // 3. NOVO MÉTODO QUE BUSCA OS DADOS DO H2 PELO ID DO USUÁRIO
     public String processarAtendimentoPorUsuario(Long usuarioId, String mensagemAtual, List<MensagemDTO> historico, int qtdMusicos) {
         if (usuarioRepository == null) {
             return "[ERRO CONFIGURAÇÃO]: Repositório de usuários não foi injetado pelo Spring.";
@@ -55,12 +51,14 @@ public class AgenteVendasService {
         UsuarioEntity usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado no H2 para o ID: " + usuarioId));
 
-        Estabelecimento est = new Estabelecimento();
-        est.setNome(usuario.getNome());
-        est.setTipo(usuario.getTipoPerfil());
-        est.setEndereco(usuario.getEndereco() != null ? usuario.getEndereco() : "Não informado");
-        est.setEstiloMusicalDesejado(usuario.getGeneroMusical() != null ? usuario.getGeneroMusical() : "Geral");
-        est.setPossuiEquipamentoSom(true);
+        String nome = usuario.getNome() != null ? usuario.getNome() : "Cliente";
+        String tipo = usuario.getTipoPerfil() != null ? usuario.getTipoPerfil() : "ESTABELECIMENTO";
+        String endereco = usuario.getEndereco() != null ? usuario.getEndereco() : "Não informado";
+        double orcamentoPiso = 0.0;
+        String estilo = usuario.getGeneroMusical() != null ? usuario.getGeneroMusical() : "Geral";
+        boolean possuiSom = true;
+
+        Estabelecimento est = new Estabelecimento(nome, tipo, endereco, orcamentoPiso, estilo, possuiSom);
 
         return processarAtendimento(est, mensagemAtual, historico, qtdMusicos);
     }
@@ -78,7 +76,6 @@ public class AgenteVendasService {
         int totalIntegrantes = qtdMusicos > 0 ? qtdMusicos : 1;
         double cacheMinimoPiso = totalIntegrantes * CACHE_BASE_POR_MUSICO;
 
-        // MANTIDO MODELO GEMINI 3 FLASH PREVIEW
         String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=" + apiKey;
 
         String contextoComercial = String.format(
