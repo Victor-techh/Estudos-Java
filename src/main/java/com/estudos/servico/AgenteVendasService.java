@@ -1,45 +1,65 @@
 package com.estudos.servico;
 
 import com.estudos.dto.AtendimentoRequestDTO;
+import com.estudos.dto.MensagemDTO;
 import com.estudos.entidade.UsuarioEntity;
+import com.estudos.modelo.Estabelecimento;
 import com.estudos.repositorio.UsuarioRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @Service
 public class AgenteVendasService {
 
-    @Value("${gemini.api.key}")
+    @Value("${gemini.api.key:}")
     private String apiKey;
 
     private final UsuarioRepository usuarioRepository;
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    public AgenteVendasService() {
+        this.usuarioRepository = null;
+    }
+
+    @Autowired
     public AgenteVendasService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
     }
 
     public String processarAtendimentoPorUsuario(AtendimentoRequestDTO dto) {
-        if (dto.getUsuarioId() == null) {
+        if (dto == null) {
+            return "[ERRO]: Payload inválido.";
+        }
+        return processarAtendimentoPorUsuario(dto.getUsuarioId(), dto.getMensagem(), null, dto.getQuantidadeMusicos());
+    }
+
+    public String processarAtendimentoPorUsuario(Long usuarioId, String mensagem, List<MensagemDTO> historico, int quantidadeMusicos) {
+        if (usuarioId == null) {
             return "[ERRO]: Usuário não identificado para iniciar o atendimento.";
         }
 
-        UsuarioEntity usuario = usuarioRepository.findById(dto.getUsuarioId()).orElse(null);
-        if (usuario == null) {
+        UsuarioEntity usuario = null;
+        if (usuarioRepository != null) {
+            usuario = usuarioRepository.findById(usuarioId).orElse(null);
+        }
+
+        if (usuario == null && usuarioRepository != null) {
             return "[ERRO]: Usuário não encontrado no banco de dados.";
         }
 
-        try {
-            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey;
-
-            String contextoUsuario = String.format(
+        String contexto = "";
+        if (usuario != null) {
+            contexto = String.format(
                 "Você é o agente consultor do Cura. O cliente logado é %s, do estabelecimento '%s', localizado em '%s'. " +
                 "Gênero musical de preferência: '%s'. Responda diretamente e utilize esses dados no atendimento.",
                 usuario.getNome(),
@@ -47,6 +67,31 @@ public class AgenteVendasService {
                 usuario.getEndereco() != null ? usuario.getEndereco() : "Não informado",
                 usuario.getGeneroMusical() != null ? usuario.getGeneroMusical() : "Geral"
             );
+        }
+
+        return executarChamadaGemini(contexto, mensagem);
+    }
+
+    public String processarAtendimento(Estabelecimento estabelecimento, String mensagem, List<MensagemDTO> historico, int quantidadeMusicos) {
+        return processarAtendimento(estabelecimento, mensagem);
+    }
+
+    public String processarAtendimento(Estabelecimento estabelecimento, String mensagem) {
+        String contexto = "Você é o agente consultor do Cura.";
+        if (estabelecimento != null) {
+            contexto = String.format(
+                "Você é o agente consultor do Cura. O cliente é '%s', localizado em '%s'.",
+                estabelecimento.getNome() != null ? estabelecimento.getNome() : "Não informado",
+                estabelecimento.getEndereco() != null ? estabelecimento.getEndereco() : "Não informado"
+            );
+        }
+        return executarChamadaGemini(contexto, mensagem);
+    }
+
+    private String executarChamadaGemini(String contexto, String mensagem) {
+        try {
+            String key = (apiKey != null && !apiKey.isEmpty()) ? apiKey : System.getenv("GEMINI_API_KEY");
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + key;
 
             ObjectNode rootNode = objectMapper.createObjectNode();
             ArrayNode contentsNode = rootNode.putArray("contents");
@@ -56,7 +101,7 @@ public class AgenteVendasService {
             ArrayNode partsNode = contentObj.putArray("parts");
 
             ObjectNode partObj = partsNode.addObject();
-            partObj.put("text", contextoUsuario + "\n\nMensagem do cliente: " + dto.getMensagem());
+            partObj.put("text", contexto + "\n\nMensagem do cliente: " + mensagem);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
