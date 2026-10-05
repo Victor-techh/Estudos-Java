@@ -25,9 +25,6 @@ public class AgenteVendasService {
     @Value("${gemini.api.key:}")
     private String apiKey;
 
-    @Value("${gemini.api.model:gemini-3.8-flash}")
-    private String modelName;
-
     private final UsuarioRepository usuarioRepository;
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -99,50 +96,46 @@ public class AgenteVendasService {
             return "[ERRO CONFIGURAÇÃO]: A variável GEMINI_API_KEY não foi encontrada no servidor.";
         }
 
-        String model = (modelName != null && !modelName.trim().isEmpty()) ? modelName : "gemini-3.8-flash";
+        String[] modelos = {"gemini-3.8-flash", "gemini-1.5-flash-latest", "gemini-2.0-flash"};
+        String ultimoErro = "";
 
-        try {
-            String url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + key;
+        for (String model : modelos) {
+            try {
+                String url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + key;
 
-            ObjectNode rootNode = objectMapper.createObjectNode();
-            ArrayNode contentsNode = rootNode.putArray("contents");
+                ObjectNode rootNode = objectMapper.createObjectNode();
+                ArrayNode contentsNode = rootNode.putArray("contents");
 
-            ObjectNode contentObj = contentsNode.addObject();
-            contentObj.put("role", "user");
-            ArrayNode partsNode = contentObj.putArray("parts");
+                ObjectNode contentObj = contentsNode.addObject();
+                contentObj.put("role", "user");
+                ArrayNode partsNode = contentObj.putArray("parts");
 
-            ObjectNode partObj = partsNode.addObject();
-            partObj.put("text", contexto + "\n\nMensagem do cliente: " + mensagem);
+                ObjectNode partObj = partsNode.addObject();
+                partObj.put("text", contexto + "\n\nMensagem do cliente: " + mensagem);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
 
-            HttpEntity<String> request = new HttpEntity<>(rootNode.toString(), headers);
+                HttpEntity<String> request = new HttpEntity<>(rootNode.toString(), headers);
 
-            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+                ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
 
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                JsonNode jsonResposta = objectMapper.readTree(response.getBody());
-                return jsonResposta.path("candidates").get(0).path("content").path("parts").get(0).path("text").asText();
+                if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                    JsonNode jsonResposta = objectMapper.readTree(response.getBody());
+                    return jsonResposta.path("candidates").get(0).path("content").path("parts").get(0).path("text").asText();
+                }
+
+            } catch (HttpStatusCodeException e) {
+                System.err.println("=== FALHA NO MODELO " + model + " (" + e.getRawStatusCode() + ") ===");
+                ultimoErro = "[ERRO API " + e.getRawStatusCode() + "]: " + e.getResponseBodyAsString();
+            } catch (ResourceAccessException e) {
+                System.err.println("=== TIMEOUT NO MODELO " + model + " ===");
+                ultimoErro = "[ERRO CONEXÃO]: O servidor demorou para responder.";
+            } catch (Exception e) {
+                ultimoErro = "[ERRO INTERNO]: " + e.getMessage();
             }
-
-            return "[ERRO DESCONHECIDO]: Resposta sem conteúdo retornada pela IA.";
-
-        } catch (HttpStatusCodeException e) {
-            System.err.println("=== ERRO DA API DO GEMINI ===");
-            System.err.println("Status Code: " + e.getStatusCode());
-            System.err.println("Resposta Google: " + e.getResponseBodyAsString());
-            return "[ERRO API " + e.getRawStatusCode() + "]: " + e.getResponseBodyAsString();
-
-        } catch (ResourceAccessException e) {
-            System.err.println("=== ERRO DE CONEXÃO/TIMEOUT ===");
-            e.printStackTrace();
-            return "[ERRO CONEXÃO]: O servidor do Gemini demorou para responder. Tente novamente.";
-
-        } catch (Exception e) {
-            System.err.println("=== EXCEÇÃO INTERNA ===");
-            e.printStackTrace();
-            return "[ERRO INTERNO]: " + e.getMessage();
         }
+
+        return ultimoErro;
     }
 }
