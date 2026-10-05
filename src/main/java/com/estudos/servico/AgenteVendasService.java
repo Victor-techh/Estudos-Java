@@ -25,7 +25,7 @@ public class AgenteVendasService {
     @Value("${gemini.api.key:}")
     private String apiKey;
 
-    @Value("${gemini.api.model:gemini-2.5-flash}")
+    @Value("${gemini.api.model:gemini-3.8-flash}")
     private String modelName;
 
     private final UsuarioRepository usuarioRepository;
@@ -99,7 +99,7 @@ public class AgenteVendasService {
             return "[ERRO CONFIGURAÇÃO]: A variável GEMINI_API_KEY não foi encontrada no servidor.";
         }
 
-        String model = (modelName != null && !modelName.trim().isEmpty()) ? modelName : "gemini-2.5-flash";
+        String model = (modelName != null && !modelName.trim().isEmpty()) ? modelName : "gemini-3.8-flash";
 
         try {
             String url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + key;
