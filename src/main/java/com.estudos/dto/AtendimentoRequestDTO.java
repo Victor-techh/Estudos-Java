@@ -5,19 +5,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AtendimentoRequestDTO {
+    private Long usuarioId; // ATRIBUTO ADICIONADO PARA O H2
     private Estabelecimento estabelecimento;
     private String mensagem;
     private List<MensagemDTO> historico = new ArrayList<>();
-    private int quantidadeMusicos = 1; // Padrão: Solo
+    private int quantidadeMusicos = 1;
 
     public AtendimentoRequestDTO() {}
 
-    public AtendimentoRequestDTO(Estabelecimento estabelecimento, String mensagem, List<MensagemDTO> historico, int quantidadeMusicos) {
+    public AtendimentoRequestDTO(Long usuarioId, Estabelecimento estabelecimento, String mensagem, List<MensagemDTO> historico, int quantidadeMusicos) {
+        this.usuarioId = usuarioId;
         this.estabelecimento = estabelecimento;
         this.mensagem = mensagem;
         this.historico = historico != null ? historico : new ArrayList<>();
         this.quantidadeMusicos = quantidadeMusicos > 0 ? quantidadeMusicos : 1;
     }
+
+    public Long getUsuarioId() { return usuarioId; }
+    public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
 
     public Estabelecimento getEstabelecimento() { return estabelecimento; }
     public void setEstabelecimento(Estabelecimento estabelecimento) { this.estabelecimento = estabelecimento; }
