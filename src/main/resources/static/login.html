@@ -95,9 +95,14 @@
             const data = await response.json();
 
             if (response.ok) {
-                localStorage.setItem('usuarioId', data.id);
-                localStorage.setItem('usuarioNome', data.nome);
-                localStorage.setItem('usuarioPerfil', data.tipoPerfil);
+                const idFinal = data.id || data.usuarioId;
+                if (!idFinal) {
+                    msgDiv.innerText = 'Erro: Servidor não retornou ID de usuário válido.';
+                    return;
+                }
+                localStorage.setItem('usuarioId', idFinal);
+                localStorage.setItem('usuarioNome', data.nome || '');
+                localStorage.setItem('usuarioPerfil', data.tipoPerfil || '');
                 window.location.href = '/painel.html';
             } else {
                 msgDiv.innerText = data.mensagem || 'Credenciais inválidas.';
