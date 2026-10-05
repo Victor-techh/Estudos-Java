@@ -65,10 +65,9 @@
     const usuarioId = localStorage.getItem('usuarioId');
     const usuarioNome = localStorage.getItem('usuarioNome');
     
-    // Array para manter o contexto exigido pelo DTO MensagemDTO no backend
     let historicoConversa = [];
 
-    if (!usuarioId) {
+    if (!usuarioId || usuarioId === 'undefined' || usuarioId === 'null') {
         window.location.href = '/login.html';
     } else {
         document.getElementById('nome-usuario').innerText = 'Usuário: ' + usuarioNome + ' | ';
@@ -89,17 +88,23 @@
         const texto = input.value.trim();
         if (!texto) return;
 
+        const idArmazenado = localStorage.getItem('usuarioId');
+        if (!idArmazenado || idArmazenado === 'undefined' || idArmazenado === 'null') {
+            alert('Sessão expirada. Clique em Sair e faça login novamente.');
+            window.location.href = '/login.html';
+            return;
+        }
+
         adicionarMensagemNaTela(texto, 'user');
         input.value = '';
 
-        // Monta o payload conforme a classe SolicitacaoChat do AgenteController
         const payload = {
+            usuarioId: Number(idArmazenado),
             mensagem: texto,
-            qtdMusicos: 1,
+            quantidadeMusicos: 1,
             historico: historicoConversa
         };
 
-        // Atualiza o histórico local antes do envio
         historicoConversa.push({ role: 'user', texto: texto });
 
         try {
@@ -111,11 +116,9 @@
 
             const respostaTexto = await response.text();
             
-            // Adiciona a resposta da IA ao histórico local
             historicoConversa.push({ role: 'model', texto: respostaTexto });
             adicionarMensagemNaTela(respostaTexto, 'model');
 
-            // Verifica o gatilho do SINDIMUCE / Lei Estadual nº 15.112/2012
             if (respostaTexto.includes('Negócio fechado!')) {
                 document.getElementById('alerta-fechamento').style.display = 'block';
                 salvarContratoAutomatico(respostaTexto);
