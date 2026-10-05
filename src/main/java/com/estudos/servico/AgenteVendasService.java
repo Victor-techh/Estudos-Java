@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -89,8 +91,12 @@ public class AgenteVendasService {
     }
 
     private String executarChamadaGemini(String contexto, String mensagem) {
+        String key = (apiKey != null && !apiKey.trim().isEmpty()) ? apiKey : System.getenv("GEMINI_API_KEY");
+        if (key == null || key.trim().isEmpty()) {
+            return "[ERRO CONFIGURAÇÃO]: A variável GEMINI_API_KEY não foi encontrada no servidor.";
+        }
+
         try {
-            String key = (apiKey != null && !apiKey.isEmpty()) ? apiKey : System.getenv("GEMINI_API_KEY");
             String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + key;
 
             ObjectNode rootNode = objectMapper.createObjectNode();
@@ -113,17 +119,25 @@ public class AgenteVendasService {
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 JsonNode jsonResposta = objectMapper.readTree(response.getBody());
                 return jsonResposta.path("candidates").get(0).path("content").path("parts").get(0).path("text").asText();
-            } else {
-                System.err.println("=== ERRO RESPOSTA GEMINI ===");
-                System.err.println("Status: " + response.getStatusCode());
-                System.err.println("Body: " + response.getBody());
-                return "[ERRO SERVIDOR EXTERNO " + response.getStatusCodeValue() + "]: Não foi possível processar a resposta da IA.";
             }
 
-        } catch (Exception e) {
-            System.err.println("=== EXCEÇÃO NA CHAMADA DO GEMINI ===");
+            return "[ERRO DESCONHECIDO]: Resposta sem conteúdo retornada pela IA.";
+
+        } catch (HttpStatusCodeException e) {
+            System.err.println("=== ERRO DA API DO GEMINI ===");
+            System.err.println("Status Code: " + e.getStatusCode());
+            System.err.println("Resposta Google: " + e.getResponseBodyAsString());
+            return "[ERRO API " + e.getRawStatusCode() + "]: " + e.getResponseBodyAsString();
+
+        } catch (ResourceAccessException e) {
+            System.err.println("=== ERRO DE CONEXÃO/TIMEOUT ===");
             e.printStackTrace();
-            return "[ERRO TIMEOUT]: Falha ao comunicar com a API do Gemini. Verifique os logs do servidor.";
+            return "[ERRO CONEXÃO]: O servidor do Gemini demorou para responder. Tente novamente.";
+
+        } catch (Exception e) {
+            System.err.println("=== EXCEÇÃO INTERNA ===");
+            e.printStackTrace();
+            return "[ERRO INTERNO]: " + e.getMessage();
         }
     }
 }
