@@ -1,121 +1,146 @@
 package com.estudos.servico;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
+import com.estudos.dto.AtendimentoRequestDTO;
 import com.estudos.dto.MensagemDTO;
+import com.estudos.entidade.UsuarioEntity;
 import com.estudos.modelo.Estabelecimento;
+import com.estudos.repositorio.UsuarioRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Service
 public class AgenteVendasService {
 
-    private final String apiKey = System.getenv("GEMINI_API_KEY");
-    private final String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=" + apiKey;
+    @Value("${gemini.api.key:}")
+    private String apiKey;
+
+    private final UsuarioRepository usuarioRepository;
     private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // --- MÉTODOS DE SOBRECARGA (COMPATIBILIDADE RETROATIVA) ---
-
-    // Compatibilidade para chamadas legadas com 2 parâmetros
-    public String processarAtendimento(Estabelecimento est, String mensagem) {
-        return processarAtendimento(est, mensagem, Collections.emptyList(), 1, Collections.emptyList());
+    public AgenteVendasService() {
+        this.usuarioRepository = null;
     }
 
-    // Compatibilidade para chamadas legadas com 4 parâmetros
-    public String processarAtendimento(Estabelecimento est, String mensagem, List<MensagemDTO> historico, int qtdMusicos) {
-        return processarAtendimento(est, mensagem, historico, qtdMusicos, Collections.emptyList());
+    @Autowired
+    public AgenteVendasService(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
     }
 
-    // --- MÉTODO PRINCIPAL (5 PARÂMETROS) ---
-    public String processarAtendimento(
-            Estabelecimento est, 
-            String mensagemAtual, 
-            List<MensagemDTO> historico, 
-            int qtdMusicos,
-            List<String> artistasCadastrados) {
-
-        String listaArtistasStr = (artistasCadastrados == null || artistasCadastrados.isEmpty()) 
-                ? "Nenhum artista cadastrado na base no momento." 
-                : String.join(", ", artistasCadastrados);
-
-        int totalIntegrantes = Math.max(qtdMusicos, 1);
-        double cacheMinimoPiso = totalIntegrantes * 420.0;
-
-        String contextoComercial = String.format(
-            "Você é um agente de vendas e consultor artístico comercial para apresentações ao vivo no Ceará.\n" +
-            "Seu papel é negociar contratos de forma consultiva, pragmática, concisa e orientada a soluções.\n\n" +
-            "DADOS DA NEGOCIAÇÃO E PLATAFORMA:\n" +
-            "- Contratante: %s (%s)\n" +
-            "- Endereço: %s\n" +
-            "- Formação Atual Solicitada: %d músico(s)\n" +
-            "- Estilo Base: %s\n" +
-            "- Estrutura de Som: %b\n" +
-            "- ARTISTAS DISPONÍVEIS NA BASE (H2): %s\n" +
-            "- Piso Mínimo Inegociável (SINDIMUCE / Lei Estadual nº 15.112/2012): R$ %.2f (R$ 420,00 por músico).\n\n" +
-            "DIRETRIZES DE NEGOCIAÇÃO E TRATAMENTO DE OBJEÇÕES:\n" +
-            "1. PISO INVIOLÁVEL: Nunca aceite valores abaixo de R$ %.2f para a formação solicitada. Recuse citando a Lei Estadual nº 15.112/2012 e a tabela do SINDIMUCE. Se o contratante tiver orçamento menor, sugira reduzir o formato e pergunte se ele aceita.\n" +
-            "2. RECOMENDAÇÃO DE ARTISTAS: Quando solicitado indicação de nomes, cite prioritariamente os artistas disponíveis na base informada acima.\n" +
-            "3. CONTRAPROPOSTAS E PERGUNTAS: Ao sugerir adaptação de repertório, redução de músicos ou nova data, finalize APENAS com a pergunta de validação. É ESTRITAMENTE PROIBIDO usar o termo 'Negócio fechado!' enquanto aguarda a confirmação do contratante.\n" +
-            "4. FECHAMENTO DEFINITIVO: Use a expressão exata 'Negócio fechado!' SOMENTE quando o contratante concordar expressamente (ex: 'sim', 'aceito', 'fechado') ou fizer uma oferta direta igual ou superior ao piso. Após a frase, resuma brevemente: Formação, Valor final e Endereço.",
-            est.getNome(), est.getTipo(), est.getEndereco(), totalIntegrantes, est.getEstiloMusicalDesejado(), est.isPossuiEquipamentoSom(),
-            listaArtistasStr, cacheMinimoPiso, cacheMinimoPiso
-        );
-
-        try {
-            Map<String, Object> requestBody = new HashMap<>();
-            
-            Map<String, Object> systemInstruction = new HashMap<>();
-            systemInstruction.put("parts", List.of(Map.of("text", contextoComercial)));
-            requestBody.put("system_instruction", systemInstruction);
-
-            List<Map<String, Object>> contents = new ArrayList<>();
-            
-            if (historico != null) {
-                for (MensagemDTO msg : historico) {
-                    Map<String, Object> contentNode = new HashMap<>();
-                    contentNode.put("role", msg.getRole());
-                    contentNode.put("parts", List.of(Map.of("text", msg.getTexto())));
-                    contents.add(contentNode);
-                }
-            }
-
-            Map<String, Object> mensagemAtualNode = new HashMap<>();
-            mensagemAtualNode.put("role", "user");
-            mensagemAtualNode.put("parts", List.of(Map.of("text", mensagemAtual)));
-            contents.add(mensagemAtualNode);
-
-            requestBody.put("contents", contents);
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-
-            ResponseEntity<Map> response = restTemplate.postForEntity(apiUrl, entity, Map.class);
-
-            if (response.getBody() != null && response.getBody().containsKey("candidates")) {
-                List<Map<String, Object>> candidates = (List<Map<String, Object>>) response.getBody().get("candidates");
-                if (!candidates.isEmpty()) {
-                    Map<String, Object> candidate = candidates.get(0);
-                    Map<String, Object> content = (Map<String, Object>) candidate.get("content");
-                    List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
-                    return (String) parts.get(0).get("text");
-                }
-            }
-
-            return "Não foi possível gerar a resposta no momento.";
-
-        } catch (Exception e) {
-            System.err.println("Erro na comunicação com a API do Gemini: " + e.getMessage());
-            return "Erro temporário ao processar negociação com o agente.";
+    public String processarAtendimentoPorUsuario(AtendimentoRequestDTO dto) {
+        if (dto == null) {
+            return "[ERRO]: Payload inválido.";
         }
+        return processarAtendimentoPorUsuario(dto.getUsuarioId(), dto.getMensagem(), null, dto.getQuantidadeMusicos());
+    }
+
+    public String processarAtendimentoPorUsuario(Long usuarioId, String mensagem, List<MensagemDTO> historico, int quantidadeMusicos) {
+        if (usuarioId == null) {
+            return "[ERRO]: Usuário não identificado para iniciar o atendimento.";
+        }
+
+        UsuarioEntity usuario = null;
+        if (usuarioRepository != null) {
+            usuario = usuarioRepository.findById(usuarioId).orElse(null);
+        }
+
+        if (usuario == null && usuarioRepository != null) {
+            return "[ERRO]: Usuário não encontrado no banco de dados.";
+        }
+
+        String contexto = "";
+        if (usuario != null) {
+            contexto = String.format(
+                "Você é o agente consultor do Cura. O cliente logado é %s, do estabelecimento '%s', localizado em '%s'. " +
+                "Gênero musical de preferência: '%s'. Responda diretamente e utilize esses dados no atendimento.",
+                usuario.getNome(),
+                usuario.getEstabelecimento() != null ? usuario.getEstabelecimento() : "Não informado",
+                usuario.getEndereco() != null ? usuario.getEndereco() : "Não informado",
+                usuario.getGeneroMusical() != null ? usuario.getGeneroMusical() : "Geral"
+            );
+        }
+
+        return executarChamadaGemini(contexto, mensagem);
+    }
+
+    public String processarAtendimento(Estabelecimento estabelecimento, String mensagem, List<MensagemDTO> historico, int quantidadeMusicos) {
+        return processarAtendimento(estabelecimento, mensagem);
+    }
+
+    public String processarAtendimento(Estabelecimento estabelecimento, String mensagem) {
+        String contexto = "Você é o agente consultor do Cura.";
+        if (estabelecimento != null) {
+            contexto = String.format(
+                "Você é o agente consultor do Cura. O cliente é '%s', localizado em '%s'.",
+                estabelecimento.getNome() != null ? estabelecimento.getNome() : "Não informado",
+                estabelecimento.getEndereco() != null ? estabelecimento.getEndereco() : "Não informado"
+            );
+        }
+        return executarChamadaGemini(contexto, mensagem);
+    }
+
+    private String executarChamadaGemini(String contexto, String mensagem) {
+        String key = (apiKey != null && !apiKey.trim().isEmpty()) ? apiKey : System.getenv("GEMINI_API_KEY");
+        if (key == null || key.trim().isEmpty()) {
+            return "[ERRO CONFIGURAÇÃO]: A variável GEMINI_API_KEY não foi encontrada no servidor.";
+        }
+
+        String[] modelos = {"gemini-3.8-flash", "gemini-1.5-flash-latest", "gemini-2.0-flash"};
+        String ultimoErro = "";
+
+        for (String model : modelos) {
+            try {
+                String url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + key;
+
+                ObjectNode rootNode = objectMapper.createObjectNode();
+                ArrayNode contentsNode = rootNode.putArray("contents");
+
+                ObjectNode contentObj = contentsNode.addObject();
+                contentObj.put("role", "user");
+                ArrayNode partsNode = contentObj.putArray("parts");
+
+                ObjectNode partObj = partsNode.addObject();
+                partObj.put("text", contexto + "\n\nMensagem do cliente: " + mensagem);
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                HttpEntity<String> request = new HttpEntity<>(rootNode.toString(), headers);
+
+                ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+
+                if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                    JsonNode jsonResposta = objectMapper.readTree(response.getBody());
+                    return jsonResposta.path("candidates").get(0).path("content").path("parts").get(0).path("text").asText();
+                }
+
+            } catch (HttpStatusCodeException e) {
+                System.err.println("=== FALHA NO MODELO " + model + " (" + e.getRawStatusCode() + ") ===");
+                ultimoErro = "[ERRO API " + e.getRawStatusCode() + "]: " + e.getResponseBodyAsString();
+            } catch (ResourceAccessException e) {
+                System.err.println("=== TIMEOUT NO MODELO " + model + " ===");
+                ultimoErro = "[ERRO CONEXÃO]: O servidor demorou para responder.";
+            } catch (Exception e) {
+                ultimoErro = "[ERRO INTERNO]: " + e.getMessage();
+            }
+        }
+
+        return ultimoErro;
     }
 }
