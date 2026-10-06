@@ -1,25 +1,26 @@
 package com.estudos.controller;
 
-import com.estudos.dto.AtendimentoRequestDTO;
-import com.estudos.servico.AgenteVendasService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Controller REST responsável por expor o endpoint de chat da negociação.
- */
+import com.estudos.dto.AtendimentoRequestDTO;
+import com.estudos.repositorio.UsuarioRepository;
+import com.estudos.servico.AgenteVendasService;
+
 @RestController
 @RequestMapping("/api/agente")
 public class AgenteController {
 
     private final AgenteVendasService agenteVendasService;
+    private final UsuarioRepository usuarioRepository;
 
-    public AgenteController(AgenteVendasService agenteVendasService) {
+    public AgenteController(AgenteVendasService agenteVendasService, UsuarioRepository usuarioRepository) {
         this.agenteVendasService = agenteVendasService;
+        this.usuarioRepository = usuarioRepository;
     }
 
-    /**
-     * Recebe as mensagens da interface web e repassa ao serviço comercial.
-     */
     @PostMapping("/chat")
     public String conversar(@RequestBody AtendimentoRequestDTO request) {
         if (request.getUsuarioId() != null) {
