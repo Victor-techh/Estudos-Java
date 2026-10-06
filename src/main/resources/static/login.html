@@ -1,374 +1,554 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cura - Autenticação, Negociação e Gestão Artística</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>
+      Cura - Autenticação, Negociação e Gestão Artística
+    </title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f4f6f8;
-            color: #1f2937;
-            -webkit-tap-highlight-color: transparent;
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f4f6f8;
+        color: #1f2937;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .serif-title {
+        font-family: "Playfair Display", serif;
+      }
+
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #edf2f7;
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+
+      .fade-in {
+        animation: fadeIn 0.35s
+          cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
         }
 
-        .serif-title {
-            font-family: 'Playfair Display', serif;
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
-
-        ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #edf2f7;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
-        .fade-in {
-            animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(6px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body class="min-h-[100dvh] flex flex-col bg-[#0D1B2A] text-white overflow-x-hidden">
-
-    <div id="view-auth" class="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 min-h-[100dvh]">
+  <body
+    class="min-h-[100dvh] flex flex-col bg-[#0D1B2A] text-white overflow-x-hidden"
+  >
+    <div
+      id="view-auth"
+      class="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 min-h-[100dvh]"
+    >
+      <div
+        class="w-full max-w-5xl bg-white rounded-3xl shadow-2xl border border-slate-200/80 grid grid-cols-1 lg:grid-cols-12 overflow-hidden my-auto"
+      >
         <div
-            class="w-full max-w-5xl bg-white rounded-3xl shadow-2xl border border-slate-200/80 grid grid-cols-1 lg:grid-cols-12 overflow-hidden my-auto">
+          class="lg:col-span-5 bg-[#0D1B2A] text-white p-8 sm:p-10 flex flex-col justify-between relative overflow-hidden"
+        >
+          <div
+            class="absolute -right-12 -bottom-12 w-48 h-48 rounded-full bg-[#00B4D8]/15 blur-2xl pointer-events-none"
+          ></div>
+          <div>
+            <div class="flex items-center gap-3 mb-6">
+              <div>
+                <h1
+                  class="serif-title text-2xl font-bold tracking-wide text-white"
+                >
+                  CURA
+                </h1>
+                <p
+                  class="text-[10px] text-[#00B4D8] tracking-widest uppercase font-light"
+                >
+                  Gestão Artística & Inteligência Artificial
+                </p>
+              </div>
+            </div>
+            <h2
+              class="serif-title text-2xl sm:text-3xl font-normal leading-snug text-slate-100 mb-4"
+            >
+              Conectando arte, contratos e transparência
+              cultural.
+            </h2>
+            <p
+              class="text-xs sm:text-sm text-slate-300 font-light leading-relaxed"
+            >
+              Plataforma inteligente alinhada à Lei Estadual
+              nº 15.112/2012 para cotação, negociação e
+              formalização de apresentações artísticas com
+              segurança jurídica.
+            </p>
+          </div>
+
+          <div
+            class="mt-8 pt-6 border-t border-white/10 text-xs text-slate-400 flex items-center justify-between"
+          >
+            <span>SINDIMUCE / Curadoria IA</span>
+            <span class="text-[#2EC4B6] font-medium"
+              >Versão 2.0.1</span
+            >
+          </div>
+        </div>
+
+        <div
+          class="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-center bg-white"
+        >
+          <div
+            id="form-login-container"
+            class="space-y-6 fade-in"
+          >
+            <div>
+              <h3
+                class="serif-title text-2xl font-bold text-slate-900 mb-1"
+              >
+                Bem-vindo de volta
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-500">
+                Entre com suas credenciais para acessar o
+                painel de negociação.
+              </p>
+            </div>
 
             <div
-                class="lg:col-span-5 bg-[#0D1B2A] text-white p-8 sm:p-10 flex flex-col justify-between relative overflow-hidden">
-                <div
-                    class="absolute -right-12 -bottom-12 w-48 h-48 rounded-full bg-[#00B4D8]/15 blur-2xl pointer-events-none">
+              id="erro-login"
+              class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium"
+            ></div>
+
+            <form
+              onsubmit="realizarLogin(event)"
+              class="space-y-4"
+            >
+              <div>
+                <label
+                  class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5"
+                  >E-mail de Acesso</label
+                >
+                <input
+                  type="email"
+                  id="login-email"
+                  required
+                  placeholder="seu.email@exemplo.com"
+                  class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5"
+                  >Senha</label
+                >
+                <input
+                  type="password"
+                  id="login-senha"
+                  required
+                  placeholder="••••••••"
+                  class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
+                />
+              </div>
+              <button
+                type="submit"
+                class="w-full py-3.5 bg-[#0D1B2A] text-[#00B4D8] hover:bg-[#1B263B] rounded-xl font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2"
+              >
+                <span>Acessar Painel</span>
+                <span>→</span>
+              </button>
+            </form>
+
+            <div class="text-center pt-2">
+              <p class="text-xs text-slate-500">
+                Não possui uma conta?
+                <button
+                  onclick="redirectToRegister()"
+                  class="text-[#E05A47] font-semibold hover:underline ml-1"
+                >
+                  Cadastre-se aqui
+                </button>
+              </p>
+            </div>
+          </div>
+
+          <!-- ABA CADASTRO -->
+          <div
+            id="form-cadastro-container"
+            class="space-y-6 fade-in"
+            style="display: none"
+          >
+            <div>
+              <h3
+                class="serif-title text-2xl font-bold text-slate-900 mb-1"
+              >
+                Criar Nova Conta
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-500">
+                Cadastre seu estabelecimento ou perfil
+                artístico para iniciar negociações.
+              </p>
+            </div>
+
+            <div
+              id="erro-cadastro"
+              class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium"
+            ></div>
+            <div
+              id="sucesso-cadastro"
+              class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium"
+            ></div>
+
+            <form
+              onsubmit="realizarCadastro(event)"
+              class="space-y-4"
+            >
+              <div
+                class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+              >
+                <div>
+                  <label
+                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
+                    >Nome do Estabelecimento /
+                    Artista</label
+                  >
+                  <input
+                    type="text"
+                    id="cad-nome"
+                    required
+                    placeholder="Ex: Bar do Jazz / Banda Cura"
+                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
+                  />
                 </div>
                 <div>
-                    <div class="flex items-center gap-3 mb-6">
-                        <div>
-                            <h1 class="serif-title text-2xl font-bold tracking-wide text-white">CURA</h1>
-                            <p class="text-[10px] text-[#00B4D8] tracking-widest uppercase font-light">Gestão Artística
-                                & Inteligência Artificial</p>
-                        </div>
-                    </div>
-                    <h2 class="serif-title text-2xl sm:text-3xl font-normal leading-snug text-slate-100 mb-4">
-                        Conectando arte, contratos e transparência cultural.
-                    </h2>
-                    <p class="text-xs sm:text-sm text-slate-300 font-light leading-relaxed">
-                        Plataforma inteligente alinhada à Lei Estadual nº 15.112/2012 para cotação, negociação e
-                        formalização de apresentações artísticas com segurança jurídica.
-                    </p>
+                  <label
+                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
+                    >E-mail</label
+                  >
+                  <input
+                    type="email"
+                    id="cad-email"
+                    required
+                    placeholder="contato@exemplo.com"
+                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
+                  />
                 </div>
+              </div>
+              <div
+                class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+              >
+                <div>
+                  <label
+                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
+                    >Senha</label
+                  >
+                  <input
+                    type="password"
+                    id="cad-senha"
+                    required
+                    placeholder="Mínimo 6 caracteres"
+                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
+                    >Perfil</label
+                  >
+                  <select
+                    id="cad-tipo"
+                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
+                  >
+                    <option value="ESTABELECIMENTO">
+                      Estabelecimento / Contratante
+                    </option>
+                    <option value="ARTISTA">
+                      Artista / Banda
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <button
+                type="submit"
+                class="w-full py-3.5 bg-[#0D1B2A] text-[#00B4D8] hover:bg-[#1B263B] rounded-xl font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2"
+              >
+                <span>Concluir Cadastro</span>
+              </button>
+            </form>
 
-                <div
-                    class="mt-8 pt-6 border-t border-white/10 text-xs text-slate-400 flex items-center justify-between">
-                    <span>SINDIMUCE / Curadoria IA</span>
-                    <span class="text-[#2EC4B6] font-medium">Versão 2.0.1</span>
-                </div>
+            <div class="text-center pt-2">
+              <p class="text-xs text-slate-500">
+                Já possui uma conta?
+                <button
+                  onclick="alternarTelaAuth('login')"
+                  class="text-[#E05A47] font-semibold hover:underline ml-1"
+                >
+                  Faça login
+                </button>
+              </p>
             </div>
-
-            <div class="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-center bg-white">
-
-                <div id="form-login-container" class="space-y-6 fade-in">
-                    <div>
-                        <h3 class="serif-title text-2xl font-bold text-slate-900 mb-1">Bem-vindo de volta</h3>
-                        <p class="text-xs sm:text-sm text-slate-500">Entre com suas credenciais para acessar o painel de
-                            negociação.</p>
-                    </div>
-
-                    <div id="erro-login"
-                        class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
-                    </div>
-
-                    <form onsubmit="realizarLogin(event)" class="space-y-4">
-                        <div>
-                            <label
-                                class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">E-mail
-                                de Acesso</label>
-                            <input type="email" id="login-email" required placeholder="seu.email@exemplo.com"
-                                class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm">
-                        </div>
-                        <div>
-                            <label
-                                class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Senha</label>
-                            <input type="password" id="login-senha" required placeholder="••••••••"
-                                class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm">
-                        </div>
-                        <button type="submit"
-                            class="w-full py-3.5 bg-[#0D1B2A] text-[#00B4D8] hover:bg-[#1B263B] rounded-xl font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2">
-                            <span>Acessar Painel</span>
-                            <span>→</span>
-                        </button>
-                    </form>
-
-                    <div class="text-center pt-2">
-                        <p class="text-xs text-slate-500">
-                            Não possui uma conta?
-                            <button onclick="redirectToRegister()"
-                                class="text-[#E05A47] font-semibold hover:underline ml-1">Cadastre-se aqui</button>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- ABA CADASTRO -->
-                <div id="form-cadastro-container" class="space-y-6 fade-in" style="display: none;">
-                    <div>
-                        <h3 class="serif-title text-2xl font-bold text-slate-900 mb-1">Criar Nova Conta</h3>
-                        <p class="text-xs sm:text-sm text-slate-500">Cadastre seu estabelecimento ou perfil artístico
-                            para iniciar negociações.</p>
-                    </div>
-
-                    <div id="erro-cadastro"
-                        class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
-                    </div>
-                    <div id="sucesso-cadastro"
-                        class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium">
-                    </div>
-
-                    <form onsubmit="realizarCadastro(event)" class="space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label
-                                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Nome
-                                    do Estabelecimento / Artista</label>
-                                <input type="text" id="cad-nome" required placeholder="Ex: Bar do Jazz / Banda Cura"
-                                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm">
-                            </div>
-                            <div>
-                                <label
-                                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">E-mail</label>
-                                <input type="email" id="cad-email" required placeholder="contato@exemplo.com"
-                                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label
-                                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Senha</label>
-                                <input type="password" id="cad-senha" required placeholder="Mínimo 6 caracteres"
-                                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm">
-                            </div>
-                            <div>
-                                <label
-                                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Perfil</label>
-                                <select id="cad-tipo"
-                                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm">
-                                    <option value="ESTABELECIMENTO">Estabelecimento / Contratante</option>
-                                    <option value="ARTISTA">Artista / Banda</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit"
-                            class="w-full py-3.5 bg-[#0D1B2A] text-[#00B4D8] hover:bg-[#1B263B] rounded-xl font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2">
-                            <span>Concluir Cadastro</span>
-                        </button>
-                    </form>
-
-                    <div class="text-center pt-2">
-                        <p class="text-xs text-slate-500">
-                            Já possui uma conta?
-                            <button onclick="alternarTelaAuth('login')"
-                                class="text-[#E05A47] font-semibold hover:underline ml-1">Faça login</button>
-                        </p>
-                    </div>
-                </div>
-
-            </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- TELA PRINCIPAL (PAINEL DE NEGOCIAÇÃO E GESTÃO) -->
-    <div id="view-dashboard" class="flex-1 flex flex-col h-[100dvh] overflow-hidden" style="display: none;">
+    <div
+      id="view-dashboard"
+      class="flex-1 flex flex-col h-[100dvh] overflow-hidden"
+      style="display: none"
+    >
+      <!-- HEADER SUPERIOR ELEGANTE -->
+      <header
+        class="bg-[#0D1B2A] text-white px-4 sm:px-6 py-3.5 flex justify-between items-center shadow-md border-b border-[#00B4D8]/30 flex-shrink-0 z-20"
+      >
+        <div class="flex items-center gap-3">
+          <div>
+            <h1
+              class="serif-title text-lg sm:text-xl font-bold tracking-wide text-white"
+            >
+              CURA
+            </h1>
+            <p
+              class="text-[10px] sm:text-[11px] text-[#00B4D8] tracking-wider uppercase font-light"
+            >
+              Gestão Artística & Inteligência Artificial
+            </p>
+          </div>
+        </div>
 
-        <!-- HEADER SUPERIOR ELEGANTE -->
-        <header
-            class="bg-[#0D1B2A] text-white px-4 sm:px-6 py-3.5 flex justify-between items-center shadow-md border-b border-[#00B4D8]/30 flex-shrink-0 z-20">
-            <div class="flex items-center gap-3">
-                <div>
-                    <h1 class="serif-title text-lg sm:text-xl font-bold tracking-wide text-white">CURA</h1>
-                    <p class="text-[10px] sm:text-[11px] text-[#00B4D8] tracking-wider uppercase font-light">Gestão
-                        Artística & Inteligência Artificial</p>
-                </div>
+        <div class="flex items-center gap-3">
+          <div
+            class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 border border-white/15 text-xs"
+          >
+            <span
+              class="w-2 h-2 rounded-full bg-[#2EC4B6] animate-pulse"
+            ></span>
+            <span
+              id="nome-usuario"
+              class="text-slate-200 font-medium"
+              >Carregando...</span
+            >
+          </div>
+          <button
+            onclick="logout()"
+            class="px-3.5 py-2 bg-[#E05A47] hover:bg-[#C94836] text-white rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-sm"
+          >
+            <span>Sair</span>
+            <span>🚪</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- CONTAINER PRINCIPAL (GRID RESPONSIVO / VERTICAL STACK EM MOBILE) -->
+      <main
+        class="flex-1 flex flex-col lg:flex-row overflow-hidden p-3 sm:p-5 lg:p-6 gap-4 sm:gap-6 max-w-[1700px] w-full mx-auto"
+      >
+        <!-- SEÇÃO CENTRAL: CHAT DE NEGOCIAÇÃO -->
+        <section
+          class="flex-1 lg:flex-[2] bg-white rounded-3xl shadow-xl border border-slate-200/80 flex flex-col overflow-hidden min-h-[50vh] lg:min-h-0"
+        >
+          <!-- CABEÇALHO DO CHAT -->
+          <div
+            class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 flex-shrink-0"
+          >
+            <div>
+              <h3
+                class="serif-title text-base sm:text-lg font-bold text-slate-900"
+              >
+                Negociação com o Agente
+              </h3>
+              <p class="text-xs text-slate-500">
+                Defina valores, repertório e alinhamento
+                contratual direto com a curadoria IA.
+              </p>
             </div>
-
-            <div class="flex items-center gap-3">
-                <div
-                    class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 border border-white/15 text-xs">
-                    <span class="w-2 h-2 rounded-full bg-[#2EC4B6] animate-pulse"></span>
-                    <span id="nome-usuario" class="text-slate-200 font-medium">Carregando...</span>
-                </div>
-                <button onclick="logout()"
-                    class="px-3.5 py-2 bg-[#E05A47] hover:bg-[#C94836] text-white rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
-                    <span>Sair</span>
-                    <span>🚪</span>
-                </button>
+            <div
+              class="text-[11px] px-3 py-1 rounded-full bg-[#2EC4B6]/15 text-[#0F766E] border border-[#2EC4B6]/40 font-semibold whitespace-nowrap"
+            >
+              Lei Estadual nº 15.112/2012
             </div>
-        </header>
+          </div>
 
-        <!-- CONTAINER PRINCIPAL (GRID RESPONSIVO / VERTICAL STACK EM MOBILE) -->
-        <main
-            class="flex-1 flex flex-col lg:flex-row overflow-hidden p-3 sm:p-5 lg:p-6 gap-4 sm:gap-6 max-w-[1700px] w-full mx-auto">
+          <!-- ALERTA DE FECHAMENTO DE CONTRATO -->
+          <div
+            id="alerta-fechamento"
+            class="mx-4 sm:mx-5 mt-4 p-3.5 sm:p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm font-medium flex items-center gap-3 shadow-sm"
+            style="display: none"
+          >
+            <span class="text-lg">🎉</span>
+            <div>
+              <strong class="font-bold"
+                >Negócio Fechado!</strong
+              >
+              O contrato gerado foi gravado com sucesso no
+              seu histórico lateral.
+            </div>
+          </div>
 
-            <!-- SEÇÃO CENTRAL: CHAT DE NEGOCIAÇÃO -->
-            <section
-                class="flex-1 lg:flex-[2] bg-white rounded-3xl shadow-xl border border-slate-200/80 flex flex-col overflow-hidden min-h-[50vh] lg:min-h-0">
+          <!-- CAIXA DE MENSAGENS -->
+          <div
+            id="chat-box"
+            class="flex-1 p-4 sm:p-5 overflow-y-auto space-y-4 bg-white"
+          >
+            <div
+              class="flex items-start gap-3 max-w-[90%] sm:max-w-[75%]"
+            >
+              <div
+                class="w-8 h-8 rounded-full bg-[#0D1B2A] text-[#00B4D8] flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1 shadow"
+              >
+                IA
+              </div>
+              <div
+                class="p-3.5 sm:p-4 rounded-2xl rounded-tl-none bg-slate-100 text-slate-800 text-xs sm:text-sm leading-relaxed shadow-sm"
+              >
+                Olá! Sou o agente consultor do Cura. Qual a
+                proposta de apresentação musical ou
+                artística para hoje?
+              </div>
+            </div>
+          </div>
 
-                <!-- CABEÇALHO DO CHAT -->
-                <div
-                    class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 flex-shrink-0">
-                    <div>
-                        <h3 class="serif-title text-base sm:text-lg font-bold text-slate-900">Negociação com o Agente
-                        </h3>
-                        <p class="text-xs text-slate-500">Defina valores, repertório e alinhamento contratual direto com
-                            a curadoria IA.</p>
-                    </div>
-                    <div
-                        class="text-[11px] px-3 py-1 rounded-full bg-[#2EC4B6]/15 text-[#0F766E] border border-[#2EC4B6]/40 font-semibold whitespace-nowrap">
-                            Lei Estadual nº 15.112/2012
-                    </div>
-                </div>
+          <!-- INPUT DE ENVIO -->
+          <div
+            class="p-3 sm:p-5 border-t border-slate-100 bg-slate-50/50 flex-shrink-0"
+          >
+            <div class="flex gap-2 sm:gap-3">
+              <input
+                type="text"
+                id="mensagem-input"
+                placeholder="Digite sua mensagem ou proposta de cachê..."
+                onkeypress="checarEnter(event)"
+                class="flex-1 px-3.5 sm:px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] transition shadow-sm text-black"
+              />
+              <button
+                onclick="enviarMensagem()"
+                class="px-4 sm:px-5 py-3 bg-[#0D1B2A] text-[#00B4D8] hover:bg-[#1B263B] rounded-xl font-semibold text-xs sm:text-sm transition shadow-md flex items-center gap-1.5 sm:gap-2 flex-shrink-0"
+              >
+                <span>Enviar</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+        </section>
 
-                <!-- ALERTA DE FECHAMENTO DE CONTRATO -->
-                <div id="alerta-fechamento"
-                    class="mx-4 sm:mx-5 mt-4 p-3.5 sm:p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm font-medium flex items-center gap-3 shadow-sm"
-                    style="display: none;">
-                    <span class="text-lg">🎉</span>
-                    <div>
-                        <strong class="font-bold">Negócio Fechado!</strong> O contrato gerado foi gravado com sucesso no
-                        seu histórico lateral.
-                    </div>
-                </div>
+        <!-- SEÇÃO LATERAL: HISTÓRICO DE CONTRATOS -->
+        <section
+          class="w-full lg:w-[400px] xl:w-[440px] bg-white rounded-3xl shadow-xl border border-slate-200/80 flex flex-col overflow-hidden flex-shrink-0 max-h-[350px] lg:max-h-none"
+        >
+          <div
+            class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between flex-shrink-0"
+          >
+            <div class="flex items-center gap-2">
+              <span class="text-[#E05A47]">📜</span>
+              <h3
+                class="serif-title text-sm sm:text-base font-bold text-slate-900"
+              >
+                Seus Contratos Registrados
+              </h3>
+            </div>
+            <button
+              onclick="carregarHistorico()"
+              title="Atualizar Histórico"
+              class="p-1.5 hover:bg-slate-200 rounded-lg text-slate-500 transition text-xs"
+            >
+              🔄
+            </button>
+          </div>
 
-                <!-- CAIXA DE MENSAGENS -->
-                <div id="chat-box" class="flex-1 p-4 sm:p-5 overflow-y-auto space-y-4 bg-white">
-                    <div class="flex items-start gap-3 max-w-[90%] sm:max-w-[75%]">
-                        <div
-                            class="w-8 h-8 rounded-full bg-[#0D1B2A] text-[#00B4D8] flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1 shadow">
-                            IA</div>
-                        <div
-                            class="p-3.5 sm:p-4 rounded-2xl rounded-tl-none bg-slate-100 text-slate-800 text-xs sm:text-sm leading-relaxed shadow-sm">
-                            Olá! Sou o agente consultor do Cura. Qual a proposta de apresentação musical ou artística
-                            para hoje?
-                        </div>
-                    </div>
-                </div>
-
-                <!-- INPUT DE ENVIO -->
-                <div class="p-3 sm:p-5 border-t border-slate-100 bg-slate-50/50 flex-shrink-0">
-                    <div class="flex gap-2 sm:gap-3">
-                        <input type="text" id="mensagem-input" placeholder="Digite sua mensagem ou proposta de cachê..."
-                            onkeypress="checarEnter(event)"
-                            class="flex-1 px-3.5 sm:px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] transition shadow-sm text-black">
-                        <button onclick="enviarMensagem()"
-                            class="px-4 sm:px-5 py-3 bg-[#0D1B2A] text-[#00B4D8] hover:bg-[#1B263B] rounded-xl font-semibold text-xs sm:text-sm transition shadow-md flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                            <span>Enviar</span>
-                            <span>→</span>
-                        </button>
-                    </div>
-                </div>
-
-            </section>
-
-            <!-- SEÇÃO LATERAL: HISTÓRICO DE CONTRATOS -->
-            <section
-                class="w-full lg:w-[400px] xl:w-[440px] bg-white rounded-3xl shadow-xl border border-slate-200/80 flex flex-col overflow-hidden flex-shrink-0 max-h-[350px] lg:max-h-none">
-
-                <div
-                    class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between flex-shrink-0">
-                    <div class="flex items-center gap-2">
-                        <span class="text-[#E05A47]">📜</span>
-                        <h3 class="serif-title text-sm sm:text-base font-bold text-slate-900">Seus Contratos Registrados
-                        </h3>
-                    </div>
-                    <button onclick="carregarHistorico()" title="Atualizar Histórico"
-                        class="p-1.5 hover:bg-slate-200 rounded-lg text-slate-500 transition text-xs">
-                        🔄
-                    </button>
-                </div>
-
-                <div id="lista-historico"
-                    class="flex-1 p-4 sm:p-5 overflow-y-auto space-y-3 sm:space-y-4 bg-slate-50/30">
-                    <div class="text-center py-8 text-slate-400 text-xs">Carregando histórico...</div>
-                </div>
-
-            </section>
-
-        </main>
-
+          <div
+            id="lista-historico"
+            class="flex-1 p-4 sm:p-5 overflow-y-auto space-y-3 sm:space-y-4 bg-slate-50/30"
+          >
+            <div
+              class="text-center py-8 text-slate-400 text-xs"
+            >
+              Carregando histórico...
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
 
     <script>
-        const user = JSON.parse(localStorage.getItem('user')) || null;
+      const user =
+        JSON.parse(localStorage.getItem("user")) || null;
 
-        window.addEventListener('DOMContentLoaded', () => {
-            verificarEstadoSessao();
-        });
+      window.addEventListener("DOMContentLoaded", () => {
+        verificarEstadoSessao();
+      });
 
-        function verificarEstadoSessao() {
-            const user = localStorage.getItem('user');
-            if (user) window.location.href = "/painel.html";
+      function verificarEstadoSessao() {
+        const user = localStorage.getItem("user");
+        if (user) window.location.href = "/painel.html";
+      }
+
+      async function realizarLogin(e) {
+        e.preventDefault();
+        const email = document
+          .getElementById("login-email")
+          .value.trim();
+        const senha = document
+          .getElementById("login-senha")
+          .value.trim();
+        const erroBox =
+          document.getElementById("erro-login");
+
+        erroBox.classList.add("hidden");
+
+        try {
+          const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, senha }),
+          }).catch(() => null);
+
+          if (!response || !response.ok) throw new Error();
+
+          const data = await response?.json();
+          const userData = data.data;
+          localStorage.setItem(
+            "user",
+            JSON.stringify(userData),
+          );
+          verificarEstadoSessao();
+        } catch (err) {
+          console.log("ERRPR", err);
+          erroBox.innerText =
+            "Erro ao autenticar. Verifique seus dados e tente novamente.";
+          erroBox.classList.remove("hidden");
         }
+      }
 
-        async function realizarLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value.trim();
-            const senha = document.getElementById('login-senha').value.trim();
-            const erroBox = document.getElementById('erro-login');
-
-            erroBox.classList.add('hidden');
-
-            try {
-                const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, senha })
-                }).catch(() => null);
-
-                if (!response || !response.ok) throw new Error();
-
-                const data = await response?.json();
-                const userData = data.data
-                localStorage.setItem('user', JSON.stringify(userData));
-                verificarEstadoSessao();
-
-            } catch (err) {
-                console.log('ERRPR', err)
-                erroBox.innerText = 'Erro ao autenticar. Verifique seus dados e tente novamente.';
-                erroBox.classList.remove('hidden');
-            }
-        }
-
-        function redirectToRegister() {
-            window.location.href = "/register.html";
-        }
+      function redirectToRegister() {
+        window.location.href = "/register.html";
+      }
     </script>
-</body>
-
+  </body>
 </html>
