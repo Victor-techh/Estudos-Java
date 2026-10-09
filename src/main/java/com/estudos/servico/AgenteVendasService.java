@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Service
 public class AgenteVendasService {
 
-    // Injeta a chave do OpenRouter definida em application.properties ou ambiente
     @Value("${openrouter.api.key:}")
     private String openRouterApiKey;
 
@@ -35,29 +34,29 @@ public class AgenteVendasService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // Construtor sem argumentos para manter compatibilidade com instancias diretas (ex: Principal.java)
     public AgenteVendasService() {
         this.usuarioRepository = null;
     }
 
-    // Construtor utilizado pelo Spring para injetar dependencias do banco
     @Autowired
     public AgenteVendasService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
     }
 
-    // Ponto de entrada chamado pelo AgenteController processando o DTO da requisição
     public String processarAtendimentoPorUsuario(AtendimentoRequestDTO dto) {
         if (dto == null) {
             return "[ERRO]: Payload inválido.";
         }
-        return processarAtendimentoPorUsuario(dto.getUsuarioId(), dto.getMensagem(), null, dto.getQuantidadeMusicos());
+        return processarAtendimentoPorUsuario(dto.getUsuarioId(), dto.getMensagem(), dto.getHistorico(), dto.getQuantidadeMusicos());
     }
 
-    // Processa a mensagem buscando dados do usuario no banco para montar o contexto
     public String processarAtendimentoPorUsuario(Long usuarioId, String mensagem, List<MensagemDTO> historico, int quantidadeMusicos) {
         if (usuarioId == null) {
             return "[ERRO]: Usuário não identificado para iniciar o atendimento.";
+        }
+
+        if (quantidadeMusicos < 1 || quantidadeMusicos > 5) {
+            return "[RECUSADO]: A plataforma aceita apenas formações Solo (1), Duo (2), Trio (3), Quarteto (4) e Quinteto (5). A quantidade informada (" + quantidadeMusicos + ") não é permitida.";
         }
 
         UsuarioEntity usuario = null;
@@ -69,24 +68,40 @@ public class AgenteVendasService {
             return "[ERRO]: Usuário não encontrado no banco de dados.";
         }
 
-        // Montagem do prompt de sistema com os dados contextuais do cliente
         String contexto = "";
         if (usuario != null) {
             contexto = String.format(
-                "Você é o agente consultor do Cura. O cliente logado é %s, do estabelecimento '%s', localizado em '%s'. " +
-                "Gênero musical de preferência: '%s'. Responda diretamente em português de forma clara e objetiva.",
-                usuario.getNome(),
+                "Você é o agente consultor do Cura.\n\n" +
+                "REGRAS OBRIGATÓRIAS DE NEGÓCIO:\n" +
+                "1. Formações permitidas: Solo (1), Duo (2), Trio (3), Quarteto (4) e Quinteto (5 músicos).\n" +
+                "2. Avalie o perfil do usuário e a mensagem para responder de forma coerente (se artista ou contratante).\n\n" +
+                "DADOS DO USUÁRIO CONECTADO:\n" +
+                "- Nome: %s\n" +
+                "- Estabelecimento: %s\n" +
+                "- Endereço: %s\n" +
+                "- Gênero Musical: %s\n" +
+                "- Músicos na Formação: %d\n\n" +
+                "Responda diretamente em português de forma clara e objetiva.",
+                usuario.getNome() != null ? usuario.getNome() : "Não informado",
                 usuario.getEstabelecimento() != null ? usuario.getEstabelecimento() : "Não informado",
                 usuario.getEndereco() != null ? usuario.getEndereco() : "Não informado",
-                usuario.getGeneroMusical() != null ? usuario.getGeneroMusical() : "Geral"
+                usuario.getGeneroMusical() != null ? usuario.getGeneroMusical() : "Geral",
+                quantidadeMusicos
+            );
+        } else {
+            contexto = String.format(
+                "Você é o agente consultor do Cura. Formações permitidas: de 1 a 5 músicos. Músicos informados: %d. Responda em português.",
+                quantidadeMusicos
             );
         }
 
-        return executarChamadaOpenRouter(contexto, mensagem);
+        return executarChamadaOpenRouter(contexto, mensagem, historico);
     }
 
-    // Sobrecargas para manter compatibilidade com chamadas legadas
     public String processarAtendimento(Estabelecimento estabelecimento, String mensagem, List<MensagemDTO> historico, int quantidadeMusicos) {
+        if (quantidadeMusicos < 1 || quantidadeMusicos > 5) {
+            return "[RECUSADO]: A plataforma aceita apenas formações Solo (1), Duo (2), Trio (3), Quarteto (4) e Quinteto (5). A quantidade informada (" + quantidadeMusicos + ") não é permitida.";
+        }
         return processarAtendimento(estabelecimento, mensagem);
     }
 
@@ -99,12 +114,10 @@ public class AgenteVendasService {
                 estabelecimento.getEndereco() != null ? estabelecimento.getEndereco() : "Não informado"
             );
         }
-        return executarChamadaOpenRouter(contexto, mensagem);
+        return executarChamadaOpenRouter(contexto, mensagem, null);
     }
 
-    // Executa a integracao HTTP com a API do OpenRouter
-    private String executarChamadaOpenRouter(String contexto, String mensagem) {
-        // Fallback para buscar a chave na propriedade Spring ou na variavel de ambiente do Render
+    private String executarChamadaOpenRouter(String contexto, String mensagem, List<MensagemDTO> historico) {
         String key = (openRouterApiKey != null && !openRouterApiKey.trim().isEmpty()) 
             ? openRouterApiKey 
             : System.getenv("OPENROUTER_API_KEY");
@@ -114,38 +127,59 @@ public class AgenteVendasService {
         }
 
         try {
-            // Endpoint padrao OpenAI compatível com OpenRouter
             String url = "https://openrouter.ai/api/v1/chat/completions";
 
-            // Construção do payload JSON via Jackson para evitar erros de sintaxe manual
             ObjectNode rootNode = objectMapper.createObjectNode();
-            
-            // Modelo gratuito e ativo no OpenRouter
-            rootNode.put("model", "meta-llama/llama-3.1-8b-instruct:free");
+            rootNode.put("model", "meta-llama/llama-3.1-8b-instruct");
 
             ArrayNode messagesNode = rootNode.putArray("messages");
 
-            // Mensagem de sistema (instruções do agente)
             ObjectNode systemMsg = messagesNode.addObject();
             systemMsg.put("role", "system");
             systemMsg.put("content", contexto);
 
-            // Mensagem do usuário
+            if (historico != null) {
+                for (MensagemDTO item : historico) {
+                    if (item != null) {
+                        ObjectNode histMsg = messagesNode.addObject();
+                        JsonNode itemNode = objectMapper.valueToTree(item);
+
+                        String role = "user";
+                        if (itemNode.hasNonNull("role")) {
+                            role = itemNode.get("role").asText();
+                        } else if (itemNode.hasNonNull("papel")) {
+                            role = itemNode.get("papel").asText();
+                        }
+
+                        String content = "";
+                        if (itemNode.hasNonNull("content")) {
+                            content = itemNode.get("content").asText();
+                        } else if (itemNode.hasNonNull("conteudo")) {
+                            content = itemNode.get("conteudo").asText();
+                        } else if (itemNode.hasNonNull("mensagem")) {
+                            content = itemNode.get("mensagem").asText();
+                        } else if (itemNode.hasNonNull("texto")) {
+                            content = itemNode.get("texto").asText();
+                        }
+
+                        histMsg.put("role", role);
+                        histMsg.put("content", content);
+                    }
+                }
+            }
+
             ObjectNode userMsg = messagesNode.addObject();
             userMsg.put("role", "user");
             userMsg.put("content", mensagem);
 
-            // Configuração dos cabecalhos HTTP com autenticação Bearer Token
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setBearerAuth(key);
 
             HttpEntity<String> request = new HttpEntity<>(rootNode.toString(), headers);
 
-            // Envio da requisição POST
             ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
 
-            // Extração do texto de resposta do JSON retornado pela API
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 JsonNode jsonResposta = objectMapper.readTree(response.getBody());
                 return jsonResposta.path("choices").get(0).path("message").path("content").asText();
@@ -154,20 +188,17 @@ public class AgenteVendasService {
             return "[ERRO DESCONHECIDO]: Sem resposta do OpenRouter.";
 
         } catch (HttpStatusCodeException e) {
-            // Captura respostas de erro da API (4xx e 5xx) sem derrubar a aplicação
             System.err.println("=== ERRO DA API OPENROUTER ===");
             System.err.println("Status Code: " + e.getStatusCode());
             System.err.println("Resposta: " + e.getResponseBodyAsString());
             return "[ERRO OPENROUTER " + e.getRawStatusCode() + "]: " + e.getResponseBodyAsString();
 
         } catch (ResourceAccessException e) {
-            // Tratamento de falhas de rede e timeouts
             System.err.println("=== TIMEOUT NO OPENROUTER ===");
             e.printStackTrace();
             return "[ERRO CONEXÃO]: O servidor OpenRouter demorou para responder.";
 
         } catch (Exception e) {
-            // Tratamento generico para exceções de parsing ou execução interna
             System.err.println("=== EXCEÇÃO INTERNA ===");
             e.printStackTrace();
             return "[ERRO INTERNO]: " + e.getMessage();
