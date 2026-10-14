@@ -131,70 +131,186 @@
         </div>
       </div>
 
-      <div
-          class="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-center bg-white"
-        >
-         <div id="form-cadastro-container" class="space-y-6 fade-in" >
-            <div>
-              <h3 class="serif-title text-2xl font-bold text-white mb-1">Criar Nova Conta</h3>
-              <p class="text-xs sm:text-sm text-slate-400">Cadastre seu estabelecimento ou perfil artístico
-                  para iniciar negociações.</p>
-            </div>
-
-            <div id="erro-cadastro"
-                class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
-            </div>
-            <div id="sucesso-cadastro"
-                class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium">
-            </div>
-
-            <form onsubmit="realizarCadastro(event)" class="space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                          <label
-                              class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Nome
-                              do Estabelecimento / Artista</label>
-                        <input type="text" id="cad-nome" required placeholder="Ex: Bar do Jazz / Banda Cura"
-                            class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm">
-                    </div>
-                    <div>
-                          <label
-                              class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">E-mail</label>
-                        <input type="email" id="cad-email" required placeholder="contato@exemplo.com"
-                            class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm">
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label
-                          class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Senha</label>
-                      <input type="password" id="cad-senha" required placeholder="Mínimo 6 caracteres"
-                          class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm">
-                    </div>
-                    <div>
-                      <label
-                          class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Perfil</label>
-                      <select id="cad-tipo"
-                          class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm">
-                          <option value="ESTABELECIMENTO">Estabelecimento / Contratante</option>
-                          <option value="ARTISTA">Artista / Banda</option>
-                      </select>
-                    </div>
-                </div>
-                <button type="submit"
-                    class="w-full py-3.5 bg-[#0D1B2A] text-[#00B4D8] hover:bg-[#1B263B] rounded-xl font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2">
-                    <span>Concluir Cadastro</span>
-                </button>
-            </form>
-
-            <div class="text-center pt-2">
-                <p class="text-xs text-slate-400">
-                    Já possui uma conta?
-                    <button onclick="redirectToLogin()"
-                        class="text-[#E05A47] font-semibold hover:underline ml-1">Faça login</button>
-                </p>
-            </div>
+      <div class="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-center bg-white" >
+        <div id="form-cadastro-container" class="space-y-6 fade-in">
+          <div>
+            <h3 class="serif-title text-2xl font-bold text-slate-900 mb-1" >
+              Criar Nova Conta
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-500">
+              Cadastre seu estabelecimento ou perfil
+              artístico para iniciar negociações.
+            </p>
           </div>
+
+          <div
+            id="erro-cadastro"
+            class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium"
+          ></div>
+          <div
+            id="sucesso-cadastro"
+            class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium"
+          ></div>
+
+          <form onsubmit="realizarCadastro(event)" class="space-y-4">
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            >
+              <div>
+                <label
+                  class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
+                  for="cad-nome"
+                  >Nome</label
+                >
+                <input
+                  type="text"
+                  id="cad-nome"
+                  required
+                  placeholder="Ex: João da Silva"
+                  class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
+                  for="cad-email"
+                  >E-mail</label
+                >
+                <input
+                  type="email"
+                  id="cad-email"
+                  required
+                  placeholder="contato@exemplo.com"
+                  class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
+                />
+              </div>
+            </div>
+            <div
+              class="grid grid-cols-1 sm:grid-cols-1 gap-4"
+            >
+              <div>
+                <label
+                  class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
+                  for="cad-endereco"
+                  >Endereço</label
+                >
+                <input
+                  type="text"
+                  id="cad-endereco"
+                  required
+                  placeholder="Ex: Rua das Flores, 123"
+                  class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
+                />
+              </div>
+            </div>
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            >
+              <div>
+                <label
+                  class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
+                  for="cad-senha"
+                  >Senha</label
+                >
+                <input
+                  type="password"
+                  id="cad-senha"
+                  required
+                  placeholder="Mínimo 6 caracteres"
+                  class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
+                  for="cad-senha-confirmacao"
+                  >Confirme a Senha</label
+                >
+                <input
+                  type="password"
+                  id="cad-senha-confirmacao"
+                  required
+                  oninput="validarSenhas()"
+                  placeholder="Mínimo 6 caracteres"
+                  class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
+                />
+              </div>
+            </div>
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            >
+              <div>
+                <label
+                  class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
+                  for="cad-genero-musical"
+                  >Gênero musical</label
+                >
+                <input
+                  type="text"
+                  id="cad-genero-musical"
+                  required
+                  placeholder="Ex: Rock, Pop, Samba"
+                  class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
+                  for="cad-tipo"
+                  >Perfil</label
+                >
+                <select
+                  id="cad-tipo"
+                  class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
+                  onchange="MostrarCampoEstabelecimento()"
+                >
+                  <option value="CONTRATANTE">
+                    Estabelecimento / Contratante
+                  </option>
+                  <option value="ARTISTA">
+                    Artista / Banda
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div
+              class="grid grid-cols-1 sm:grid-cols-1 gap-4"
+            >
+              <div id="cad-estabelecimento">
+                <label
+                  class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
+                  for="cad-nome-estabelecimento"
+                  >Nome do Estabelecimento</label
+                >
+                <input
+                  type="text"
+                  id="cad-nome-estabelecimento"
+                  placeholder="Ex: Estabelecimento Parceiro"
+                  class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              class="w-full py-3.5 bg-[#0D1B2A] text-[#00B4D8] hover:bg-[#1B263B] rounded-xl font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2"
+            >
+              <span>Concluir Cadastro</span>
+            </button>
+          </form>
+
+          <div class="text-center pt-2">
+            <p class="text-xs text-slate-500">
+              Já possui uma conta?
+              <button
+                onclick="alternarTelaAuth('login')"
+                class="text-[#E05A47] font-semibold hover:underline ml-1"
+              >
+                Faça login
+              </button>
+            </p>
+          </div>
+        </div>
         </div>
       </div>
     </div>
@@ -203,8 +319,8 @@
   <script>
     let historicoConversa = [];
     const user = JSON.parse(localStorage.getItem('user'));
-    const usuarioId = user.id;
-    const usuarioNome = user.nome;
+    let usuarioId = user?.id || null;
+    let usuarioNome = user?.nome || null;
 
     window.addEventListener('DOMContentLoaded', () => {
       verificarEstadoSessao();
@@ -218,34 +334,83 @@
       window.location.href = "/login.html";
     }
 
+    function validarSenhas() {
+      const senha = document.getElementById("cad-senha");
+      const confirmacao = document.getElementById("cad-senha-confirmacao");
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+
+      confirmacao.setCustomValidity("");
+
+      if (senha.value !== confirmacao.value) {
+        confirmacao.setCustomValidity("As senhas não coincidem.");
+        return;
+      } 
+      
+      if (!passwordRegex.test(senha.value)) {
+        confirmacao.setCustomValidity("A senha deve ter pelo menos 8 caracteres, incluindo letras, números e caracteres especiais.");
+        return;
+      }      
+    }
+
     async function realizarCadastro(e) {
       e.preventDefault();
-      const nome = document.getElementById('cad-nome').value.trim();
-      const email = document.getElementById('cad-email').value.trim();
-      const senha = document.getElementById('cad-senha').value.trim();
-      const tipo = document.getElementById('cad-tipo').value;
-      const erroBox = document.getElementById('erro-cadastro');
-      const sucessoBox = document.getElementById('sucesso-cadastro');
+      const nome = document.getElementById("cad-nome").value.trim();
+      const email = document.getElementById("cad-email").value.trim();
+      const senha = document.getElementById("cad-senha").value.trim();
+      const senhaConfirmacao = document.getElementById("cad-senha-confirmacao").value.trim();
+      const tipoPerfil = document.getElementById("cad-tipo").value;
+      const generoMusical = document.getElementById("cad-genero-musical").value;
+      const endereco = document.getElementById("cad-endereco").value.trim();
+      const estabelecimento = document.getElementById("cad-nome-estabelecimento").value.trim() ?? "";
+      const erroBox = document.getElementById("erro-cadastro");
+      const sucessoBox = document.getElementById( "sucesso-cadastro");
 
-      erroBox.classList.add('hidden');
-      sucessoBox.classList.add('hidden');
+      if (senha !== senhaConfirmacao) return;
+
+      erroBox.classList.add("hidden");
+      sucessoBox.classList.add("hidden");
 
       try {
         const response = await fetch('/api/auth/cadastro', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nome, email, senha, tipo })
-        }).catch(() => null);
+          headers: { 'Content-Type': 'application/json', },
+          body: JSON.stringify({
+            nome,
+            email,
+            senha,
+            tipoPerfil,
+            generoMusical,
+            endereco,
+            estabelecimento,
+          }),
+        }).catch((err) => {
+          console.log('Erro ao realizar cadastro no servidor:', err);
+        } );
 
-        if (!response || !response.ok) throw new Error();
+      if (!response || !response.ok) throw new Error("Invalid responses.");
 
-        sucessoBox.innerText = 'Conta criada com sucesso! Faça login para continuar.';
-        sucessoBox.classList.remove('hidden');
-        setTimeout(() => redirectToLogin(), 1200);
+      sucessoBox.innerText = 'Conta criada com sucesso! Faça login para continuar.';
+      sucessoBox.classList.remove('hidden');
+      setTimeout(() => redirectToLogin(), 1200);
 
       } catch (err) {
         erroBox.innerText = 'Erro ao realizar cadastro no servidor.';
         erroBox.classList.remove('hidden');
+      }
+    }
+
+    function MostrarCampoEstabelecimento() {
+      const tipo = document.getElementById("cad-tipo").value;
+      const campoEstabelecimento = document.getElementById("cad-estabelecimento");
+      const inputNomeEstabelecimento = document.getElementById("cad-nome-estabelecimento");
+
+      if (tipo === "CONTRATANTE") {
+        campoEstabelecimento.style.display = "block";
+        inputNomeEstabelecimento.focus();
+        inputNomeEstabelecimento.required = true;
+      } else {
+        campoEstabelecimento.style.display = "none";
+        inputNomeEstabelecimento.required = false;
       }
     }
 
