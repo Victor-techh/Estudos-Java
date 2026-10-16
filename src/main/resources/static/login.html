@@ -349,8 +349,10 @@
                 body: JSON.stringify({ email, senha }),
               },
             );
+
             if (response.ok) {
               const resData = await response.json();
+
               if (resData && resData.data) {
                 userData = {
                   ...userData,
@@ -358,6 +360,19 @@
                   token: idToken,
                 };
               }
+
+              sessionStorage.setItem(
+                "user",
+                JSON.stringify(userData),
+              );
+
+              localStorage.setItem(
+                "user",
+                JSON.stringify(userData),
+              );
+              localStorage.setItem("token", idToken);
+
+              window.location.href = "/painel.html";
             }
           } catch (backendErr) {
             console.warn(
@@ -365,19 +380,6 @@
               backendErr,
             );
           }
-
-          sessionStorage.setItem(
-            "user",
-            JSON.stringify(userData),
-          );
-
-          localStorage.setItem(
-            "user",
-            JSON.stringify(userData),
-          );
-          localStorage.setItem("token", idToken);
-
-          window.location.href = "/painel.html";
         } catch (err) {
           console.error("Erro no login:", err);
           let msg =

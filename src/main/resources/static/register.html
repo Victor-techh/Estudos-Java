@@ -336,6 +336,7 @@
           });
         } catch (backendErr) {
           console.warn('Aviso: Falha ao sincronizar cadastro com o backend local:', backendErr);
+          return;
         }
 
         sucessoBox.innerHTML = `
