@@ -43,6 +43,7 @@ public class FirebaseTokenFilter extends OncePerRequestFilter {
                         String uid = claims.has("user_id") ? claims.get("user_id").asText()
                                 : (claims.has("sub") ? claims.get("sub").asText() : "anonymous");
                         String email = claims.has("email") ? claims.get("email").asText() : uid;
+                        String name = claims.has("name") ? claims.get("name").asText() : null;
 
                         long exp = claims.has("exp") ? claims.get("exp").asLong() : 0;
                         long currentTime = System.currentTimeMillis() / 1000;
@@ -53,6 +54,20 @@ public class FirebaseTokenFilter extends OncePerRequestFilter {
 
                             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                                     email, null, authorities);
+
+                            java.util.Map<String, Object> details = new java.util.HashMap<>();
+                            details.put("uid", uid);
+                            details.put("email", email);
+                            if (name != null) {
+                                details.put("name", name);
+                            }
+                            authentication.setDetails(details);
+
+                            request.setAttribute("firebaseUid", uid);
+                            request.setAttribute("firebaseEmail", email);
+                            if (name != null) {
+                                request.setAttribute("firebaseName", name);
+                            }
 
                             SecurityContextHolder.getContext().setAuthentication(authentication);
                         }

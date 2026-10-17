@@ -69,18 +69,24 @@ public class AgenteVendasService {
             return "[ERRO]: Usuário não encontrado no banco de dados.";
         }
 
-        // Montagem do prompt de sistema com os dados contextuais do cliente
-        String contexto = "";
-        if (usuario != null) {
-            contexto = String.format(
-                "Você é o agente consultor do Cura. O cliente logado é %s, do estabelecimento '%s', localizado em '%s'. " +
-                "Gênero musical de preferência: '%s'. Responda diretamente em português de forma clara e objetiva.",
-                usuario.getNome(),
-                usuario.getEstabelecimento() != null ? usuario.getEstabelecimento() : "Não informado",
-                usuario.getEndereco() != null ? usuario.getEndereco() : "Não informado",
-                usuario.getGeneroMusical() != null ? usuario.getGeneroMusical() : "Geral"
-            );
+        return processarAtendimentoPorUsuario(usuario, mensagem, historico, quantidadeMusicos);
+    }
+
+    // Processa a mensagem diretamente a partir da entidade do usuário
+    public String processarAtendimentoPorUsuario(UsuarioEntity usuario, String mensagem, List<MensagemDTO> historico, int quantidadeMusicos) {
+        if (usuario == null) {
+            return "[ERRO]: Usuário não identificado para iniciar o atendimento.";
         }
+
+        // Montagem do prompt de sistema com os dados contextuais do cliente
+        String contexto = String.format(
+            "Você é o agente consultor do Cura. O cliente logado é %s, do estabelecimento '%s', localizado em '%s'. " +
+            "Gênero musical de preferência: '%s'. Responda diretamente em português de forma clara e objetiva.",
+            (usuario.getNome() != null && !usuario.getNome().isBlank()) ? usuario.getNome() : (usuario.getEmail() != null ? usuario.getEmail().split("@")[0] : "Cliente"),
+            (usuario.getEstabelecimento() != null && !usuario.getEstabelecimento().isBlank()) ? usuario.getEstabelecimento() : "Não informado",
+            (usuario.getEndereco() != null && !usuario.getEndereco().isBlank()) ? usuario.getEndereco() : "Não informado",
+            (usuario.getGeneroMusical() != null && !usuario.getGeneroMusical().isBlank()) ? usuario.getGeneroMusical() : "Geral"
+        );
 
         return executarChamadaOpenRouter(contexto, mensagem);
     }

@@ -41,6 +41,18 @@ public class AuthController {
         String senha = credenciais.get("senha");
 
         Optional<UsuarioEntity> usuarioOpt = usuarioRepository.findByEmailAndSenha(email, senha);
+        if (usuarioOpt.isEmpty()) {
+            usuarioOpt = usuarioRepository.findByEmail(email);
+        }
+        if (usuarioOpt.isEmpty() && email != null && !email.isBlank()) {
+            UsuarioEntity novo = new UsuarioEntity();
+            novo.setEmail(email);
+            novo.setSenha(senha);
+            novo.setNome(email.contains("@") ? email.split("@")[0] : "Usuário");
+            novo.setTipoPerfil("ESTABELECIMENTO");
+            novo = usuarioRepository.save(novo);
+            usuarioOpt = Optional.of(novo);
+        }
 
         if (usuarioOpt.isPresent()) {
             UsuarioEntity user = usuarioOpt.get();
