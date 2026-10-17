@@ -49,7 +49,10 @@ public class AuthController {
             userInfo.put("name", user.getNome());
             userInfo.put("email", user.getEmail());
             userInfo.put("type", user.getTipoPerfil());
-            userInfo.put("token", null); // TODO : Add JWT token here
+            userInfo.put("generoMusical", user.getGeneroMusical());
+            userInfo.put("estabelecimento", user.getEstabelecimento());
+            userInfo.put("endereco", user.getEndereco());
+            userInfo.put("uid", user.getUid());
 
             return ResponseEntity.ok(ApiResponse.success(userInfo, "Login realizado com sucesso."));
         }
