@@ -14,6 +14,8 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
+import com.estudos.agent.AgentPromptProvider;
+import com.estudos.agent.AgentPromptProvider.PromptDefinition;
 import com.estudos.dto.AtendimentoRequestDTO;
 import com.estudos.dto.MensagemDTO;
 import com.estudos.entidade.UsuarioEntity;
@@ -32,18 +34,26 @@ public class AgenteVendasService {
     private String openRouterApiKey;
 
     private final UsuarioRepository usuarioRepository;
+    private final AgentPromptProvider agentPromptProvider;
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // Construtor sem argumentos para manter compatibilidade com instancias diretas (ex: Principal.java)
     public AgenteVendasService() {
         this.usuarioRepository = null;
+        this.agentPromptProvider = new AgentPromptProvider();
+    }
+
+    public AgenteVendasService(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
+        this.agentPromptProvider = new AgentPromptProvider();
     }
 
     // Construtor utilizado pelo Spring para injetar dependencias do banco
     @Autowired
-    public AgenteVendasService(UsuarioRepository usuarioRepository) {
+    public AgenteVendasService(UsuarioRepository usuarioRepository, AgentPromptProvider agentPromptProvider) {
         this.usuarioRepository = usuarioRepository;
+        this.agentPromptProvider = agentPromptProvider;
     }
 
     // Ponto de entrada chamado pelo AgenteController processando o DTO da requisição
@@ -51,7 +61,12 @@ public class AgenteVendasService {
         if (dto == null) {
             return "[ERRO]: Payload inválido.";
         }
-        return processarAtendimentoPorUsuario(dto.getUsuarioId(), dto.getMensagem(), null, dto.getQuantidadeMusicos());
+        return processarAtendimentoPorUsuario(
+            dto.getUsuarioId(),
+            dto.getMensagem(),
+            dto.getHistorico(),
+            dto.getQuantidadeMusicos()
+        );
     }
 
     // Processa a mensagem buscando dados do usuario no banco para montar o contexto
@@ -80,36 +95,48 @@ public class AgenteVendasService {
 
         // Montagem do prompt de sistema com os dados contextuais do cliente
         String contexto = String.format(
-            "Você é o agente consultor do Cura. O cliente logado é %s, do estabelecimento '%s', localizado em '%s'. " +
-            "Gênero musical de preferência: '%s'. Responda diretamente em português de forma clara e objetiva.",
+            "Nome: %s. Perfil: %s. Estabelecimento: '%s'. Localização: '%s'. " +
+            "Preferência musical: '%s'. Quantidade recebida do formulário (o valor 1 pode ser padrão, não confirmação): %d.",
             (usuario.getNome() != null && !usuario.getNome().isBlank()) ? usuario.getNome() : (usuario.getEmail() != null ? usuario.getEmail().split("@")[0] : "Cliente"),
+            (usuario.getTipoPerfil() != null && !usuario.getTipoPerfil().isBlank()) ? usuario.getTipoPerfil() : "Não informado",
             (usuario.getEstabelecimento() != null && !usuario.getEstabelecimento().isBlank()) ? usuario.getEstabelecimento() : "Não informado",
             (usuario.getEndereco() != null && !usuario.getEndereco().isBlank()) ? usuario.getEndereco() : "Não informado",
-            (usuario.getGeneroMusical() != null && !usuario.getGeneroMusical().isBlank()) ? usuario.getGeneroMusical() : "Geral"
+            (usuario.getGeneroMusical() != null && !usuario.getGeneroMusical().isBlank()) ? usuario.getGeneroMusical() : "Não informado",
+            Math.max(1, quantidadeMusicos)
         );
 
-        return executarChamadaOpenRouter(contexto, mensagem);
+        return executarAtendimentoComContexto(contexto, mensagem, historico);
     }
 
     // Sobrecargas para manter compatibilidade com chamadas legadas
     public String processarAtendimento(Estabelecimento estabelecimento, String mensagem, List<MensagemDTO> historico, int quantidadeMusicos) {
-        return processarAtendimento(estabelecimento, mensagem);
+        return executarAtendimentoComContexto(criarContextoEstabelecimento(estabelecimento), mensagem, historico);
     }
 
     public String processarAtendimento(Estabelecimento estabelecimento, String mensagem) {
-        String contexto = "Você é o agente consultor do Cura. Responda em português de forma objetiva.";
+        return processarAtendimento(estabelecimento, mensagem, null, 1);
+    }
+
+    private String criarContextoEstabelecimento(Estabelecimento estabelecimento) {
+        String contexto = "";
         if (estabelecimento != null) {
             contexto = String.format(
-                "Você é o agente consultor do Cura. O cliente é '%s', localizado em '%s'. Responda em português.",
+                "Estabelecimento: '%s'. Localização: '%s'.",
                 estabelecimento.getNome() != null ? estabelecimento.getNome() : "Não informado",
                 estabelecimento.getEndereco() != null ? estabelecimento.getEndereco() : "Não informado"
             );
         }
-        return executarChamadaOpenRouter(contexto, mensagem);
+        return contexto;
+    }
+
+    private String executarAtendimentoComContexto(String contexto, String mensagem, List<MensagemDTO> historico) {
+        PromptDefinition prompt = agentPromptProvider.build(contexto);
+        String promptCompleto = prompt.systemInstructions() + "\n\n" + prompt.contextSummary();
+        return executarChamadaOpenRouter(promptCompleto, mensagem, historico);
     }
 
     // Executa a integracao HTTP com a API do OpenRouter
-    private String executarChamadaOpenRouter(String contexto, String mensagem) {
+    private String executarChamadaOpenRouter(String contexto, String mensagem, List<MensagemDTO> historico) {
         // Fallback para buscar a chave na propriedade Spring ou na variavel de ambiente do Render
         String key = (openRouterApiKey != null && !openRouterApiKey.trim().isEmpty()) 
             ? openRouterApiKey 
@@ -135,6 +162,8 @@ public class AgenteVendasService {
             ObjectNode systemMsg = messagesNode.addObject();
             systemMsg.put("role", "system");
             systemMsg.put("content", contexto);
+
+            adicionarHistorico(messagesNode, historico, mensagem);
 
             // Mensagem do usuário
             ObjectNode userMsg = messagesNode.addObject();
@@ -178,5 +207,45 @@ public class AgenteVendasService {
             e.printStackTrace();
             return "[ERRO INTERNO]: " + e.getMessage();
         }
+    }
+
+    private void adicionarHistorico(ArrayNode messagesNode, List<MensagemDTO> historico, String mensagemAtual) {
+        if (historico == null || historico.isEmpty()) {
+            return;
+        }
+
+        int ultimoIndice = historico.size() - 1;
+        for (int i = 0; i < historico.size(); i++) {
+            MensagemDTO mensagem = historico.get(i);
+            
+            if (mensagem == null || mensagem.getTexto() == null || mensagem.getTexto().isBlank()) {
+                continue;
+            }
+
+            String role = normalizarRole(mensagem.getRole());
+            if (role == null) {
+                continue;
+            }
+
+            if (i == ultimoIndice && "user".equals(role) && mensagem.getTexto().equals(mensagemAtual)) {
+                continue;
+            }
+
+            ObjectNode historyMessage = messagesNode.addObject();
+            historyMessage.put("role", role);
+            historyMessage.put("content", mensagem.getTexto());
+        }
+    }
+
+    private String normalizarRole(String role) {
+        if (role == null) {
+            return null;
+        }
+
+        return switch (role.trim().toLowerCase()) {
+            case "user" -> "user";
+            case "assistant", "model" -> "assistant";
+            default -> null;
+        };
     }
 }
