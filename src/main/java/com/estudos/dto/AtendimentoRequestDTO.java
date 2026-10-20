@@ -10,7 +10,6 @@ public class AtendimentoRequestDTO {
     private String mensagem;
     private List<MensagemDTO> historico = new ArrayList<>();
     private int quantidadeMusicos = 1;
-    private Long interesseId;
 
     public AtendimentoRequestDTO() {}
 
@@ -36,7 +35,4 @@ public class AtendimentoRequestDTO {
 
     public int getQuantidadeMusicos() { return quantidadeMusicos; }
     public void setQuantidadeMusicos(int quantidadeMusicos) { this.quantidadeMusicos = quantidadeMusicos; }
-
-    public Long getInteresseId() { return interesseId; }
-    public void setInteresseId(Long interesseId) { this.interesseId = interesseId; }
 }

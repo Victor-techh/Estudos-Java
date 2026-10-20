@@ -53,9 +53,9 @@
             <div class="header">
                 <h2>Negociação com Agente Comercial</h2>
                 <select id="select-formacao">
-                    <option value="1">Solo (1 músico - mínimo: R$ 400)</option>
-                    <option value="2">Duo (2 músicos - mínimo: R$ 800)</option>
-                    <option value="3" selected>Trio (3 músicos - mínimo: R$ 1.200)</option>
+                    <option value="1">Solo (1 Músico - Piso: R$ 420)</option>
+                    <option value="2">Duo (2 Músicos - Piso: R$ 840)</option>
+                    <option value="3" selected>Trio (3 Músicos - Piso: R$ 1.260)</option>
                 </select>
             </div>
             <div class="chat-box" id="chat-box"></div>
@@ -118,7 +118,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         mensagem: texto,
-                        quantidadeMusicos: parseInt(qtdMusicos),
+                        qtdMusicos: parseInt(qtdMusicos),
                         historico: historicoChat
                     })
                 });

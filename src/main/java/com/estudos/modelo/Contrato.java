@@ -10,11 +10,11 @@ public class Contrato {
             throw new IllegalArgumentException("Proposta recusada pelo estabelecimento.");
         }
 
-        double cacheMinimo = proposta.getArtista().getCacheMinimo();
+        double pisoLegal = proposta.getArtista().getPisoLegal();
 
-        if (proposta.getArtista().getCacheBruto() < cacheMinimo) {
-            throw new InfracaoLegalException("Cachê de R$ " + proposta.getArtista().getCacheBruto() +
-                    " é inferior ao mínimo de referência informado para a formação (R$ " + cacheMinimo + ")");
+        if (proposta.getArtista().getValorShow() < pisoLegal) {
+            throw new InfracaoLegalException("Cachê de R$ " + proposta.getArtista().getValorShow() + 
+                                              " é inferior ao piso legal exigido para a categoria (R$ " + pisoLegal + ")");
         }
 
         this.proposta = proposta;

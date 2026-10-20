@@ -6,7 +6,7 @@ public class ArtistaSolo extends Artista {
     }
 
     @Override
-    public double getCacheMinimo() {
-        return Formacao.SOLO.getCacheMinimo();
+    public double getPisoLegal() {
+        return 500.0;
     }
 }
