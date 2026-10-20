@@ -6,6 +6,7 @@ import java.util.List;
 
 public class AtendimentoRequestDTO {
     private Long usuarioId; // ATRIBUTO ADICIONADO PARA O H2
+    private String uid;     // UID do Firebase
     private Estabelecimento estabelecimento;
     private String mensagem;
     private List<MensagemDTO> historico = new ArrayList<>();
@@ -22,7 +23,26 @@ public class AtendimentoRequestDTO {
     }
 
     public Long getUsuarioId() { return usuarioId; }
-    public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
+
+    public void setUsuarioId(Object id) {
+        if (id == null) {
+            this.usuarioId = null;
+            return;
+        }
+        if (id instanceof Number) {
+            this.usuarioId = ((Number) id).longValue();
+        } else {
+            String str = id.toString().trim();
+            try {
+                this.usuarioId = Long.parseLong(str);
+            } catch (NumberFormatException e) {
+                this.uid = str;
+            }
+        }
+    }
+
+    public String getUid() { return uid; }
+    public void setUid(String uid) { this.uid = uid; }
 
     public Estabelecimento getEstabelecimento() { return estabelecimento; }
     public void setEstabelecimento(Estabelecimento estabelecimento) { this.estabelecimento = estabelecimento; }
@@ -34,5 +54,8 @@ public class AtendimentoRequestDTO {
     public void setHistorico(List<MensagemDTO> historico) { this.historico = historico; }
 
     public int getQuantidadeMusicos() { return quantidadeMusicos; }
-    public void setQuantidadeMusicos(int quantidadeMusicos) { this.quantidadeMusicos = quantidadeMusicos; }
+    public void setQuantidadeMusicos(int quantidadeMusicos) { this.quantidadeMusicos = quantidadeMusicos > 0 ? quantidadeMusicos : 1; }
+
+    public int getQtdMusicos() { return this.quantidadeMusicos; }
+    public void setQtdMusicos(int qtdMusicos) { setQuantidadeMusicos(qtdMusicos); }
 }

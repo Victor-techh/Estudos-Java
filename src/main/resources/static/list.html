@@ -112,12 +112,19 @@
             adicionarMensagemNoChat('user', texto);
             input.value = '';
 
+            const token = sessionStorage.getItem('token') || sessionStorage.getItem('authToken') || localStorage.getItem('token');
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) {
+                headers['Authorization'] = 'Bearer ' + token;
+            }
+
             try {
                 const response = await fetch('/api/agente/chat', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: headers,
                     body: JSON.stringify({
                         mensagem: texto,
+                        quantidadeMusicos: parseInt(qtdMusicos),
                         qtdMusicos: parseInt(qtdMusicos),
                         historico: historicoChat
                     })

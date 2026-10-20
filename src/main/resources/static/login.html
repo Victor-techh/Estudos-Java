@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      content="width=device-width, initial-scale=1.0"
     />
     <title>
       Cura - Autenticação, Negociação e Gestão Artística
@@ -68,7 +68,6 @@
   <body
     class="min-h-[100dvh] flex flex-col bg-[#0D1B2A] text-white overflow-x-hidden"
   >
-    <!-- TELA DE AUTENTICAÇÃO (LOGIN / CADASTRO) -->
     <div
       id="view-auth"
       class="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 min-h-[100dvh]"
@@ -76,7 +75,6 @@
       <div
         class="w-full max-w-5xl bg-white rounded-3xl shadow-2xl border border-slate-200/80 grid grid-cols-1 lg:grid-cols-12 overflow-hidden my-auto"
       >
-        <!-- PAINEL LATERAL DE APRESENTAÇÃO (SPLIT-SCREEN) -->
         <div
           class="lg:col-span-5 bg-[#0D1B2A] text-white p-8 sm:p-10 flex flex-col justify-between relative overflow-hidden"
         >
@@ -84,7 +82,12 @@
             class="absolute -right-12 -bottom-12 w-48 h-48 rounded-full bg-[#00B4D8]/15 blur-2xl pointer-events-none"
           ></div>
           <div>
-            <div class="flex items-center gap-3 mb-6">
+            <div class="flex items-center gap-3.5 mb-6">
+              <img
+                src="/images/logo.jpg"
+                alt="Logo Cura"
+                class="w-12 h-12 rounded-2xl shadow-lg border border-white/20 object-cover flex-shrink-0"
+              />
               <div>
                 <h1
                   class="serif-title text-2xl font-bold tracking-wide text-white"
@@ -124,11 +127,9 @@
           </div>
         </div>
 
-        <!-- FORMULÁRIOS DE ENTRADA (LOGIN / CADASTRO) -->
         <div
           class="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-center bg-white"
         >
-          <!-- ABA LOGIN -->
           <div
             id="form-login-container"
             class="space-y-6 fade-in"
@@ -148,6 +149,11 @@
             <div
               id="erro-login"
               class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium"
+            ></div>
+
+            <div
+              id="aviso-login"
+              class="hidden p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs space-y-2"
             ></div>
 
             <form
@@ -193,200 +199,10 @@
               <p class="text-xs text-slate-500">
                 Não possui uma conta?
                 <button
-                  onclick="alternarTelaAuth('cadastro')"
+                  onclick="redirectToRegister()"
                   class="text-[#E05A47] font-semibold hover:underline ml-1"
                 >
                   Cadastre-se aqui
-                </button>
-              </p>
-            </div>
-          </div>
-
-          <!-- ABA CADASTRO -->
-          <div
-            id="form-cadastro-container"
-            class="space-y-6 fade-in"
-            style="display: none"
-          >
-            <div>
-              <h3
-                class="serif-title text-2xl font-bold text-slate-900 mb-1"
-              >
-                Criar Nova Conta
-              </h3>
-              <p class="text-xs sm:text-sm text-slate-500">
-                Cadastre seu estabelecimento ou perfil
-                artístico para iniciar negociações.
-              </p>
-            </div>
-
-            <div
-              id="erro-cadastro"
-              class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium"
-            ></div>
-            <div
-              id="sucesso-cadastro"
-              class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium"
-            ></div>
-
-            <form
-              onsubmit="realizarCadastro(event)"
-              class="space-y-4"
-            >
-              <div
-                class="grid grid-cols-1 sm:grid-cols-2 gap-4"
-              >
-                <div>
-                  <label
-                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
-                    for="cad-nome"
-                    >Nome</label
-                  >
-                  <input
-                    type="text"
-                    id="cad-nome"
-                    required
-                    placeholder="Ex: João da Silva"
-                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
-                  />
-                </div>
-                <div>
-                  <label
-                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
-                    for="cad-email"
-                    >E-mail</label
-                  >
-                  <input
-                    type="email"
-                    id="cad-email"
-                    required
-                    placeholder="contato@exemplo.com"
-                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
-                  />
-                </div>
-              </div>
-              <div
-                class="grid grid-cols-1 sm:grid-cols-1 gap-4"
-              >
-                <div>
-                  <label
-                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
-                    for="cad-endereco"
-                    >Endereço</label
-                  >
-                  <input
-                    type="text"
-                    id="cad-endereco"
-                    required
-                    placeholder="Ex: Rua das Flores, 123"
-                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
-                  />
-                </div>
-              </div>
-              <div
-                class="grid grid-cols-1 sm:grid-cols-2 gap-4"
-              >
-                <div>
-                  <label
-                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
-                    for="cad-senha"
-                    >Senha</label
-                  >
-                  <input
-                    type="password"
-                    id="cad-senha"
-                    required
-                    placeholder="Mínimo 6 caracteres"
-                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
-                  />
-                </div>
-                <div>
-                  <label
-                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
-                    for="cad-senha-confirmacao"
-                    >Confirme a Senha</label
-                  >
-                  <input
-                    type="password"
-                    id="cad-senha-confirmacao"
-                    required
-                    oninput="validarSenhas()"
-                    placeholder="Mínimo 6 caracteres"
-                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
-                  />
-                </div>
-              </div>
-              <div
-                class="grid grid-cols-1 sm:grid-cols-2 gap-4"
-              >
-                <div>
-                  <label
-                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
-                    for="cad-genero-musical"
-                    >Gênero musical</label
-                  >
-                  <input
-                    type="text"
-                    id="cad-genero-musical"
-                    required
-                    placeholder="Ex: Rock, Pop, Samba"
-                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
-                  />
-                </div>
-                <div>
-                  <label
-                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
-                    for="cad-tipo"
-                    >Perfil</label
-                  >
-                  <select
-                    id="cad-tipo"
-                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
-                    onchange="MostrarCampoEstabelecimento()"
-                  >
-                    <option value="CONTRATANTE">
-                      Estabelecimento / Contratante
-                    </option>
-                    <option value="ARTISTA">
-                      Artista / Banda
-                    </option>
-                  </select>
-                </div>
-              </div>
-
-              <div
-                class="grid grid-cols-1 sm:grid-cols-1 gap-4"
-              >
-                <div id="cad-estabelecimento">
-                  <label
-                    class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1"
-                    for="cad-nome-estabelecimento"
-                    >Nome do Estabelecimento</label
-                  >
-                  <input
-                    type="text"
-                    id="cad-nome-estabelecimento"
-                    placeholder="Ex: Estabelecimento Parceiro"
-                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-[#1B263B] focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] focus:bg-white transition shadow-sm"
-                  />
-                </div>
-              </div>
-              <button
-                type="submit"
-                class="w-full py-3.5 bg-[#0D1B2A] text-[#00B4D8] hover:bg-[#1B263B] rounded-xl font-semibold text-sm transition shadow-lg flex items-center justify-center gap-2"
-              >
-                <span>Concluir Cadastro</span>
-              </button>
-            </form>
-
-            <div class="text-center pt-2">
-              <p class="text-xs text-slate-500">
-                Já possui uma conta?
-                <button
-                  onclick="alternarTelaAuth('login')"
-                  class="text-[#E05A47] font-semibold hover:underline ml-1"
-                >
-                  Faça login
                 </button>
               </p>
             </div>
@@ -395,239 +211,36 @@
       </div>
     </div>
 
-    <!-- TELA PRINCIPAL (PAINEL DE NEGOCIAÇÃO E GESTÃO) -->
-    <div
-      id="view-dashboard"
-      class="flex-1 flex flex-col h-[100dvh] overflow-hidden"
-      style="display: none"
-    >
-      <!-- HEADER SUPERIOR ELEGANTE -->
-      <header
-        class="bg-[#0D1B2A] text-white px-4 sm:px-6 py-3.5 flex justify-between items-center shadow-md border-b border-[#00B4D8]/30 flex-shrink-0 z-20"
-      >
-        <div class="flex items-center gap-3">
-          <div>
-            <h1
-              class="serif-title text-lg sm:text-xl font-bold tracking-wide text-white"
-            >
-              CURA
-            </h1>
-            <p
-              class="text-[10px] sm:text-[11px] text-[#00B4D8] tracking-wider uppercase font-light"
-            >
-              Gestão Artística & Inteligência Artificial
-            </p>
-          </div>
-        </div>
+    <script type="module">
+      // ------ START FIREBASE CONFIG  ------ //
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+      import {
+        getAuth,
+        signInWithEmailAndPassword,
+        sendEmailVerification,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+      import { firebaseConfig } from "./firebase-config.js";
 
-        <div class="flex items-center gap-3">
-          <div
-            class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 border border-white/15 text-xs"
-          >
-            <span
-              class="w-2 h-2 rounded-full bg-[#2EC4B6] animate-pulse"
-            ></span>
-            <span
-              id="nome-usuario"
-              class="text-slate-200 font-medium"
-              >Carregando...</span
-            >
-          </div>
-          <button
-            onclick="logout()"
-            class="px-3.5 py-2 bg-[#E05A47] hover:bg-[#C94836] text-white rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-sm"
-          >
-            <span>Sair</span>
-            <span>🚪</span>
-          </button>
-        </div>
-      </header>
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      // ------ END FIREBASE CONFIG  ------ //
 
-      <!-- CONTAINER PRINCIPAL (GRID RESPONSIVO / VERTICAL STACK EM MOBILE) -->
-      <main
-        class="flex-1 flex flex-col lg:flex-row overflow-hidden p-3 sm:p-5 lg:p-6 gap-4 sm:gap-6 max-w-[1700px] w-full mx-auto"
-      >
-        <!-- SEÇÃO CENTRAL: CHAT DE NEGOCIAÇÃO -->
-        <section
-          class="flex-1 lg:flex-[2] bg-white rounded-3xl shadow-xl border border-slate-200/80 flex flex-col overflow-hidden min-h-[50vh] lg:min-h-0"
-        >
-          <!-- CABEÇALHO DO CHAT -->
-          <div
-            class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 flex-shrink-0"
-          >
-            <div>
-              <h3
-                class="serif-title text-base sm:text-lg font-bold text-slate-900"
-              >
-                Negociação com o Agente
-              </h3>
-              <p class="text-xs text-slate-500">
-                Defina valores, repertório e alinhamento
-                contratual direto com a curadoria IA.
-              </p>
-            </div>
-            <div
-              class="text-[11px] px-3 py-1 rounded-full bg-[#2EC4B6]/15 text-[#0F766E] border border-[#2EC4B6]/40 font-semibold whitespace-nowrap"
-            >
-              Lei Estadual nº 15.112/2012
-            </div>
-          </div>
-
-          <!-- ALERTA DE FECHAMENTO DE CONTRATO -->
-          <div
-            id="alerta-fechamento"
-            class="mx-4 sm:mx-5 mt-4 p-3.5 sm:p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm font-medium flex items-center gap-3 shadow-sm"
-            style="display: none"
-          >
-            <span class="text-lg">🎉</span>
-            <div>
-              <strong class="font-bold"
-                >Negócio Fechado!</strong
-              >
-              O contrato gerado foi gravado com sucesso no
-              seu histórico lateral.
-            </div>
-          </div>
-
-          <!-- CAIXA DE MENSAGENS -->
-          <div
-            id="chat-box"
-            class="flex-1 p-4 sm:p-5 overflow-y-auto space-y-4 bg-white"
-          >
-            <div
-              class="flex items-start gap-3 max-w-[90%] sm:max-w-[75%]"
-            >
-              <div
-                class="w-8 h-8 rounded-full bg-[#0D1B2A] text-[#00B4D8] flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1 shadow"
-              >
-                IA
-              </div>
-              <div
-                class="p-3.5 sm:p-4 rounded-2xl rounded-tl-none bg-slate-100 text-slate-800 text-xs sm:text-sm leading-relaxed shadow-sm"
-              >
-                Olá! Sou o agente consultor do Cura. Qual a
-                proposta de apresentação musical ou
-                artística para hoje?
-              </div>
-            </div>
-          </div>
-
-          <!-- INPUT DE ENVIO -->
-          <div
-            class="p-3 sm:p-5 border-t border-slate-100 bg-slate-50/50 flex-shrink-0"
-          >
-            <div class="flex gap-2 sm:gap-3">
-              <input
-                type="text"
-                id="mensagem-input"
-                placeholder="Digite sua mensagem ou proposta de cachê..."
-                onkeypress="checarEnter(event)"
-                class="flex-1 px-3.5 sm:px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0D1B2A] transition shadow-sm text-black"
-              />
-              <button
-                onclick="enviarMensagem()"
-                class="px-4 sm:px-5 py-3 bg-[#0D1B2A] text-[#00B4D8] hover:bg-[#1B263B] rounded-xl font-semibold text-xs sm:text-sm transition shadow-md flex items-center gap-1.5 sm:gap-2 flex-shrink-0"
-              >
-                <span>Enviar</span>
-                <span>→</span>
-              </button>
-            </div>
-          </div>
-        </section>
-
-        <!-- SEÇÃO LATERAL: HISTÓRICO DE CONTRATOS -->
-        <section
-          class="w-full lg:w-[400px] xl:w-[440px] bg-white rounded-3xl shadow-xl border border-slate-200/80 flex flex-col overflow-hidden flex-shrink-0 max-h-[350px] lg:max-h-none"
-        >
-          <div
-            class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between flex-shrink-0"
-          >
-            <div class="flex items-center gap-2">
-              <span class="text-[#E05A47]">📜</span>
-              <h3
-                class="serif-title text-sm sm:text-base font-bold text-slate-900"
-              >
-                Seus Contratos Registrados
-              </h3>
-            </div>
-            <button
-              onclick="carregarHistorico()"
-              title="Atualizar Histórico"
-              class="p-1.5 hover:bg-slate-200 rounded-lg text-slate-500 transition text-xs"
-            >
-              🔄
-            </button>
-          </div>
-
-          <div
-            id="lista-historico"
-            class="flex-1 p-4 sm:p-5 overflow-y-auto space-y-3 sm:space-y-4 bg-slate-50/30"
-          >
-            <div
-              class="text-center py-8 text-slate-400 text-xs"
-            >
-              Carregando histórico...
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
-
-    <script>
-      let usuarioId = localStorage.getItem("usuarioId");
-      let usuarioNome = localStorage.getItem("usuarioNome");
-      let historicoConversa = [];
-
-      // Inicialização de estado da interface com base no login
       window.addEventListener("DOMContentLoaded", () => {
         verificarEstadoSessao();
       });
 
       function verificarEstadoSessao() {
-        if (
-          usuarioId &&
-          usuarioId !== "null" &&
-          usuarioId !== ""
-        ) {
-          document.getElementById(
-            "view-auth",
-          ).style.display = "none";
-          document.getElementById(
-            "view-dashboard",
-          ).style.display = "flex";
-          document.getElementById(
-            "nome-usuario",
-          ).innerText =
-            "Usuário: " + (usuarioNome || "Conta Ativa");
-          carregarHistorico();
-        } else {
-          document.getElementById(
-            "view-auth",
-          ).style.display = "flex";
-          document.getElementById(
-            "view-dashboard",
-          ).style.display = "none";
+        const token =
+          sessionStorage.getItem("token") ||
+          sessionStorage.getItem("authToken");
+        const user = sessionStorage.getItem("user");
+        if (token && user) {
+          window.location.href = "/painel.html";
         }
       }
 
-      function alternarTelaAuth(tipo) {
-        const loginBox = document.getElementById(
-          "form-login-container",
-        );
-        const cadastroBox = document.getElementById(
-          "form-cadastro-container",
-        );
-
-        if (tipo === "cadastro") {
-          loginBox.style.display = "none";
-          cadastroBox.style.display = "block";
-        } else {
-          cadastroBox.style.display = "none";
-          loginBox.style.display = "block";
-        }
-      }
-
-      async function realizarLogin(e) {
+      window.realizarLogin = async function (e) {
         e.preventDefault();
         const email = document
           .getElementById("login-email")
@@ -637,391 +250,177 @@
           .value.trim();
         const erroBox =
           document.getElementById("erro-login");
+        const avisoBox =
+          document.getElementById("aviso-login");
+        const submitBtn = e.target.querySelector(
+          'button[type="submit"]',
+        );
 
         erroBox.classList.add("hidden");
+        avisoBox.classList.add("hidden");
 
-        try {
-          const response = await fetch("/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, senha }),
-          }).catch(() => null);
-
-          if (!response || !response.ok) {
-            if (email) {
-              usuarioId = "user_sim_" + Date.now();
-              usuarioNome = email.split("@")[0];
-              localStorage.setItem("usuarioId", usuarioId);
-              localStorage.setItem(
-                "usuarioNome",
-                usuarioNome,
-              );
-              verificarEstadoSessao();
-              return;
-            }
-            throw new Error("Credenciais inválidas.");
-          }
-
-          const dados = await response.json();
-          usuarioId = dados.id || dados.usuarioId;
-          usuarioNome = dados.nome || email;
-          localStorage.setItem("usuarioId", usuarioId);
-          localStorage.setItem("usuarioNome", usuarioNome);
-          verificarEstadoSessao();
-        } catch (err) {
-          erroBox.innerText =
-            "Erro ao autenticar. Verifique seus dados ou tente novamente.";
-          erroBox.classList.remove("hidden");
-        }
-      }
-
-      function validarSenhas() {
-        const senha = document.getElementById("cad-senha");
-        const confirmacao = document.getElementById(
-          "cad-senha-confirmacao",
-        );
-
-        if (senha.value !== confirmacao.value) {
-          confirmacao.setCustomValidity(
-            "As senhas não coincidem.",
-          );
-        } else {
-          confirmacao.setCustomValidity("");
-        }
-      }
-
-      async function realizarCadastro(e) {
-        e.preventDefault();
-        const nome = document
-          .getElementById("cad-nome")
-          .value.trim();
-        const email = document
-          .getElementById("cad-email")
-          .value.trim();
-        const senha = document
-          .getElementById("cad-senha")
-          .value.trim();
-        const senhaConfirmacao = document
-          .getElementById("cad-senha-confirmacao")
-          .value.trim();
-        const tipo =
-          document.getElementById("cad-tipo").value;
-        const estiloMusical = document.getElementById(
-          "cad-estilo-musical",
-        ).value;
-        const endereco = document
-          .getElementById("cad-endereco")
-          .value.trim();
-        const nomeEstabelecimento =
-          document
-            .getElementById("cad-nome-estabelecimento")
-            .value.trim() ?? "";
-        const erroBox =
-          document.getElementById("erro-cadastro");
-        const sucessoBox = document.getElementById(
-          "sucesso-cadastro",
-        );
-
-        if (senha !== senhaConfirmacao) return;
-
-        erroBox.classList.add("hidden");
-        sucessoBox.classList.add("hidden");
-
-        try {
-          const response = await fetch(
-            "/api/auth/cadastro",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                nome,
-                email,
-                senha,
-                tipo,
-                estiloMusical,
-                endereco,
-                nomeEstabelecimento,
-              }),
-            },
-          ).catch(() => null);
-
-          if (!response || !response.ok) {
-            sucessoBox.innerText =
-              "Cadastro realizado com sucesso! Redirecionando...";
-            sucessoBox.classList.remove("hidden");
-            setTimeout(() => {
-              usuarioId = "user_cad_" + Date.now();
-              usuarioNome = nome;
-              localStorage.setItem("usuarioId", usuarioId);
-              localStorage.setItem(
-                "usuarioNome",
-                usuarioNome,
-              );
-              verificarEstadoSessao();
-            }, 1000);
-            return;
-          }
-
-          sucessoBox.innerText =
-            "Conta criada com sucesso! Faça login para continuar.";
-          sucessoBox.classList.remove("hidden");
-          setTimeout(() => alternarTelaAuth("login"), 1200);
-        } catch (err) {
-          erroBox.innerText =
-            "Erro ao realizar cadastro no servidor.";
-          erroBox.classList.remove("hidden");
-        }
-      }
-
-      function MostrarCampoEstabelecimento() {
-        const tipo =
-          document.getElementById("cad-tipo").value;
-        const campoEstabelecimento =
-          document.getElementById("cad-estabelecimento");
-        const inputNomeEstabelecimento =
-          document.getElementById(
-            "cad-nome-estabelecimento",
-          );
-
-        if (tipo === "CONTRATANTE") {
-          campoEstabelecimento.style.display = "block";
-          inputNomeEstabelecimento.focus();
-          inputNomeEstabelecimento.required = true;
-        } else {
-          campoEstabelecimento.style.display = "none";
-          inputNomeEstabelecimento.required = false;
-        }
-      }
-
-      function logout() {
-        localStorage.clear();
-        usuarioId = null;
-        usuarioNome = null;
-        historicoConversa = [];
-        window.location.reload();
-      }
-
-      function checarEnter(e) {
-        if (e.key === "Enter") enviarMensagem();
-      }
-
-      async function enviarMensagem() {
-        const input = document.getElementById(
-          "mensagem-input",
-        );
-        const texto = input.value.trim();
-        if (!texto) return;
-
-        adicionarMensagemNaTela(texto, "user");
-        input.value = "";
-
-        const payload = {
-          mensagem: texto,
-          qtdMusicos: 1,
-          historico: historicoConversa,
-        };
-
-        historicoConversa.push({
-          role: "user",
-          texto: texto,
-        });
-
-        try {
-          const response = await fetch("/api/agente/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          }).catch(() => null);
-
-          if (
-            !response ||
-            (!response.ok && response.status === 404)
-          ) {
-            setTimeout(() => {
-              const respostaSimulada =
-                "Proposta analisada com sucesso pela Curadoria IA. Com base no repertório e cachê alinhados, Negócio fechado!\n\nCONTRATO DE APRESENTAÇÃO ARTÍSTICA\nContratante: " +
-                (usuarioNome || "Estabelecimento") +
-                "\nValor Acordado: R$ 1.500,00\nCondições: Conforme Lei Estadual nº 15.112/2012 e diretrizes do SINDIMUCE.";
-              historicoConversa.push({
-                role: "model",
-                texto: respostaSimulada,
-              });
-              adicionarMensagemNaTela(
-                respostaSimulada,
-                "model",
-              );
-              document.getElementById(
-                "alerta-fechamento",
-              ).style.display = "flex";
-              salvarContratoSimuladoLocal(respostaSimulada);
-            }, 800);
-            return;
-          }
-
-          const respostaTexto = await response.text();
-          historicoConversa.push({
-            role: "model",
-            texto: respostaTexto,
-          });
-          adicionarMensagemNaTela(respostaTexto, "model");
-
-          if (
-            respostaTexto
-              .toLowerCase()
-              .includes("negócio fechado")
-          ) {
-            document.getElementById(
-              "alerta-fechamento",
-            ).style.display = "flex";
-            salvarContratoAutomatico(respostaTexto);
-          }
-        } catch (error) {
-          adicionarMensagemNaTela(
-            "Erro ao comunicar com o servidor.",
-            "model",
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.classList.add(
+            "opacity-75",
+            "cursor-not-allowed",
           );
         }
-      }
 
-      function adicionarMensagemNaTela(texto, role) {
-        const box = document.getElementById("chat-box");
-        const div = document.createElement("div");
-
-        if (role === "user") {
-          div.className =
-            "flex items-start justify-end gap-3 max-w-[90%] sm:max-w-[75%] ml-auto fade-in";
-          div.innerHTML = `
-                    <div class="p-3.5 sm:p-4 rounded-2xl rounded-tr-none bg-[#0D1B2A] text-white text-xs sm:text-sm leading-relaxed shadow-sm">
-                        ${escapeHtml(texto)}
-                    </div>
-                    <div class="w-8 h-8 rounded-full bg-[#00B4D8] text-[#0D1B2A] flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1 shadow">EU</div>
-                `;
-        } else {
-          div.className =
-            "flex items-start gap-3 max-w-[90%] sm:max-w-[75%] fade-in";
-          div.innerHTML = `
-                    <div class="w-8 h-8 rounded-full bg-[#0D1B2A] text-[#00B4D8] flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1 shadow">IA</div>
-                    <div class="p-3.5 sm:p-4 rounded-2xl rounded-tl-none bg-slate-100 text-slate-800 text-xs sm:text-sm leading-relaxed shadow-sm whitespace-pre-wrap">${escapeHtml(texto)}</div>
-                `;
-        }
-
-        box.appendChild(div);
-        box.scrollTop = box.scrollHeight;
-      }
-
-      function salvarContratoSimuladoLocal(textoAcordo) {
-        let locais = JSON.parse(
-          localStorage.getItem("contratos_simulados") ||
-            "[]",
-        );
-        locais.push({
-          dataEnvio: new Date().toISOString(),
-          estabelecimento:
-            usuarioNome || "Estabelecimento Parceiro",
-          textoContrato: textoAcordo,
-        });
-        localStorage.setItem(
-          "contratos_simulados",
-          JSON.stringify(locais),
-        );
-        carregarHistorico();
-      }
-
-      async function salvarContratoAutomatico(textoAcordo) {
         try {
-          await fetch(
-            `/api/contratos/enviar?usuarioId=${usuarioId}&email=contratos@cura.com&estabelecimento=${encodeURIComponent(usuarioNome)}`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "text/plain" },
-              body: textoAcordo,
-            },
-          );
-          carregarHistorico();
-        } catch (e) {
-          console.error("Erro ao persistir contrato:", e);
-        }
-      }
-
-      async function carregarHistorico() {
-        const container = document.getElementById(
-          "lista-historico",
-        );
-        try {
-          const response = await fetch(
-            "/api/contratos/historico?usuarioId=" +
-              usuarioId,
-          ).catch(() => null);
-
-          if (!response || !response.ok) {
-            const locais = JSON.parse(
-              localStorage.getItem("contratos_simulados") ||
-                "[]",
+          const userCredential =
+            await signInWithEmailAndPassword(
+              auth,
+              email,
+              senha,
             );
-            renderizarListaHistorico(locais);
+          const firebaseUser = userCredential.user;
+
+          if (!firebaseUser.emailVerified) {
+            await signOut(auth);
+
+            avisoBox.innerHTML = `
+              <div class="space-y-1.5">
+                <p class="font-bold text-amber-900">⚠️ E-mail não validado!</p>
+                <p>O seu e-mail <strong>${escapeHtml(email)}</strong> ainda não foi confirmado.</p>
+                <p>Por favor, valide seu e-mail clicando no link enviado à sua caixa de entrada antes de acessar o sistema.</p>
+                <div class="pt-1">
+                  <button type="button" id="btn-reenviar-email" class="text-xs font-semibold text-[#0D1B2A] bg-amber-200/80 hover:bg-amber-300 px-3 py-1.5 rounded-lg transition">
+                    Reenviar e-mail de validação
+                  </button>
+                  <span id="msg-reenvio" class="ml-2 text-[11px] font-medium text-emerald-700 hidden"></span>
+                </div>
+              </div>
+            `;
+            avisoBox.classList.remove("hidden");
+
+            document.getElementById(
+              "btn-reenviar-email",
+            ).onclick = async () => {
+              const msgReenvio =
+                document.getElementById("msg-reenvio");
+              try {
+                const tempCred =
+                  await signInWithEmailAndPassword(
+                    auth,
+                    email,
+                    senha,
+                  );
+                await sendEmailVerification(tempCred.user);
+                await signOut(auth);
+                msgReenvio.innerText =
+                  "Link de validação reenviado com sucesso!";
+                msgReenvio.classList.remove("hidden");
+              } catch (resendErr) {
+                console.error(
+                  "Erro ao reenviar e-mail:",
+                  resendErr,
+                );
+                msgReenvio.innerText =
+                  "Erro ao reenviar. Tente novamente em instantes.";
+                msgReenvio.classList.remove("hidden");
+              }
+            };
             return;
           }
 
-          const dados = await response.json();
-          renderizarListaHistorico(dados);
-        } catch (error) {
-          const locais = JSON.parse(
-            localStorage.getItem("contratos_simulados") ||
-              "[]",
-          );
-          renderizarListaHistorico(locais);
+          const idToken = await firebaseUser.getIdToken();
+
+          sessionStorage.setItem("token", idToken);
+          sessionStorage.setItem("authToken", idToken);
+
+          let userData = {
+            id: firebaseUser.uid,
+            name:
+              firebaseUser.displayName ||
+              email.split("@")[0],
+            email: firebaseUser.email,
+            token: idToken,
+          };
+
+          try {
+            const response = await fetch(
+              "/api/auth/login",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, senha }),
+              },
+            );
+
+            if (response.ok) {
+              const resData = await response.json();
+
+              if (resData && resData.data) {
+                userData = {
+                  ...userData,
+                  ...resData.data,
+                  token: idToken,
+                };
+              }
+
+              sessionStorage.setItem(
+                "user",
+                JSON.stringify(userData),
+              );
+
+              localStorage.setItem(
+                "user",
+                JSON.stringify(userData),
+              );
+              localStorage.setItem("token", idToken);
+
+              window.location.href = "/painel.html";
+            }
+          } catch (backendErr) {
+            console.warn(
+              "Aviso ao conectar com backend local:",
+              backendErr,
+            );
+          }
+        } catch (err) {
+          console.error("Erro no login:", err);
+          let msg =
+            "Erro ao autenticar. Verifique seus dados e tente novamente.";
+          if (
+            err.code === "auth/invalid-credential" ||
+            err.code === "auth/user-not-found" ||
+            err.code === "auth/wrong-password"
+          ) {
+            msg = "E-mail ou senha inválidos.";
+          } else if (
+            err.code === "auth/too-many-requests"
+          ) {
+            msg =
+              "Muitas tentativas sem sucesso. Tente novamente mais tarde.";
+          } else if (
+            err.code === "auth/api-key-not-valid" ||
+            err.message?.includes("api-key-not-valid")
+          ) {
+            msg =
+              "Atenção: Configure sua chave válida do Firebase em firebase-config.js.";
+          } else if (err.message) {
+            msg = err.message;
+          }
+
+          erroBox.innerText = msg;
+          erroBox.classList.remove("hidden");
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove(
+              "opacity-75",
+              "cursor-not-allowed",
+            );
+          }
         }
-      }
+      };
 
-      function renderizarListaHistorico(dados) {
-        const container = document.getElementById(
-          "lista-historico",
-        );
-        if (!dados || dados.length === 0) {
-          container.innerHTML = `
-                    <div class="text-center py-10 text-slate-400 text-xs">
-                        <p class="text-2xl mb-2">📂</p>
-                        <p>Nenhum contrato fechado no histórico ainda.</p>
-                    </div>`;
-          return;
-        }
-
-        container.innerHTML = "";
-        dados
-          .slice()
-          .reverse()
-          .forEach((item) => {
-            const div = document.createElement("div");
-            div.className =
-              "bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition text-xs space-y-2";
-            const dataFormatada = item.dataEnvio
-              ? new Date(item.dataEnvio).toLocaleDateString(
-                  "pt-BR",
-                  {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  },
-                )
-              : "Data recente";
-
-            div.innerHTML = `
-                    <div class="flex justify-between items-center text-slate-500 border-b border-slate-100 pb-2">
-                        <span class="font-semibold text-slate-700">📅 ${dataFormatada}</span>
-                        <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold">Assinado</span>
-                    </div>
-                    <div>
-                        <strong class="text-slate-900">Contratante:</strong> <span class="text-slate-600">${escapeHtml(item.estabelecimento)}</span>
-                    </div>
-                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-mono text-[11px] text-slate-700 max-h-28 overflow-y-auto whitespace-pre-wrap">${escapeHtml(item.textoContrato)}</div>
-                `;
-            container.appendChild(div);
-          });
-      }
+      window.redirectToRegister = function () {
+        window.location.href = "/register.html";
+      };
 
       function escapeHtml(text) {
         return text
