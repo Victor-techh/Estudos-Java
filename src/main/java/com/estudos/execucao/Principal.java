@@ -55,7 +55,7 @@ public class Principal {
 
         for (int i = 1; i <= quantidade; i++) {
             System.out.println("\n--- Artista " + i + " ---");
-            int tipoArtista = lerInteiroValido(scanner, "Tipo de artista (1 - Solo | 2 - Banda): ");
+            int tipoArtista = lerInteiroValido(scanner, "Formação (1 - Solo | 2 - Duo | 3 - Trio): ");
 
             System.out.print("Nome: ");
             String nomeArt = scanner.nextLine();
@@ -65,11 +65,15 @@ public class Principal {
 
             double valorArt = lerDoubleValido(scanner, "Valor do Show (R$): ");
 
-            if (tipoArtista == 2) {
-                double taxaArt = lerDoubleValido(scanner, "Taxa de Logística (R$): ");
-                artistas.add(new Banda(nomeArt, estiloArt, valorArt, taxaArt));
-            } else {
+            if (tipoArtista == Formacao.SOLO.getQuantidadeMusicos()) {
                 artistas.add(new ArtistaSolo(nomeArt, estiloArt, valorArt));
+            } else if (tipoArtista == Formacao.DUO.getQuantidadeMusicos()
+                    || tipoArtista == Formacao.TRIO.getQuantidadeMusicos()) {
+                double taxaArt = lerDoubleValido(scanner, "Taxa de Logística (R$): ");
+                artistas.add(new Banda(nomeArt, estiloArt, valorArt, taxaArt, tipoArtista));
+            } else {
+                System.out.println("Formação inválida. Informe 1 (Solo), 2 (Duo) ou 3 (Trio).");
+                i--;
             }
         }
 

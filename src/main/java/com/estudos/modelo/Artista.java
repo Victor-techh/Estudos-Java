@@ -22,6 +22,7 @@ public abstract class Artista {
     public String getNome() { return nome; }
     public String getEstiloMusical() { return estiloMusical; }
     public double getValorShow() { return valorShow; }
+    public double getCacheBruto() { return valorShow; }
 
-    public abstract double getPisoLegal();
+    public abstract double getCacheMinimo();
 }

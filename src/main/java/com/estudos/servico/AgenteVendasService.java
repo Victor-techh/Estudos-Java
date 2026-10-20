@@ -1,6 +1,7 @@
 package com.estudos.servico;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +19,7 @@ import com.estudos.dto.AtendimentoRequestDTO;
 import com.estudos.dto.MensagemDTO;
 import com.estudos.entidade.UsuarioEntity;
 import com.estudos.modelo.Estabelecimento;
+import com.estudos.modelo.Formacao;
 import com.estudos.repositorio.UsuarioRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,8 +57,9 @@ public class AgenteVendasService {
             return "[ERRO]: Usuário não identificado para iniciar o atendimento.";
         }
 
-        if (quantidadeMusicos < 1 || quantidadeMusicos > 5) {
-            return "[RECUSADO]: A plataforma aceita apenas formações Solo (1), Duo (2), Trio (3), Quarteto (4) e Quinteto (5). A quantidade informada (" + quantidadeMusicos + ") não é permitida.";
+        Formacao formacao = Formacao.fromQuantidadeMusicos(quantidadeMusicos);
+        if (formacao == null) {
+            return "[RECUSADO]: As formações permitidas são Solo (1), Duo (2) e Trio (3).";
         }
 
         UsuarioEntity usuario = null;
@@ -73,25 +76,39 @@ public class AgenteVendasService {
             contexto = String.format(
                 "Você é o agente consultor do Cura.\n\n" +
                 "REGRAS OBRIGATÓRIAS DE NEGÓCIO:\n" +
-                "1. Formações permitidas: Solo (1), Duo (2), Trio (3), Quarteto (4) e Quinteto (5 músicos).\n" +
-                "2. Avalie o perfil do usuário e a mensagem para responder de forma coerente (se artista ou contratante).\n\n" +
+                "1. Formações permitidas: Solo (1), Duo (2) e Trio (3) músicos.\n" +
+                "2. O cachê bruto mínimo informado como referência sindical do SINDIMUCE é R$ 400 por músico para apresentações de até 3 horas: Solo R$ 400, Duo R$ 800 e Trio R$ 1.200.\n" +
+                "3. Nunca recomende, aceite ou apresente como cachê negociado um valor abaixo do mínimo correspondente à formação. Apresente a penalidade de cancelamento como ajuste separado do cachê bruto.\n" +
+                "4. Não invente valores de hora extra. Quando o local não tiver equipamento de som, informe que esse custo é negociado separadamente; se tiver equipamento próprio, não inclua aluguel de som.\n" +
+                "5. Use técnicas de venda consultiva para ajudar as partes a esclarecer valor, data, duração, repertório e condições, sem afirmar que um contrato foi fechado antes da confirmação das partes.\n" +
+                "6. Avalie o perfil do usuário e a mensagem para responder de forma coerente (se artista ou contratante).\n\n" +
                 "DADOS DO USUÁRIO CONECTADO:\n" +
                 "- Nome: %s\n" +
                 "- Estabelecimento: %s\n" +
                 "- Endereço: %s\n" +
                 "- Gênero Musical: %s\n" +
-                "- Músicos na Formação: %d\n\n" +
+                "- Formação: %s (%d músicos), cachê mínimo de referência R$ %.2f\n\n" +
+                "Referências informadas: tabela de cachês do SINDIMUCE; CLT e Lei Federal nº 3.857/1960 são referências legais, sem afirmar que fixam estes valores. O piso não foi validado contra uma tabela oficial neste momento.\n\n" +
                 "Responda diretamente em português de forma clara e objetiva.",
                 usuario.getNome() != null ? usuario.getNome() : "Não informado",
                 usuario.getEstabelecimento() != null ? usuario.getEstabelecimento() : "Não informado",
                 usuario.getEndereco() != null ? usuario.getEndereco() : "Não informado",
                 usuario.getGeneroMusical() != null ? usuario.getGeneroMusical() : "Geral",
-                quantidadeMusicos
+                formacao.getDescricao(),
+                quantidadeMusicos,
+                formacao.getCacheMinimo()
             );
+            contexto += montarCatalogoPublico(usuario);
         } else {
             contexto = String.format(
-                "Você é o agente consultor do Cura. Formações permitidas: de 1 a 5 músicos. Músicos informados: %d. Responda em português.",
-                quantidadeMusicos
+                "Você é o agente consultor do Cura. Formações permitidas: Solo (1), Duo (2) e Trio (3). " +
+                        "O cachê bruto mínimo informado como referência sindical do SINDIMUCE é R$ 400 por músico para apresentações de até 3 horas. " +
+                        "Para a formação %s (%d músicos), o mínimo é R$ %.2f. Nunca recomende nem aceite cachê abaixo desse mínimo. " +
+                        "Não invente valores de hora extra. Som sem equipamento é negociado separadamente; não cobre aluguel se o local já possui som. " +
+                        "Use venda consultiva, sem dizer que o contrato está fechado antes do aceite das partes. Responda em português.",
+                formacao.getDescricao(),
+                quantidadeMusicos,
+                formacao.getCacheMinimo()
             );
         }
 
@@ -99,22 +116,35 @@ public class AgenteVendasService {
     }
 
     public String processarAtendimento(Estabelecimento estabelecimento, String mensagem, List<MensagemDTO> historico, int quantidadeMusicos) {
-        if (quantidadeMusicos < 1 || quantidadeMusicos > 5) {
-            return "[RECUSADO]: A plataforma aceita apenas formações Solo (1), Duo (2), Trio (3), Quarteto (4) e Quinteto (5). A quantidade informada (" + quantidadeMusicos + ") não é permitida.";
+        Formacao formacao = Formacao.fromQuantidadeMusicos(quantidadeMusicos);
+        if (formacao == null) {
+            return "[RECUSADO]: As formações permitidas são Solo (1), Duo (2) e Trio (3).";
         }
-        return processarAtendimento(estabelecimento, mensagem);
+        String contexto = String.format(
+                "Você é o agente consultor do Cura. Formações: Solo, Duo e Trio. " +
+                        "O cachê bruto mínimo informado como referência sindical é R$ 400 por músico para apresentações de até 3 horas. " +
+                        "A formação atual é %s (%d músicos), mínimo R$ %.2f. Nunca recomende nem aceite abaixo do mínimo. " +
+                        "Som sem equipamento é negociado separadamente; sem aluguel se o local já possui equipamento. " +
+                        "Não invente valores de hora extra e não afirme fechamento sem aceite de ambas as partes. Responda em português.",
+                formacao.getDescricao(),
+                quantidadeMusicos,
+                formacao.getCacheMinimo()
+        );
+        if (estabelecimento != null) {
+            contexto += String.format(
+                    " O cliente é '%s', localizado em '%s'. %s",
+                    estabelecimento.getNome() != null ? estabelecimento.getNome() : "Não informado",
+                    estabelecimento.getEndereco() != null ? estabelecimento.getEndereco() : "Não informado",
+                    estabelecimento.isPossuiEquipamentoSom()
+                            ? "O estabelecimento possui equipamento de som; não inclua aluguel de som."
+                            : "O estabelecimento não possui equipamento de som; aluguel/serviço de som deve ser negociado separadamente."
+            );
+        }
+        return executarChamadaOpenRouter(contexto, mensagem, historico);
     }
 
     public String processarAtendimento(Estabelecimento estabelecimento, String mensagem) {
-        String contexto = "Você é o agente consultor do Cura. Responda em português de forma objetiva.";
-        if (estabelecimento != null) {
-            contexto = String.format(
-                "Você é o agente consultor do Cura. O cliente é '%s', localizado em '%s'. Responda em português.",
-                estabelecimento.getNome() != null ? estabelecimento.getNome() : "Não informado",
-                estabelecimento.getEndereco() != null ? estabelecimento.getEndereco() : "Não informado"
-            );
-        }
-        return executarChamadaOpenRouter(contexto, mensagem, null);
+        return processarAtendimento(estabelecimento, mensagem, null, 1);
     }
 
     private String executarChamadaOpenRouter(String contexto, String mensagem, List<MensagemDTO> historico) {
@@ -165,6 +195,7 @@ public class AgenteVendasService {
                         histMsg.put("role", role);
                         histMsg.put("content", content);
                     }
+
                 }
             }
 
@@ -203,5 +234,55 @@ public class AgenteVendasService {
             e.printStackTrace();
             return "[ERRO INTERNO]: " + e.getMessage();
         }
+    }
+
+    private String montarCatalogoPublico(UsuarioEntity usuario) {
+        String perfilAlvo = "ARTISTA".equals(usuario.getTipoPerfil()) ? "ESTABELECIMENTO" : "ARTISTA";
+        List<UsuarioEntity> perfis = usuarioRepository.findByTipoPerfilOrderByNomeAsc(perfilAlvo).stream()
+                .filter(perfil -> perfil.getId() != null && !perfil.getId().equals(usuario.getId()))
+                .limit(20)
+                .toList();
+        if (perfis.isEmpty()) {
+            return "\n\nNão há perfis correspondentes registrados no catálogo neste momento.";
+        }
+
+        StringBuilder catalogo = new StringBuilder(
+                "\n\nPERFIS PÚBLICOS DO CATÁLOGO (não revele e-mail, CPF/CNPJ ou endereço; contatos só após interesse mútuo):");
+        for (UsuarioEntity perfil : perfis) {
+            catalogo.append("\n- ").append(perfil.getNome());
+            if (perfil.getCidade() != null) {
+                catalogo.append(" | Cidade: ").append(perfil.getCidade());
+            }
+            if ("ARTISTA".equals(perfilAlvo)) {
+                if (perfil.getGeneroMusical() != null) {
+                    catalogo.append(" | Gênero: ").append(perfil.getGeneroMusical());
+                }
+                Formacao formacaoPerfil = perfil.getQuantidadeMusicos() == null
+                        ? null
+                        : Formacao.fromQuantidadeMusicos(perfil.getQuantidadeMusicos());
+                if (formacaoPerfil != null) {
+                    catalogo.append(" | Formação: ").append(formacaoPerfil.getDescricao())
+                            .append(" | Cachê mínimo: R$ ")
+                            .append(String.format(Locale.forLanguageTag("pt-BR"), "%.2f", formacaoPerfil.getCacheMinimo()));
+                }
+            } else {
+                if (perfil.getTipoEstabelecimento() != null) {
+                    catalogo.append(" | Tipo: ").append(perfil.getTipoEstabelecimento());
+                }
+                if (perfil.getGeneroDesejado() != null) {
+                    catalogo.append(" | Gêneros desejados: ").append(perfil.getGeneroDesejado());
+                }
+                if (perfil.getPossuiEquipamentoSom() != null) {
+                    catalogo.append(perfil.getPossuiEquipamentoSom()
+                            ? " | Possui equipamento de som"
+                            : " | Não possui equipamento de som; locação deve ser negociada separadamente");
+                }
+            }
+            if (perfil.getDescricao() != null) {
+                catalogo.append(" | Sobre: ").append(perfil.getDescricao());
+            }
+        }
+        catalogo.append("\nApresente opções compatíveis como sugestões e explique que o usuário deve demonstrar interesse para iniciar contato.");
+        return catalogo.toString();
     }
 }
