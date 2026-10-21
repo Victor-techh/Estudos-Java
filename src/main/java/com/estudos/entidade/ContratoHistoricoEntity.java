@@ -1,5 +1,6 @@
 package com.estudos.entidade;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,6 +19,7 @@ public class ContratoHistoricoEntity {
     private Long usuarioId;
     private String emailDestinatario;
     private String estabelecimento;
+    @Column(columnDefinition = "TEXT")
     private String textoContrato;
     private LocalDateTime dataEnvio;
 

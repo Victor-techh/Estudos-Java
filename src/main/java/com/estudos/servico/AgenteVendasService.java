@@ -153,8 +153,7 @@ public class AgenteVendasService {
             // Construção do payload JSON via Jackson para evitar erros de sintaxe manual
             ObjectNode rootNode = objectMapper.createObjectNode();
             
-            // Modelo gratuito e ativo no OpenRouter
-            rootNode.put("model", "meta-llama/llama-3.1-8b-instruct:free");
+            rootNode.put("model", "meta-llama/llama-3.1-8b-instruct");
 
             ArrayNode messagesNode = rootNode.putArray("messages");
 
