@@ -29,6 +29,8 @@ public class AuthController {
                     .body(ApiResponse.error("E-mail já cadastrado no sistema."));
         }
 
+        usuario.setTipoPerfil(normalizarTipoPerfil(usuario.getTipoPerfil()));
+
         UsuarioEntity novoUsuario = usuarioRepository.save(usuario);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -49,7 +51,6 @@ public class AuthController {
             novo.setEmail(email);
             novo.setSenha(senha);
             novo.setNome(email.contains("@") ? email.split("@")[0] : "Usuário");
-            novo.setTipoPerfil("ESTABELECIMENTO");
             novo = usuarioRepository.save(novo);
             usuarioOpt = Optional.of(novo);
         }
@@ -60,7 +61,7 @@ public class AuthController {
             userInfo.put("id", user.getId());
             userInfo.put("name", user.getNome());
             userInfo.put("email", user.getEmail());
-            userInfo.put("type", user.getTipoPerfil());
+            userInfo.put("type", normalizarTipoPerfil(user.getTipoPerfil()));
             userInfo.put("generoMusical", user.getGeneroMusical());
             userInfo.put("estabelecimento", user.getEstabelecimento());
             userInfo.put("endereco", user.getEndereco());
@@ -72,5 +73,16 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.error("E-mail ou senha inválidos."));
+    }
+
+    private String normalizarTipoPerfil(String tipoPerfil) {
+        if (tipoPerfil == null) {
+            return null;
+        }
+        return switch (tipoPerfil.trim().toUpperCase(java.util.Locale.ROOT)) {
+            case "ESTABELECIMENTO", "CONTRATANTE" -> "CONTRATANTE";
+            case "ARTISTA" -> "ARTISTA";
+            default -> tipoPerfil.trim();
+        };
     }
 }

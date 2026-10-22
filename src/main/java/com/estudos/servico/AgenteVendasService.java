@@ -98,7 +98,7 @@ public class AgenteVendasService {
             "Nome: %s. Perfil: %s. Estabelecimento: '%s'. Localização: '%s'. " +
             "Preferência musical: '%s'. Quantidade recebida do formulário (o valor 1 pode ser padrão, não confirmação): %d.",
             (usuario.getNome() != null && !usuario.getNome().isBlank()) ? usuario.getNome() : (usuario.getEmail() != null ? usuario.getEmail().split("@")[0] : "Cliente"),
-            (usuario.getTipoPerfil() != null && !usuario.getTipoPerfil().isBlank()) ? usuario.getTipoPerfil() : "Não informado",
+            normalizarTipoPerfil(usuario.getTipoPerfil()),
             (usuario.getEstabelecimento() != null && !usuario.getEstabelecimento().isBlank()) ? usuario.getEstabelecimento() : "Não informado",
             (usuario.getEndereco() != null && !usuario.getEndereco().isBlank()) ? usuario.getEndereco() : "Não informado",
             (usuario.getGeneroMusical() != null && !usuario.getGeneroMusical().isBlank()) ? usuario.getGeneroMusical() : "Não informado",
@@ -106,6 +106,17 @@ public class AgenteVendasService {
         );
 
         return executarAtendimentoComContexto(contexto, mensagem, historico);
+    }
+
+    private String normalizarTipoPerfil(String tipoPerfil) {
+        if (tipoPerfil == null || tipoPerfil.isBlank()) {
+            return "Não informado";
+        }
+        return switch (tipoPerfil.trim().toUpperCase(java.util.Locale.ROOT)) {
+            case "ESTABELECIMENTO", "CONTRATANTE" -> "CONTRATANTE";
+            case "ARTISTA" -> "ARTISTA";
+            default -> tipoPerfil.trim();
+        };
     }
 
     // Sobrecargas para manter compatibilidade com chamadas legadas
