@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.http.HttpStatus;
 
 import com.estudos.dto.AtendimentoRequestDTO;
 import com.estudos.entidade.UsuarioEntity;
@@ -24,6 +25,7 @@ public class AgenteControllerTest {
         Map<Long, UsuarioEntity> idMap = new HashMap<>();
         Map<String, UsuarioEntity> emailMap = new HashMap<>();
         Map<String, UsuarioEntity> uidMap = new HashMap<>();
+        java.util.List<String> observedProfiles = new java.util.ArrayList<>();
         long[] idSeq = {1L};
 
         UsuarioRepository mockRepo = (UsuarioRepository) java.lang.reflect.Proxy.newProxyInstance(
@@ -34,6 +36,10 @@ public class AgenteControllerTest {
                     if (name.equals("findByEmail")) {
                         String email = (String) mArgs[0];
                         return Optional.ofNullable(emailMap.get(email));
+                    }
+                    if (name.equals("existsByEmail")) {
+                        String email = (String) mArgs[0];
+                        return emailMap.containsKey(email);
                     }
                     if (name.equals("findByUid")) {
                         String uid = (String) mArgs[0];
@@ -61,6 +67,7 @@ public class AgenteControllerTest {
         AgenteVendasService service = new AgenteVendasService(mockRepo) {
             @Override
             public String processarAtendimentoPorUsuario(UsuarioEntity usuario, String mensagem, java.util.List<com.estudos.dto.MensagemDTO> historico, int quantidadeMusicos) {
+                observedProfiles.add(usuario.getTipoPerfil());
                 return "[OK_USUARIO]: " + usuario.getNome() + " (" + usuario.getEmail() + ") - " + mensagem;
             }
 
@@ -90,6 +97,7 @@ public class AgenteControllerTest {
         System.out.println("Teste 1 (Firebase Auth novo usuario): " + resp1);
         assert resp1.contains("[OK_USUARIO]") : "Deveria identificar o usuário pelo token Firebase";
         assert resp1.contains("Usuario Teste") : "Deveria usar o nome extraído do Firebase";
+        assert observedProfiles.get(0) == null : "Não deve presumir que um usuário novo é estabelecimento";
 
         // Teste 2: Segundo chamado com mesmo usuário (já persistido no mockRepo)
         AtendimentoRequestDTO req2 = new AtendimentoRequestDTO();
@@ -128,6 +136,16 @@ public class AgenteControllerTest {
         String resp6 = controller.conversar(req6, null, null);
         System.out.println("Teste 6 (Sem identificação): " + resp6);
         assert resp6.equals("[ERRO]: Usuário não identificado para iniciar o atendimento.") : "Deveria retornar erro de não identificado";
+
+        // Teste 7: Cadastro preserva CONTRATANTE como tipo de perfil
+        UsuarioEntity contratante = new UsuarioEntity();
+        contratante.setNome("Contratante Teste");
+        contratante.setEmail("contratante@teste.com");
+        contratante.setTipoPerfil("CONTRATANTE");
+        var respostaCadastro = new AuthController(mockRepo).cadastrar(contratante);
+        assert respostaCadastro.getStatusCode() == HttpStatus.CREATED : "Deveria cadastrar o contratante";
+        assert "CONTRATANTE".equals(emailMap.get("contratante@teste.com").getTipoPerfil())
+                : "O perfil CONTRATANTE deve ser preservado no cadastro";
 
         System.out.println("TODOS OS TESTES PASSARAM COM SUCESSO!");
     }

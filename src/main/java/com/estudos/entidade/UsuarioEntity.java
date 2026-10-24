@@ -19,7 +19,7 @@ public class UsuarioEntity {
 
     private String senha;
 
-    private String tipoPerfil; // "ARTISTA" ou "ESTABELECIMENTO"
+    private String tipoPerfil; // "ARTISTA" ou "CONTRATANTE"
 
     private String generoMusical;
     private String estabelecimento;

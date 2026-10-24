@@ -84,7 +84,6 @@ public class AgenteController {
                     usuario.setEmail(email);
                     usuario.setUid(uid);
                     usuario.setNome(nome != null && !nome.isBlank() ? nome : (email != null && email.contains("@") ? email.split("@")[0] : "Usuário"));
-                    usuario.setTipoPerfil("ESTABELECIMENTO");
                     usuario = usuarioRepository.save(usuario);
                 } else if (usuario != null && usuario.getUid() == null && uid != null) {
                     usuario.setUid(uid);
